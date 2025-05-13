@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.testcompose"
-    compileSdk = 35
+    compileSdk = 28
 
     defaultConfig {
         applicationId = "com.example.testcompose"
@@ -28,8 +28,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        // 🔥 Thêm dòng này để bật desugaring
+        isCoreLibraryDesugaringEnabled = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.0"
@@ -41,6 +43,8 @@ android {
         compose = true
         viewBinding = true
     }
+    buildToolsVersion = "28.0.0"
+    ndkVersion = "27.0.12077973"
 }
 
 dependencies {
@@ -53,6 +57,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.ads.mobile.sdk)
     debugImplementation("androidx.compose.ui:ui-tooling:1.5.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -69,6 +74,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.3")
+
 // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-analytics")
