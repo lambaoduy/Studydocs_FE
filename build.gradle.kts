@@ -1,5 +1,6 @@
-//plugins {
-//    alias(libs.plugins.android.application) // áp dụng plugin Android cho ứng dụng
-//    alias(libs.plugins.kotlin.android) // áp dụng plugin Kotlin cho Android
-//    alias(libs.plugins.kotlin.compose) // áp dụng plugin Kotlin Compose
-//}
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose) apply false
+}
