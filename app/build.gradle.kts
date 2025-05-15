@@ -63,6 +63,7 @@ dependencies {
 
     // Choose one of the following:
     // Material Design 3
+implementation ("com.google.android.material:material:1.11.0")
     implementation("androidx.compose.material3:material3")
     // or Material Design 2
     implementation("androidx.compose.material:material")
