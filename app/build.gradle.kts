@@ -100,4 +100,7 @@ dependencies {
 //fire base
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-analytics")
+    //hao them
+    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.compose.ui:ui-graphics:1.5.4")
 }
