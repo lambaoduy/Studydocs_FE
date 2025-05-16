@@ -64,8 +64,13 @@ dependencies {
 
     // Choose one of the following:
     // Material Design 3
+//<<<<<<< Duy
     implementation ("com.google.android.material:material:1.11.0")
     implementation(libs.material3)
+//=======
+//implementation ("com.google.android.material:material:1.11.0")
+  //  implementation("androidx.compose.material3:material3")
+//>>>>>>> master
     // or Material Design 2
     implementation(libs.androidx.material)
     // or skip Material Design and build directly on top of foundational components
