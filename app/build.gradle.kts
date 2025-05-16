@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.room.runtime.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,10 +64,15 @@ dependencies {
 
     // Choose one of the following:
     // Material Design 3
-implementation ("com.google.android.material:material:1.11.0")
-    implementation("androidx.compose.material3:material3")
+//<<<<<<< Duy
+    implementation ("com.google.android.material:material:1.11.0")
+    implementation(libs.material3)
+//=======
+//implementation ("com.google.android.material:material:1.11.0")
+  //  implementation("androidx.compose.material3:material3")
+//>>>>>>> master
     // or Material Design 2
-    implementation("androidx.compose.material:material")
+    implementation(libs.androidx.material)
     // or skip Material Design and build directly on top of foundational components
     implementation("androidx.compose.foundation:foundation")
     // or only import the main APIs for the underlying toolkit systems,
