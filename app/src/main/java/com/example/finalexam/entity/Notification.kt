@@ -4,6 +4,7 @@ import com.google.firebase.Timestamp
 
 data class Notification(
     val notificationId: String = "",
+    val documentId: String = "",
     val senderId: String = "",
     val type: String = "",
     val title: String = "",

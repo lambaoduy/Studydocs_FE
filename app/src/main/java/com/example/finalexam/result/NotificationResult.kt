@@ -10,6 +10,7 @@ sealed class NotificationResult {
     }
 
     data object Load : NotificationResult()
+    data object Close : NotificationResult()
     data class Show(val notifications: List<Notification>, val viewMode: ViewMode) :
         NotificationResult()
 

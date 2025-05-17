@@ -8,6 +8,7 @@ class NotificationReducer {
     fun reduce(state: NotificationState, result: NotificationResult): NotificationState =
         when (result) {
             is NotificationResult.Load -> state.copy(isLoading = true)
+            is NotificationResult.Close -> state.copy(viewMode = ViewMode.NONE)
             is NotificationResult.Open -> state.copy(
                 documentId = result.documentId,
                 viewMode = ViewMode.NONE
@@ -16,7 +17,8 @@ class NotificationReducer {
             is NotificationResult.Show -> state.copy(
                 notifications = result.notifications,
                 viewMode = result.viewMode,
-                isLoading = false
+                isLoading = false,
+                unreadCount = 0
             )
 
             is NotificationResult.Error -> state.copy(
