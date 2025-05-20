@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.finalexam.ui.theme.FinalExamTheme
 import com.example.finalexam.view.HomeScreen
-
+import com.google.firebase.auth.FirebaseAuth
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,11 +21,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             HomeScreen()
         }
+        
     }
+
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun GreetingPreview() {
-        HomeScreen()
-}

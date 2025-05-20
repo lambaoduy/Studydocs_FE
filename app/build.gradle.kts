@@ -64,17 +64,12 @@ dependencies {
 
     // Choose one of the following:
     // Material Design 3
-//<<<<<<< Duy
     implementation ("com.google.android.material:material:1.11.0")
     implementation(libs.material3)
-//=======
-//implementation ("com.google.android.material:material:1.11.0")
-  //  implementation("androidx.compose.material3:material3")
-//>>>>>>> master
     // or Material Design 2
     implementation(libs.androidx.material)
     // or skip Material Design and build directly on top of foundational components
-    implementation("androidx.compose.foundation:foundation")
+//    implementation("androidx.compose.foundation:foundation")
     // or only import the main APIs for the underlying toolkit systems,
     // such as input and measurement/layout
     implementation("androidx.compose.ui:ui")
@@ -107,4 +102,26 @@ dependencies {
 //fire base
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-analytics")
+    // Firebase Authentication
+    implementation ("com.google.firebase:firebase-auth")
+
+    // Cloud Firestore (cơ sở dữ liệu thời gian thực)
+    implementation ("com.google.firebase:firebase-firestore")
+
+    // Cloud Storage (lưu trữ hình ảnh, tệp, ...)
+    implementation ("com.google.firebase:firebase-storage")
+
+    // Firebase Cloud Messaging (push notification)
+    implementation ("com.google.firebase:firebase-messaging")
+    // HTTP client
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Retrofit (HTTP client cao cấp hơn OkHttp)
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+
+    // JSON converter cho Retrofit
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+//    routing
+    implementation ("androidx.navigation:navigation-compose:2.9.0")
+
 }
