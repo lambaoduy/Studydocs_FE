@@ -44,4 +44,9 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
 
     implementation("com.google.firebase:firebase-analytics")
+
+    implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.3") // Hiển thị PDF
+    implementation("com.squareup.retrofit2:retrofit:2.9.0") // Gọi API
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // Parse JSON
+    implementation("com.google.code.gson:gson:2.8.9")
 }
