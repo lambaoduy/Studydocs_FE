@@ -1,5 +1,6 @@
 package com.example.finalexam.ui.myLibraryScreen
 
+import MyLibraryViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,17 +19,15 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.finalexam.ui.myLibraryVModel.Document
-import com.example.finalexam.ui.myLibraryVModel.MyLibraryViewModel
+import com.example.finalexam.entity.Document
+import com.example.finalexam.intent.MyLibraryIntent
+
 import com.example.finalexam.ui.theme.*
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 
 @Composable
 fun MyLibraryScreen(
-    viewModel: MyLibraryViewModel = viewModel()
+    viewModel:  MyLibraryViewModel = viewModel()
 ) {
     // Lấy state từ ViewModel
     val state by viewModel.state.collectAsState()
@@ -241,7 +240,7 @@ fun PreviewMyLibraryScreen() {
 
                 UploadDocumentButton(onClick = {}, onAddClick = {})
 
-                Spacer(modifier = Modifier.height(24))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 UploadedDocumentsPanel(documents = documents.filter {
                     it.title.contains(searchQuery, ignoreCase = true)

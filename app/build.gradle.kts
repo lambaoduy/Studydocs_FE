@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.finalexam"
-    compileSdk = 30
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.finalexam"

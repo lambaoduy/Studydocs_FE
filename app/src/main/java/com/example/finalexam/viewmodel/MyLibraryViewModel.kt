@@ -1,8 +1,13 @@
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+
+import com.example.finalexam.intent.MyLibraryIntent
+import com.example.finalexam.state.MyLibraryState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.collections.filter
+import com.example.finalexam.entity.Document
 
 // ViewModel cho màn hình MyLibrary
 // Nhận Intent từ UI, xử lý logic và cập nhật State

@@ -2,7 +2,8 @@
 // State này sẽ được ViewModel cập nhật và View sử dụng để hiển thị UI
 package com.example.finalexam.state
 
-import Document
+import com.example.finalexam.entity.Document
+
 
 data class MyLibraryState(
     val isLoading: Boolean = false, // Trạng thái đang tải dữ liệu
