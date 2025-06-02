@@ -20,12 +20,22 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.finalexam.intent.AuthIntent
+import com.example.finalexam.viewmodel.AuthViewModel
 import com.example.finalexam.ui.theme.*
 
+// thiện làm: RegisterScreen theo MVI
 @Composable
 fun RegisterScreen(
+    authViewModel: AuthViewModel = viewModel(),
     onLoginClick: () -> Unit = {}
 ) {
+    val state by authViewModel.state.collectAsState()
+    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -39,51 +49,42 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(40.dp))
-
-            // Image placeholder
-//            Image(
-//                painter = painterResource(id = R.mipmap.register_illustration),
-//                contentDescription = "Register Illustration",
-//                modifier = Modifier
-//                    .height(200.dp)
-//                    .fillMaxWidth()
-//            )
-
             Spacer(modifier = Modifier.height(24.dp))
-
             Text(
                 text = "Create New Account",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Purple40
             )
-
             Spacer(modifier = Modifier.height(24.dp))
-
             RoundedInputField(
                 icon = Icons.Default.Person,
-                placeholder = "Subeo"
+                placeholder = "Username",
+                value = username,
+                onValueChange = { username = it }
             )
-
             Spacer(modifier = Modifier.height(12.dp))
-
             RoundedInputField(
                 icon = Icons.Default.Email,
-                placeholder = "subeo13@gmail.com"
+                placeholder = "Email",
+                value = email,
+                onValueChange = { email = it }
             )
-
             Spacer(modifier = Modifier.height(12.dp))
-
             RoundedInputField(
                 icon = Icons.Default.Lock,
-                placeholder = "*****",
+                placeholder = "Password",
+                value = password,
+                onValueChange = { password = it },
                 visualTransformation = PasswordVisualTransformation()
             )
-
             Spacer(modifier = Modifier.height(24.dp))
-
             Button(
-                onClick = { /* TODO: Handle registration */ },
+                onClick = {
+                    authViewModel.processIntent(
+                        AuthIntent.Register(username, email, password)
+                    )
+                },
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(backgroundColor = Purple40),
                 modifier = Modifier
@@ -92,9 +93,10 @@ fun RegisterScreen(
             ) {
                 Text("SIGN UP", color = Color.White, fontWeight = FontWeight.Bold)
             }
-
+            if (state.error?.isNotBlank() == true) {
+                Text(state.error ?: "", color = Color.Red)
+            }
             Spacer(modifier = Modifier.height(16.dp))
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable { onLoginClick() }
@@ -111,7 +113,44 @@ fun RegisterScreen(
                 )
             }
         }
+        if (state.isLoading) {
+            CircularProgressIndicator(Modifier.align(Alignment.Center))
+        }
     }
+}
+
+// thiện làm: RoundedInputField nhận value và onValueChange
+@Composable
+fun RoundedInputField(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    placeholder: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    visualTransformation: androidx.compose.ui.text.input.VisualTransformation = androidx.compose.ui.text.input.VisualTransformation.None
+) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        leadingIcon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = Purple40
+            )
+        },
+        placeholder = { Text(text = placeholder, color = Color.Gray) },
+        visualTransformation = visualTransformation,
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.Transparent,
+            focusedIndicatorColor = Color.Black,
+            unfocusedIndicatorColor = Color.Gray,
+            textColor = Color.Black
+        ),
+        shape = RoundedCornerShape(50),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp)
+    )
 }
 
 @Preview(showSystemUi = true, showBackground = true)
