@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.finalexam"
-    compileSdk = 35
+    compileSdk = 30
 
     defaultConfig {
         applicationId = "com.example.finalexam"
@@ -124,4 +124,7 @@ dependencies {
 //    routing
     implementation ("androidx.navigation:navigation-compose:2.9.0")
 
+    //hao them
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 }
