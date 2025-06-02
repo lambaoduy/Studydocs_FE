@@ -103,40 +103,6 @@ fun LoginScreen(
     }
 }
 
-// thiện làm: RoundedInputField nhận value và onValueChange (dùng lại từ RegisterScreen)
-@Composable
-fun RoundedInputField(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    placeholder: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    visualTransformation: androidx.compose.ui.text.input.VisualTransformation = androidx.compose.ui.text.input.VisualTransformation.None
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        leadingIcon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Purple40
-            )
-        },
-        placeholder = { Text(text = placeholder, color = Color.Gray) },
-        visualTransformation = visualTransformation,
-        colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = Color.Transparent,
-            focusedIndicatorColor = Color.Black,
-            unfocusedIndicatorColor = Color.Gray,
-            textColor = Color.Black
-        ),
-        shape = RoundedCornerShape(50),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(55.dp)
-    )
-}
-
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun LoginScreenPreview() {

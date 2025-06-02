@@ -119,7 +119,7 @@ fun RegisterScreen(
     }
 }
 
-// thiện làm: RoundedInputField nhận value và onValueChange
+// Định nghĩa RoundedInputField duy nhất ở đây
 @Composable
 fun RoundedInputField(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
