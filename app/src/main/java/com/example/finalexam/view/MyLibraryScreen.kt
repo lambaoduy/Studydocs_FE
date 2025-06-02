@@ -215,37 +215,3 @@ fun UploadedDocumentsPanel(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewMyLibraryScreen() {
-    val documents = listOf(
-        Document("1", "Tài liệu Kotlin", "Nguyễn Văn A", "01/01/2024"),
-        Document("2", "Tài liệu Jetpack Compose", "Trần Thị B", "02/01/2024"),
-        Document("3", "Tài liệu Android", "Lê Văn C", "03/01/2024")
-    )
-
-    var searchQuery by remember { mutableStateOf("") }
-
-    FinalExamTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(AppColors.Background)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                SearchPanel(
-                    query = searchQuery, onQueryChange = { searchQuery = it })
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                UploadDocumentButton(onClick = {}, onAddClick = {})
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                UploadedDocumentsPanel(documents = documents.filter {
-                    it.title.contains(searchQuery, ignoreCase = true)
-                }, onDocumentClick = { /* preview: không xử lý */ })
-            }
-        }
-    }
-}

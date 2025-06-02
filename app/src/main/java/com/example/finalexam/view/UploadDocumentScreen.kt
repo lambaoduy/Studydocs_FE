@@ -1,5 +1,6 @@
 package com.example.finalexam.ui.myLibraryScreen
 
+import UploadDocumentViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,7 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-//import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -25,19 +26,10 @@ import com.example.finalexam.ui.theme.FinalExamTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-
-data class UploadDocument(
-    val id: String,
-    val name: String,
-    var isSelected: Boolean = false
-)
-
-data class University(
-    val id: String,
-    val name: String,
-    val courses: List<String>,
-    var selectedCourseIndex: Int = 0
-)
+import com.example.finalexam.entity.University
+import com.example.finalexam.entity.UploadDocument
+import com.example.finalexam.intent.UploadDocumentIntent
+import kotlin.collections.filter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +48,9 @@ fun UploadDocumentScreen(
         viewModel.loadMockData()
     }
 
-    Column(modifier = modifier.fillMaxSize().background(AppColors.Background)) {
+    Column(modifier = modifier
+        .fillMaxSize()
+        .background(AppColors.Background)) {
         TopAppBar(
             title = { Text("Studocu") },
             navigationIcon = {
@@ -253,33 +247,3 @@ private fun UniversitySelectionSection(
     }
 }
 
-@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
-@Composable
-fun UploadDocumentScreenPreview() {
-    val mockDocuments = listOf(
-        UploadDocument("1", "Chao_cau.docx", true),
-        UploadDocument("2", "Bai_tap.pdf"),
-        UploadDocument("3", "Assignment.docx")
-    )
-
-    val mockUniversity = University(
-        id = "uni1",
-        name = "Đại học Nông Lâm TP.HCM",  // Fixed Vietnamese typo
-        courses = listOf("Công nghệ thông tin", "Khoa học dữ liệu", "Kỹ thuật phần mềm"),
-        selectedCourseIndex = 0
-    )
-
-    FinalExamTheme {
-        UploadDocumentScreen(
-            documents = mockDocuments,
-            university = mockUniversity,
-            onBackClick = { println("Back clicked") },
-            onUploadClick = { selected ->
-                println("Uploading: ${selected.joinToString { it.name }}")
-            },
-            onCourseSelected = { index ->
-                println("Selected course index: $index")
-            }
-        )
-    }
-}

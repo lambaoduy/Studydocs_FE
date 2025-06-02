@@ -1,4 +1,5 @@
 // Định nghĩa các Intent (hành động) cho màn hình UploadDocument
+package com.example.finalexam.intent
 sealed class UploadDocumentIntent {
     // Hành động chọn tài liệu để upload
     data class SelectDocument(val documentId: String) : UploadDocumentIntent()
@@ -12,16 +13,3 @@ sealed class UploadDocumentIntent {
     object Back : UploadDocumentIntent()
 }
 
-// Định nghĩa data class UploadDocument (nếu chưa có, có thể tách riêng file nếu muốn)
-data class UploadDocument(
-    val id: String,
-    val name: String,
-    var isSelected: Boolean = false
-)
-
-data class University(
-    val id: String,
-    val name: String,
-    val courses: List<String>,
-    var selectedCourseIndex: Int = 0
-) 

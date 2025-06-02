@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.finalexam.ui.myLibraryScreen.MyLibraryScreen
+import com.example.finalexam.ui.myLibraryScreen.UploadDocumentScreen
 import com.example.finalexam.ui.theme.FinalExamTheme
 import com.example.finalexam.view.HomeScreen
 import com.google.firebase.auth.FirebaseAuth
@@ -19,10 +21,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            HomeScreen()
+            MyLibraryScreen()
         }
-        
     }
-
 }
-

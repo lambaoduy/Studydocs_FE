@@ -1,5 +1,9 @@
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.finalexam.entity.University
+import com.example.finalexam.entity.UploadDocument
+import com.example.finalexam.intent.UploadDocumentIntent
+import com.example.finalexam.state.UploadDocumentState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
