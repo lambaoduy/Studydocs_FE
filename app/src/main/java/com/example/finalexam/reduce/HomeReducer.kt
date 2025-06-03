@@ -10,8 +10,21 @@ class HomeReducer {
     fun reduce(state: HomeState, result: HomeResult): HomeState = when (result) {
 
         is HomeResult.Find -> TODO()//hàm tìm kiếm chưa làm nên tạm để đây
-        is HomeResult.LoadByUserID -> state.copy(result.data)
-        is HomeResult.Error -> state.copy(result.Error)
+        //đóng gói danh sách document theo userID thành state
+        is HomeResult.LoadByUserID -> {
+            state.copy(
+                listDocument = result.data,
+                isLoading = false,
+                error = null
+            )
+        }
+        //quăng lỗi theo state
+        is HomeResult.Error -> {
+            state.copy(
+                isLoading = false,
+                error = result.throwable.message
+            )
+        }
         HomeResult.Loading -> TODO()
     }
 
