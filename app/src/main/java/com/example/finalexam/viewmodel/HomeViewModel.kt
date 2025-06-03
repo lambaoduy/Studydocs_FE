@@ -7,6 +7,7 @@ import com.example.finalexam.intent.HomeIntent
 import com.example.finalexam.reduce.HomeReducer
 import com.example.finalexam.state.HomeState
 import com.example.finalexam.usecase.HomeFindUseCase
+import com.example.finalexam.result.HomeResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -26,7 +27,7 @@ class HomeViewModel : ViewModel() {
 //    như kiểu đăng ký cho view model biết là nó sẽ làm được hành động ở đây
 //    biến handlers sẽ lưu trữ toàn bộ hành động mà view model nó làm được
 //
-    private val handlers: List<IntentHandler<HomeIntent>> = listOf(
+    private val handlers: List<IntentHandler<HomeIntent, HomeResult>> = listOf(
        HomeFindHandler(HomeFindUseCase()),
 //        AddTodoHandler(AddTodoUseCase(db)),
 //        RemoveTodoHandler(RemoveTodoUseCase(db))
