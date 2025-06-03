@@ -1,4 +1,4 @@
-package com.example.finalexam.dao.notification
+package com.example.finalexam.data.dao.notification
 
 import com.example.finalexam.entity.Notification
 
