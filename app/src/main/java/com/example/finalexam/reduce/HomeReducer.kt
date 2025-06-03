@@ -8,8 +8,15 @@ import com.example.finalexam.state.HomeState
 class HomeReducer {
     //    hàm reduce để đóng gói dữ liệu thành state
     fun reduce(state: HomeState, result: HomeResult): HomeState = when (result) {
+        is HomeResult.Find -> {
+            println("Find result data: ${result.data}")  // In ra list document tìm được
+            state.copy(
+                listDocument = result.data,
+                isLoading = false,
+                error = null
+            )
 
-        is HomeResult.Find -> TODO()//hàm tìm kiếm chưa làm nên tạm để đây
+        }
         //đóng gói danh sách document theo userID thành state
         is HomeResult.LoadByUserID -> {
             state.copy(
@@ -26,6 +33,7 @@ class HomeReducer {
             )
         }
         HomeResult.Loading -> TODO()
+
     }
 
 }

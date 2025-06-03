@@ -148,10 +148,10 @@ fun Content(modifier: Modifier = Modifier) {
     val homeViewModel: HomeViewModel = viewModel()
 
     var searchQuery by remember { mutableStateOf("") }// biến này dùng để lưu dữ liệu ng dùng nhập vào thanh search
-    val id="user default"
-    homeViewModel.processIntent(HomeIntent.LoadByUserID(id))
-    val uiState by homeViewModel.state.collectAsState()
-    val documents = uiState.listDocument
+    val id=""// lấy id user
+    homeViewModel.processIntent(HomeIntent.LoadByUserID(id))//load dữ liệu ban đầu theo id user
+    val uiState by homeViewModel.state.collectAsState()//lấy state
+    val documents = uiState.listDocument//lấy document từ state
 
     Column(modifier = modifier.padding(16.dp)) {
 //        thanh search
@@ -200,7 +200,7 @@ fun ListDocumentView(documents: List<Document>) {
         }
     }
 }
-
+//hiển thị 1 document
 @Composable
 fun DocumentItemView(doc: Document) {
     Text(text = "Title: ${doc.title}")

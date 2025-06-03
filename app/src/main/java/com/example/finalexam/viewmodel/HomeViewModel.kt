@@ -29,8 +29,8 @@ class HomeViewModel : ViewModel() {
 //    biến handlers sẽ lưu trữ toàn bộ hành động mà view model nó làm được
 //
     private val handlers: List<IntentHandler<HomeIntent,HomeResult>> = listOf(
-//       HomeFindHandler(),// để tạm chưa làm xong
-        HomeLoadByUerIDHandler(),
+       HomeFindHandler(),//tìm kiếm
+        HomeLoadByUerIDHandler(),//
     )
 // xử lý intent truyền vào từ trang home ở đây
     fun processIntent(intent: HomeIntent) {
