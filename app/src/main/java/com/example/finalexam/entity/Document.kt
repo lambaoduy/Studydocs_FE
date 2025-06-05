@@ -1,7 +1,10 @@
 package com.example.finalexam.entity
+
 data class Document(
     val id: String,
     val title: String,
+      var subject: String,
+    var university: String,
     val author: String,
     val createdDate: String
 

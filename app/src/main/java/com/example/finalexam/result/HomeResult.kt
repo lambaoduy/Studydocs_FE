@@ -1,11 +1,11 @@
 package com.example.finalexam.result
+
+import com.example.finalexam.entity.Document
+
 //file này duy viết
 sealed class HomeResult {
     object Loading : HomeResult()
-//    data class Loaded(val todos: List<Todo>) : HomeResult()
-//    data class Added(val todos: List<Todo>) : HomeResult()
-//    data class Removed(val todos: List<Todo>) : HomeResult()
-    data class Find(val todos: List<String>): HomeResult()
-    data class Error(val throwable: Throwable) : HomeResult()
-
+    data class LoadByUserID(val data: List<Document>):HomeResult()//danh sách documents theo userid
+    data class Find(val data: List<Document>): HomeResult()//tìm kiếm
+    data class Error(val throwable: Throwable) : HomeResult()// lỗi
 }
