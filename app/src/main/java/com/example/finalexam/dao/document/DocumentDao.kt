@@ -1,7 +1,7 @@
 package com.example.finalexam.dao.document
 
 import com.example.finalexam.entity.Document
-
+//lớp liên kết với backend
 class DocumentDao {
     // Danh sách document mẫu
     private val sampleDocuments = listOf(
@@ -21,7 +21,7 @@ class DocumentDao {
     }
 
     fun getDocumentbyUserID(): List<Document> {
-return sampleDocuments
+        return sampleDocuments
     }
 
 }

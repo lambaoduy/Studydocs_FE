@@ -30,16 +30,15 @@ class HomeViewModel : ViewModel() {
 //
     private val handlers: List<IntentHandler<HomeIntent,HomeResult>> = listOf(
        HomeFindHandler(),//tìm kiếm
-        HomeLoadByUerIDHandler(),//
+        HomeLoadByUerIDHandler(),//lấy dữ liệu theo id user
     )
 // xử lý intent truyền vào từ trang home ở đây
     fun processIntent(intent: HomeIntent) {
 //        viewModelScope là lớp có sẵn, chịu trách nhiệm cho việc chạy gọi api, gọi db.
-
         viewModelScope.launch {
-            val handler = handlers.find { it.canHandle(intent) }
-            handler?.handle(intent) { result ->
-                _state.value = reducer.reduce(_state.value, result)
+            val handler = handlers.find { it.canHandle(intent) }//tạo handler để xử lý
+            handler?.handle(intent) {//kiểm tra intent có trong các intent xử lý được không
+                result -> _state.value = reducer.reduce(_state.value, result)//dùng reduce chuyển dữ liệu từ handler hành state và trả về
             } ?: println("[WARN] No handler for intent: $intent")
         }
     }

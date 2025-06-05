@@ -30,6 +30,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -149,7 +150,9 @@ fun Content(modifier: Modifier = Modifier) {
 
     var searchQuery by remember { mutableStateOf("") }// biến này dùng để lưu dữ liệu ng dùng nhập vào thanh search
     val id=""// lấy id user
-    homeViewModel.processIntent(HomeIntent.LoadByUserID(id))//load dữ liệu ban đầu theo id user
+    LaunchedEffect(Unit) {
+        homeViewModel.processIntent(HomeIntent.LoadByUserID(id))
+    }//load dữ liệu ban đầu theo id user
     val uiState by homeViewModel.state.collectAsState()//lấy state
     val documents = uiState.listDocument//lấy document từ state
 
