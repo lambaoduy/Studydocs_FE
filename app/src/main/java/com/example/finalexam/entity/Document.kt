@@ -1,15 +1,26 @@
 package com.example.finalexam.entity
 
+import com.google.gson.annotations.SerializedName
+import java.sql.Timestamp
+
 data class Document(
-    val id: String,
-    val title: String,
-      var subject: String,
-    var university: String,
-    val author: String,
-    val createdDate: String
-
+    val id: String = "",
+    val userId: String = "",
+    val title: String = "",
+    val description: String = "",
+    val fileUrl: String = "",
+    val subject: String = "",
+    val university: String = "",
+    @SerializedName("isDelete")
+    val isDelete: Boolean = false,
+    val createdAt: Timestamp? = null,
+    val updatedAt: Timestamp? = null,
+    val deletedAt: Timestamp? = null,
+    val likes: List<Like>? = null
 ) {
-    val shortTitle: String
-        get() = if (title.length > 10) title.take(10) + "..." else title
+    data class Like(
+        val userId: String = "",
+        val type: String = "",
+        val createAt: Timestamp? = null
+    )
 }
-
