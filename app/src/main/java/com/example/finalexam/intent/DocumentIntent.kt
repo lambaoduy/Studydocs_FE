@@ -5,4 +5,5 @@ sealed class DocumentIntent {
     data class DownloadDocument(val documentId: String) : DocumentIntent()
     data class LikeDocument(val documentId: String, val userId: String) : DocumentIntent()
     data class UnlikeDocument(val documentId: String, val userId: String) : DocumentIntent()
+    data class Error(val message: String) : DocumentIntent()
 }
