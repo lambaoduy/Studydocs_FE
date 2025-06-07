@@ -18,7 +18,8 @@ class DocumentReducer {
             isLiked = result.document.likes?.any { it.userId == "currentUserId" } ?: false // Giả định userId hiện tại
         )
         is DocumentResult.DownloadUrl -> state.copy(downloadUrl = result.url)
-        is DocumentResult.ActionSuccess -> state // Cập nhật state nếu cần (ví dụ: toggle isLiked/isBookmarked)
+        is DocumentResult.Liked -> state.copy(isLiked = true) // Cập nhật khi like
+        is DocumentResult.Unliked -> state.copy(isLiked = false) // Cập nhật khi unlike
         is DocumentResult.Error -> state.copy(isLoading = false, errorMessage = result.message)
     }
 }

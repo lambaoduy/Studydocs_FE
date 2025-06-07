@@ -2,6 +2,7 @@ package com.example.finalexam.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.handler.document.*
 import com.example.finalexam.intent.DocumentIntent
 import com.example.finalexam.reduce.DocumentReducer
@@ -20,7 +21,8 @@ class DocumentViewModel : ViewModel() {
         LoadDocumentHandler(),
         DownloadDocumentHandler(),
         LikeDocumentHandler(),
-        UnlikeDocumentHandler()
+        UnlikeDocumentHandler(),
+        ErrorHandler() // Thêm ErrorHandler vào danh sách
     )
 
     /**
@@ -33,6 +35,14 @@ class DocumentViewModel : ViewModel() {
             handler?.handle(intent) { result ->
                 _state.value = reducer.reduce(_state.value, result)
             } ?: println("[WARN] No handler for intent: $intent")
+        }
+    }
+
+    inner class ErrorHandler : IntentHandler<DocumentIntent, DocumentResult> {
+        override fun canHandle(intent: DocumentIntent): Boolean = intent is DocumentIntent.Error
+        override suspend fun handle(intent: DocumentIntent, setResult: (DocumentResult) -> Unit) {
+            val errorIntent = intent as DocumentIntent.Error
+            setResult(DocumentResult.Error(errorIntent.message))
         }
     }
 }

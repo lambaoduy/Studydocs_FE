@@ -15,7 +15,7 @@ class LikeDocumentHandler : IntentHandler<DocumentIntent, DocumentResult> {
             val api = RetrofitClient.createApi(DocumentApi::class.java)
             val response = api.likeDocument(likeIntent.documentId, likeIntent.userId)
             if (response.isSuccessful) {
-                setResult(DocumentResult.ActionSuccess)
+                setResult(DocumentResult.Liked) // Kết quả cụ thể cho hành động "thích"
             } else {
                 setResult(DocumentResult.Error("Failed to like document: ${response.message()}"))
             }

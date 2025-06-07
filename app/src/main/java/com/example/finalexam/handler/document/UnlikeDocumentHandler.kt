@@ -15,7 +15,7 @@ class UnlikeDocumentHandler : IntentHandler<DocumentIntent, DocumentResult> {
             val api = RetrofitClient.createApi(DocumentApi::class.java)
             val response = api.unlikeDocument(unlikeIntent.documentId, unlikeIntent.userId)
             if (response.isSuccessful) {
-                setResult(DocumentResult.ActionSuccess)
+                setResult(DocumentResult.Unliked) // Kết quả cụ thể cho hành động "bỏ thích"
             } else {
                 setResult(DocumentResult.Error("Failed to unlike document: ${response.message()}"))
             }
