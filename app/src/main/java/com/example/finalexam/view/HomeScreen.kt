@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
@@ -28,6 +30,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.R
+import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.HomeIntent
 import com.example.finalexam.ui.theme.FinalExamTheme
 import com.example.finalexam.viewmodel.HomeViewModel
@@ -144,6 +149,12 @@ fun Content(modifier: Modifier = Modifier) {
     val homeViewModel: HomeViewModel = viewModel()
 
     var searchQuery by remember { mutableStateOf("") }// biến này dùng để lưu dữ liệu ng dùng nhập vào thanh search
+    val id=""// lấy id user
+    LaunchedEffect(Unit) {
+        homeViewModel.processIntent(HomeIntent.LoadByUserID(id))
+    }//load dữ liệu ban đầu theo id user
+    val uiState by homeViewModel.state.collectAsState()//lấy state
+    val documents = uiState.listDocument//lấy document từ state
 
     Column(modifier = modifier.padding(16.dp)) {
 //        thanh search
@@ -151,6 +162,7 @@ fun Content(modifier: Modifier = Modifier) {
             value = searchQuery,
             onValueChange = {
                searchQuery=it//gán cái gì người dùng nhập vô searchQuery
+
                 if (searchQuery.isNotBlank()) {
 //                    dùng home viewmodel để xử lý intent
 //                    xử lý như nào thì xem ở lớp viewmodel
@@ -160,7 +172,6 @@ fun Content(modifier: Modifier = Modifier) {
                         HomeIntent.FindTodo(searchQuery)
                     )
                 }
-
             },
             label = { Text("Tìm kiếm") },
             leadingIcon = {
@@ -178,10 +189,28 @@ fun Content(modifier: Modifier = Modifier) {
         )
 // kết thúc thanh search
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Nội dung khác bên dưới
+//Hiển thị danh sách documents
+        ListDocumentView(documents);
     }
 }
+
+@Composable
+fun ListDocumentView(documents: List<Document>) {
+    LazyColumn {
+        items(documents) { doc ->
+            DocumentItemView(doc)
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+//hiển thị 1 document
+@Composable
+fun DocumentItemView(doc: Document) {
+    Text(text = "Title: ${doc.title}")
+    Text(text = "Subject: ${doc.subject}")
+    Text(text = "University: ${doc.university}")
+}
+
 //xem demo
 @Preview(showSystemUi = true)
 @Composable
