@@ -28,7 +28,8 @@ import com.example.finalexam.ui.theme.*
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel = viewModel(),
-    onRegisterClick: () -> Unit = {}
+    onRegisterClick: () -> Unit = {},
+    onForgotPasswordClick: () -> Unit = {}
 ) {
     val state by authViewModel.state.collectAsState()
     var email by remember { mutableStateOf("") }
@@ -96,6 +97,12 @@ fun LoginScreen(
                 style = TextStyle(textDecoration = TextDecoration.Underline),
                 modifier = Modifier.clickable { onRegisterClick() }
             )
+            Text(
+                text = "Quên mật khẩu?",
+                color = PurpleGrey40,
+                style = TextStyle(textDecoration = TextDecoration.Underline),
+                modifier = Modifier.clickable { onForgotPasswordClick() }
+            )
         }
         if (state.isLoading) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -109,4 +116,4 @@ fun LoginScreenPreview() {
     FinalExamTheme {
         LoginScreen()
     }
-} 
+}
