@@ -19,7 +19,8 @@ import com.example.finalexam.ui.theme.creamy
 @Composable
 fun ForgotPasswordScreen(
     authViewModel: AuthViewModel = viewModel(),
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onSuccess: () -> Unit = {}
 ) {
     val state by authViewModel.state.collectAsState()
     var email by remember { mutableStateOf("") }
@@ -50,6 +51,7 @@ fun ForgotPasswordScreen(
                 onClick = {
                     authViewModel.processIntent(AuthIntent.ForgotPassword(email))
                     sent = true
+                    if (state.isSuccess) onSuccess()
                 },
                 shape = RoundedCornerShape(50),
                 modifier = Modifier.fillMaxWidth().height(48.dp)

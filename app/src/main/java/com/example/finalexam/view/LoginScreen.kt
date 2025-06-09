@@ -29,7 +29,8 @@ import com.example.finalexam.ui.theme.*
 fun LoginScreen(
     authViewModel: AuthViewModel = viewModel(),
     onRegisterClick: () -> Unit = {},
-    onForgotPasswordClick: () -> Unit = {}
+    onForgotPasswordClick: () -> Unit = {},
+    onLoginSuccess: () -> Unit = {}
 ) {
     val state by authViewModel.state.collectAsState()
     var email by remember { mutableStateOf("") }
@@ -78,6 +79,8 @@ fun LoginScreen(
             Button(
                 onClick = {
                     authViewModel.processIntent(AuthIntent.Login(email, password))
+                    // Sau khi đăng nhập thành công, gọi callback
+                    if (state.isSuccess) onLoginSuccess()
                 },
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(backgroundColor = Purple40),
