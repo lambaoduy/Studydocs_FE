@@ -6,7 +6,6 @@ import com.example.finalexam.dto.ForgotPasswordDTO
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-// Bạn cần định nghĩa BaseResponse<T> ở nơi khác
 interface AuthApi {
     @POST("/auth/login")
     suspend fun login(@Body request: LoginDTO): BaseResponse<String>
