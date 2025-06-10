@@ -26,7 +26,15 @@ class AuthHandler(private val useCase: AuthUseCase) : IntentHandler<AuthIntent, 
                     onFailure = { AuthResult.Error(it) }
                 ))
             }
+            is AuthIntent.ForgotPassword -> {
+                setResult(AuthResult.Loading)
+                val result = useCase.forgotPassword(intent.email)
+                setResult(result.fold(
+                    onSuccess = { AuthResult.Success },
+                    onFailure = { AuthResult.Error(it) }
+                ))
+            }
             is AuthIntent.ClearError -> setResult(AuthResult.Error(Exception("")))
         }
     }
-} 
+}

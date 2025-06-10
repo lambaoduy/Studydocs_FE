@@ -18,7 +18,7 @@ class AuthViewModel : ViewModel() {
     private val _state = MutableStateFlow(AuthState())
     val state: StateFlow<AuthState> = _state
 
-    private val handler = AuthHandler(AuthUseCase())
+    private val handler = AuthHandler(AuthUseCase(com.example.finalexam.api.RetrofitInstance.api))
 
     fun processIntent(intent: AuthIntent) {
         viewModelScope.launch {
