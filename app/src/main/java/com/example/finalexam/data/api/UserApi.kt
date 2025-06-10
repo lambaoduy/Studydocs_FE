@@ -8,4 +8,6 @@ import retrofit2.http.POST
 interface UserApi {
     @POST("/user/follow")
     suspend fun follow(@Body followRequest: FollowRequest): BaseResponse<Boolean>
+    @POST("/user/unFollow")
+    suspend fun unFollow(@Body followRequest: FollowRequest): BaseResponse<Boolean>
 }
