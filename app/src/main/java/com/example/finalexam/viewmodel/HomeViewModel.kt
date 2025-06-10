@@ -28,7 +28,9 @@ class HomeViewModel : ViewModel() {
 //    biến handlers sẽ lưu trữ toàn bộ hành động mà view model nó làm được
 //
     private val handlers: List<IntentHandler<HomeIntent, HomeResult>> = listOf(
+
         HomeFindHandler(HomeFindUseCase()),
+
 //        AddTodoHandler(AddTodoUseCase(db)),
 //        RemoveTodoHandler(RemoveTodoUseCase(db))
     )

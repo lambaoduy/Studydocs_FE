@@ -1,7 +1,7 @@
 package com.example.finalexam.usecase.notification
 
-import com.example.finalexam.dao.notification.NotificationDao
-import com.example.finalexam.dao.notification.impl.NotificationDaoImpl
+import com.example.finalexam.data.dao.notification.NotificationDao
+import com.example.finalexam.data.dao.notification.impl.NotificationDaoImpl
 import com.example.finalexam.entity.Notification
 import com.example.finalexam.result.NotificationResult
 
