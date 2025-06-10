@@ -65,10 +65,6 @@ fun HomeScreen(){
             }
         )
     }
-
-
-
-
 }
 //Ở đây là top bar
 @OptIn(ExperimentalMaterial3Api::class)
