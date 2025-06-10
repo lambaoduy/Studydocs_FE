@@ -122,4 +122,4 @@ fun ForgotPasswordScreenPreview() {
     FinalExamTheme {
         ForgotPasswordScreen()
     }
-} 
+}
