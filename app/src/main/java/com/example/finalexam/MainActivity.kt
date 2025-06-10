@@ -15,8 +15,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.finalexam.ui.screens.LoginScreen
 import com.example.finalexam.ui.screens.RegisterScreen
 import com.example.finalexam.ui.theme.FinalExamTheme
+
+
 import com.example.finalexam.view.HomeScreen
-import com.example.finalexam.ui.screens.ForgotPasswordScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,9 +1,10 @@
-package com.example.finalexam.dao.notification.impl
+package com.example.finalexam.data.dao.notification.impl
 
-import com.example.finalexam.dao.notification.NotificationDao
+import com.example.finalexam.data.dao.notification.NotificationDao
 import com.example.finalexam.entity.Notification
 
 class NotificationDaoImpl : NotificationDao {
+
     private suspend fun markAllAsRead() {
 
     }
