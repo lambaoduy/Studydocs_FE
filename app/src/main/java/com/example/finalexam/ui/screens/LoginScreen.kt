@@ -1,4 +1,4 @@
-package com.example.finalexam.ui.screens
+package com.example.finalexam.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +28,8 @@ import com.example.finalexam.ui.theme.*
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel = viewModel(),
-    onRegisterClick: () -> Unit = {}
+    onRegisterClick: () -> Unit = {},
+    onForgotPasswordClick: () -> Unit = {}
 ) {
     val state by authViewModel.state.collectAsState()
     var email by remember { mutableStateOf("") }
@@ -37,7 +38,11 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(creamy)
+            .background(
+                brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                    colors = listOf(Purple40, PurpleGrey40, creamy)
+                )
+            )
     ) {
         Column(
             modifier = Modifier
@@ -47,6 +52,12 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(40.dp))
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = "Login Icon",
+                tint = Purple40,
+                modifier = Modifier.size(64.dp)
+            )
             Text(
                 text = "Login",
                 fontSize = 30.sp,
@@ -73,7 +84,20 @@ fun LoginScreen(
                 onValueChange = { password = it },
                 visualTransformation = PasswordVisualTransformation()
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Text(
+                    text = "Quên mật khẩu?",
+                    color = Purple40,
+                    style = TextStyle(textDecoration = TextDecoration.Underline),
+                    fontSize = 13.sp,
+                    modifier = Modifier.clickable { onForgotPasswordClick() }
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
                     authViewModel.processIntent(AuthIntent.Login(email, password))
