@@ -5,10 +5,6 @@ import com.example.finalexam.entity.Notification
 
 class NotificationDaoImpl : NotificationDao {
 
-    private suspend fun markAllAsRead() {
-
-    }
-
     override suspend fun getNotifications(userId: String): List<Notification> {
         TODO("Not yet implemented")
     }
@@ -18,6 +14,22 @@ class NotificationDaoImpl : NotificationDao {
     }
 
     override suspend fun getNotification(notificationId: String): Notification {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun markAsReadAll(userId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun markAsRead(notificationId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun delete(notificationId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteAll(userId: String) {
         TODO("Not yet implemented")
     }
 }

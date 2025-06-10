@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class FollowerViewModel: ViewModel() {
     private val reducer = FollowerReducer()
     private val _state = MutableStateFlow(FollowerState())
-    private val state = _state.asStateFlow()
+    val state = _state.asStateFlow()
     private val handlers: List<IntentHandler<FollowerIntent, FollowerResult>> = listOf(
         GetFollowersHandler(),
         GetFolloweesHandler(),
