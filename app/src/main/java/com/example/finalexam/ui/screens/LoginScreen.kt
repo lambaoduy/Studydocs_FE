@@ -24,7 +24,6 @@ import com.example.finalexam.intent.AuthIntent
 import com.example.finalexam.viewmodel.AuthViewModel
 import com.example.finalexam.ui.theme.*
 
-// thiện làm: LoginScreen theo MVI
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel = viewModel(),
