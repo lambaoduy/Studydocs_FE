@@ -32,7 +32,12 @@ class HomeReducer {
                 error = result.throwable.message
             )
         }
-        HomeResult.Loading -> TODO()
+        HomeResult.Loading -> {
+            state.copy(
+                isLoading = true,
+                error = null // clear error khi bắt đầu loading mới
+            )
+        }
 
     }
 

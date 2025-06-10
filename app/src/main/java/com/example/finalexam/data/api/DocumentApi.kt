@@ -17,4 +17,13 @@ interface DocumentApi {
 
     @DELETE("/{documentId}/like")
     suspend fun unlikeDocument(@Path("documentId") documentId: String, @Query("userId") userId: String): Response<BaseResponse<Void>>
+    @GET("/documents/all")
+    suspend fun getAllDocuments(): Response<BaseResponse<List<Document>>>
+
+    @GET("/documents/search")
+    suspend fun searchDocuments(@Query("keyword") keyword: String): Response<BaseResponse<List<Document>>>
+
+    @GET("/documents/user")
+    suspend fun getDocumentsByUserID(@Query("userId") userId: String): Response<BaseResponse<List<Document>>>
+
 }
