@@ -75,7 +75,7 @@ dependencies {
     /* Material Design 3 components */
     implementation(libs.androidx.material3)
     /*code ở ngoài compose thì phải thêm*/
-    implementation ("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material:1.11.0")
 
     // ========== COMPOSE EXTENSIONS ========== //
     /* Material icons cơ bản */
