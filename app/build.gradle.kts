@@ -1,6 +1,9 @@
 plugins {
+    // Plugin tạo ứng dụng Android
     alias(libs.plugins.android.application)
+    // Plugin hỗ trợ Kotlin cho Android
     alias(libs.plugins.kotlin.android)
+    // Plugin hỗ trợ Jetpack Compose với Kotlin
     alias(libs.plugins.kotlin.compose)
 }
 
@@ -16,6 +19,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     buildTypes {
@@ -37,94 +43,96 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
 
 dependencies {
-
+    // ========== CORE ANDROID ========== //
+    /* Thư viện mở rộng Kotlin cho Android Core */
     implementation(libs.androidx.core.ktx)
+    /* Quản lý vòng đời ứng dụng với Kotlin extensions */
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.room.runtime.android)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-//compose
+
+    // ========== COMPOSE ========== //
+    /* BOM (Bill of Materials) để quản lý phiên bản các thư viện Compose */
     val composeBom = platform("androidx.compose:compose-bom:2025.05.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    // Choose one of the following:
-    // Material Design 3
-    implementation ("com.google.android.material:material:1.11.0")
-    implementation(libs.material3)
-    // or Material Design 2
-    implementation(libs.androidx.material)
-    // or skip Material Design and build directly on top of foundational components
-//    implementation("androidx.compose.foundation:foundation")
-    // or only import the main APIs for the underlying toolkit systems,
-    // such as input and measurement/layout
+    /* Core Compose UI */
     implementation("androidx.compose.ui:ui")
-
-    // Android Studio Preview support
+    /* Hỗ trợ đồ họa trong Compose */
+    implementation("androidx.compose.ui:ui-graphics")
+    /* Công cụ preview trong Android Studio */
     implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
+    /* Material Design 3 components */
+    implementation(libs.androidx.material3)
+    /*code ở ngoài compose thì phải thêm*/
+    implementation ("com.google.android.material:material:1.11.0")
 
-    // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-
-    // Optional - Included automatically by material, only add when you need
-    // the icons but not the material library (e.g. when using Material3 or a
-    // custom design system based on Foundation)
+    // ========== COMPOSE EXTENSIONS ========== //
+    /* Material icons cơ bản */
     implementation("androidx.compose.material:material-icons-core")
-    // Optional - Add full set of material icons
+    /* Bộ icon mở rộng */
     implementation("androidx.compose.material:material-icons-extended")
-    // Optional - Add window size utils
+    /* Hỗ trợ giao diện adaptive (cho nhiều kích thước màn hình) */
     implementation("androidx.compose.material3.adaptive:adaptive")
-
-    // Optional - Integration with activities
-    implementation(libs.androidx.activity.compose)
-    // Optional - Integration with ViewModels
+    /* Tích hợp ViewModel với Compose */
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
-    // Optional - Integration with LiveData
-    implementation("androidx.compose.runtime:runtime-livedata")
-    // Optional - Integration with RxJava
-    implementation("androidx.compose.runtime:runtime-rxjava2")
-//fire base
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    // Firebase Authentication
-    implementation ("com.google.firebase:firebase-auth")
-
-    // Cloud Firestore (cơ sở dữ liệu thời gian thực)
-    implementation ("com.google.firebase:firebase-firestore")
-
-    // Cloud Storage (lưu trữ hình ảnh, tệp, ...)
-    implementation ("com.google.firebase:firebase-storage")
-
-    // Firebase Cloud Messaging (push notification)
-    implementation ("com.google.firebase:firebase-messaging")
-    // HTTP client
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-    // Retrofit (HTTP client cao cấp hơn OkHttp)
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-
-    // JSON converter cho Retrofit
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-//    routing
-    implementation ("androidx.navigation:navigation-compose:2.9.0")
-
-    //hao them
+    /* Hệ thống điều hướng trong Compose */
+    implementation("androidx.navigation:navigation-compose:2.9.0")
+    /* Thư viện load ảnh trong Compose */
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // ========== FIREBASE ========== //
+    /* BOM để quản lý phiên bản Firebase */
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    /* Analytics */
+    implementation("com.google.firebase:firebase-analytics")
+    /* Xác thực người dùng */
+    implementation("com.google.firebase:firebase-auth")
+    /* Cơ sở dữ liệu NoSQL thời gian thực */
+    implementation("com.google.firebase:firebase-firestore")
+    /* Lưu trữ file trên cloud */
+    implementation("com.google.firebase:firebase-storage")
+    /* Push notification */
+    implementation("com.google.firebase:firebase-messaging")
+
+    // ========== NETWORKING ========== //
+    /* HTTP client */
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    /* REST API client */
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    /* Chuyển đổi JSON <-> Object */
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    // ========== DATABASE ========== //
+    /* ORM database local */
+    implementation(libs.androidx.room.runtime.android)
+
+    // ========== PERMISSIONS ========== //
+    /* Xử lý runtime permissions dễ dàng hơn */
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+    // ========== TESTING ========== //
+    /* Unit testing */
+    testImplementation(libs.junit)
+    /* Android instrumentation testing */
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    /* UI testing cho Compose */
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
+    // ========== DEBUG TOOLS ========== //
+    /* Công cụ debug Compose */
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    /* Tạo manifest cho testing */
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

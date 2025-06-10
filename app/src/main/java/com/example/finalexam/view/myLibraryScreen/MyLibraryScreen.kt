@@ -1,6 +1,6 @@
-package com.example.finalexam.ui.myLibraryScreen
+package com.example.finalexam.view.myLibraryScreen
 
-import MyLibraryViewModel
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,15 +22,36 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.MyLibraryIntent
-
-import com.example.finalexam.ui.theme.*
+import com.example.finalexam.navigation.NavigationEvent
+import com.example.finalexam.ui.theme.AppColors
+import com.example.finalexam.viewmodel.MyLibraryViewModel
 
 @Composable
 fun MyLibraryScreen(
-    viewModel:  MyLibraryViewModel = viewModel()
+    viewModel: MyLibraryViewModel = viewModel(),
+    // Callback khi cần chuyển đến màn hình upload
+    onNavigateToUpload: () -> Unit = {},
+    // Callback khi cần chuyển đến màn hình chi tiết tài liệu
+    onNavigateToDocumentDetail: (String) -> Unit = {}
 ) {
     // Lấy state từ ViewModel
     val state by viewModel.state.collectAsState()
+
+    // Lắng nghe các sự kiện navigation
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is NavigationEvent.NavigateToUpload -> {
+                    Log.d("MyLibraryScreen", "Navigating to Upload...") // Thêm log ở đây
+                    onNavigateToUpload()
+                }
+                is NavigationEvent.NavigateToDocumentDetail -> {
+                    onNavigateToDocumentDetail(event.documentId)
+                }
+                else -> {}
+            }
+        }
+    }
 
     // Khi vào màn hình, tự động load dữ liệu
     LaunchedEffect(Unit) {
@@ -62,9 +83,8 @@ fun MyLibraryScreen(
             UploadDocumentButton(
                 onClick = {
                     // Gửi Intent upload lên ViewModel
-                    viewModel.processIntent(MyLibraryIntent.UploadDocument)
-                },
-                onAddClick = { /* chưa dùng */ }
+                    viewModel.processIntent(MyLibraryIntent.OnUploadClicked)
+                }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -122,7 +142,8 @@ fun SearchPanel(
 
 @Composable
 fun UploadDocumentButton(
-    modifier: Modifier = Modifier, onClick: () -> Unit, onAddClick: () -> Unit
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -140,7 +161,8 @@ fun UploadDocumentButton(
                     cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
                 )
             }
-            .clickable { onClick() }, contentAlignment = Alignment.Center
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = "Tải tài liệu lên",

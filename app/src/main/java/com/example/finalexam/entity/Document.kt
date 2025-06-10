@@ -1,4 +1,5 @@
 package com.example.finalexam.entity
+
 data class Document(
     val id: String,
     val title: String,

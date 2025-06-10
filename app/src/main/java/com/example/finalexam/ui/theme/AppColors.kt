@@ -1,7 +1,6 @@
 package com.example.finalexam.ui.theme
 
 import androidx.compose.ui.graphics.Color
-
 object AppColors {
     val Background = Color(0xFFF5F5F5)
     val Surface = Color(0xFFFFFFFF)

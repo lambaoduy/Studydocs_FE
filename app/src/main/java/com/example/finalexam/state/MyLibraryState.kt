@@ -6,8 +6,9 @@ import com.example.finalexam.entity.Document
 
 
 data class MyLibraryState(
-    val isLoading: Boolean = false, // Trạng thái đang tải dữ liệu
-    val documents: List<Document> = emptyList(), // Danh sách tài liệu
-    val searchQuery: String = "", // Từ khóa tìm kiếm hiện tại
-    val error: String? = null // Thông báo lỗi (nếu có)
-) 
+    val isLoading: Boolean = false,
+    val documents: List<Document> = emptyList(),
+    val searchQuery: String = "",
+    val selectedDocument: Document? = null,
+    val error: String? = null
+)

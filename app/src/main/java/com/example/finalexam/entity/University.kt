@@ -7,5 +7,8 @@ data class University(
     val selectedCourseIndex: Int = 0
 ) {
     val selectedCourse: String
-        get() = courses[selectedCourseIndex]
+        get() = courses[selectedCourseIndex].toString()
 }
+
+
+
