@@ -5,7 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.intent.AuthIntent
 import com.example.finalexam.viewmodel.AuthViewModel
 import com.example.finalexam.ui.theme.*
+import androidx.compose.material3.MaterialTheme
 
 // thiện làm: LoginScreen theo MVI
 @Composable
@@ -84,7 +85,7 @@ fun LoginScreen(
                     authViewModel.processIntent(AuthIntent.Login(email, password))
                 },
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Purple40),
+                colors = ButtonDefaults.buttonColors(containerColor = Purple40),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)

@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -93,7 +92,7 @@ fun RegisterScreen(
                     )
                 },
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Purple40),
+                colors = ButtonDefaults.buttonColors(containerColor = Purple40),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
@@ -148,7 +147,7 @@ fun RoundedInputField(
         placeholder = { Text(text = placeholder, color = Color.Gray) },
         visualTransformation = visualTransformation,
         colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = Color.Transparent,
+            containerColor = Color.Transparent,
             focusedIndicatorColor = Color.Black,
             unfocusedIndicatorColor = Color.Gray,
             textColor = Color.Black

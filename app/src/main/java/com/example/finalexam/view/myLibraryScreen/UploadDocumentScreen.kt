@@ -1,10 +1,7 @@
 package com.example.finalexam.view.myLibraryScreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -15,12 +12,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-//import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.finalexam.ui.theme.FinalExamTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,7 +23,6 @@ import com.example.finalexam.entity.UploadDocument
 import com.example.finalexam.intent.UploadDocumentIntent
 import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.UploadDocumentViewModel
-import kotlin.collections.filter
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -163,6 +156,10 @@ fun UploadDocumentScreen(
             state.university?.let { uni ->
                 UniversitySelectionSection(
                     university = uni,
+                    universityList = state.universityList,
+                    onUniversitySelected = { universityId ->
+                        viewModel.processIntent(UploadDocumentIntent.SelectUniversity(universityId))
+                    },
                     onCourseSelected = { index ->
                         viewModel.processIntent(UploadDocumentIntent.SelectCourse(index))
                         onCourseSelected(index)
@@ -297,11 +294,14 @@ fun UploadDocumentScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun UniversitySelectionSection(
-    modifier: Modifier = Modifier,  // Modifier first
+    modifier: Modifier = Modifier,
     university: University,
+    universityList: List<University>,
+    onUniversitySelected: (String) -> Unit,
     onCourseSelected: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var universityExpanded by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
         Text(
@@ -318,14 +318,42 @@ private fun UniversitySelectionSection(
             tonalElevation = 2.dp
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = university.name,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                ExposedDropdownMenuBox(
+                    modifier = Modifier.fillMaxWidth(),
+                    expanded = universityExpanded,
+                    onExpandedChange = { universityExpanded = !universityExpanded }
+                ) {
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        value = university.name,
+                        onValueChange = {},
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(
+                                expanded = universityExpanded
+                            )
+                        },
+                        colors = ExposedDropdownMenuDefaults.textFieldColors()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = universityExpanded,
+                        onDismissRequest = { universityExpanded = false }
+                    ) {
+                        universityList.forEach { uni ->
+                            DropdownMenuItem(
+                                text = { Text(uni.name) },
+                                onClick = {
+                                    onUniversitySelected(uni.id)
+                                    universityExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
 
                 Spacer(Modifier.height(16.dp))
 
-                // Course Dropdown
                 Text(
                     text = "Course",
                     style = MaterialTheme.typography.bodyMedium.copy(

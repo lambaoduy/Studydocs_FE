@@ -90,7 +90,8 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.9.0")
     /* Thư viện load ảnh trong Compose */
     implementation("io.coil-kt:coil-compose:2.5.0")
-
+    /* */
+    implementation("androidx.compose.foundation:foundation")
     // ========== FIREBASE ========== //
     /* BOM để quản lý phiên bản Firebase */
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
