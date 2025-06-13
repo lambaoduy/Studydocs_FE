@@ -1,12 +1,15 @@
 package com.example.finalexam.usecase.notification
 
-import com.example.finalexam.data.dao.notification.NotificationDao
-import com.example.finalexam.data.dao.notification.impl.NotificationDaoImpl
+import com.example.finalexam.data.api.NotificationApi
+import com.example.finalexam.network.RetrofitClient
 
 class NotificationMarkAsReadAllUseCase {
-    private val notificationDao: NotificationDao = NotificationDaoImpl()
+    private val notificationApi = RetrofitClient.createApi(NotificationApi::class.java)
 
-    suspend fun invoke(userId: String) {
-        notificationDao.markAsReadAll(userId)
+    suspend fun invoke() {
+        var response = notificationApi.readAllNotification()
+        if (response.status != 200) {
+            throw Exception(response.message)
+        }
     }
 }

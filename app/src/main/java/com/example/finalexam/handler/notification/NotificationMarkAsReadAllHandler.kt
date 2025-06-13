@@ -16,8 +16,7 @@ class NotificationMarkAsReadAllHandler : IntentHandler<NotificationIntent, Notif
     ) {
         setResult(NotificationResult.Loading)
         try {
-            val notificationMarkAsReadAllIntent = intent as NotificationIntent.MarkAsReadAll
-            notificationMarkAsReadAllUseCase.invoke(notificationMarkAsReadAllIntent.userId)
+            notificationMarkAsReadAllUseCase.invoke()
             setResult(NotificationResult.MarkAsReadAll)
         } catch (e: Exception) {
             setResult(NotificationResult.Error(e.message ?: "Unknown error"))

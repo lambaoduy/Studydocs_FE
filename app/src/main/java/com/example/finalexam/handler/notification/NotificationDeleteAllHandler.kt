@@ -16,8 +16,7 @@ class NotificationDeleteAllHandler : IntentHandler<NotificationIntent, Notificat
     ) {
         setResult(NotificationResult.Loading)
         try {
-            val notificationDeleteAllIntent = intent as NotificationIntent.DeleteAll
-            notificationDeleteAllUseCase.invoke(notificationDeleteAllIntent.userId)
+            notificationDeleteAllUseCase.invoke()
             setResult(NotificationResult.DeleteAll)
         } catch (e: Exception) {
             setResult(NotificationResult.Error(e.message ?: "Unknown error"))
