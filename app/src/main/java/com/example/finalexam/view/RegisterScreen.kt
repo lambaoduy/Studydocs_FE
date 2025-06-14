@@ -35,7 +35,8 @@ import com.example.finalexam.ui.theme.*
 @Composable
 fun RegisterScreen(
     authViewModel: AuthViewModel = viewModel(),
-    onLoginClick: () -> Unit = {}
+    onLoginClick: () -> Unit = {},
+    onRegisterSuccess: () -> Unit = {}
 ) {
     val state by authViewModel.state.collectAsState()
     var username by remember { mutableStateOf("") }
@@ -90,6 +91,7 @@ fun RegisterScreen(
                     authViewModel.processIntent(
                         AuthIntent.Register(username, email, password)
                     )
+                    if (state.isSuccess) onRegisterSuccess()
                 },
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(containerColor = Purple40),

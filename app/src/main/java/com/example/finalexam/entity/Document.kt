@@ -29,4 +29,5 @@ data class Document(
         val type: String = "",
         val createAt: Timestamp? = null
     )
+
 }

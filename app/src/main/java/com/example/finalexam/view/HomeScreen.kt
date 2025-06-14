@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowForward
 
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryBooks
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
@@ -145,37 +147,40 @@ fun onItemSelected(s: String) {
 //ở đây là content hiển thị nội dung
 @Composable
 fun Content(modifier: Modifier = Modifier) {
-//    tạo viewmodel để xử lý sự kiện cho home
     val homeViewModel: HomeViewModel = viewModel()
 
-    var searchQuery by remember { mutableStateOf("") }// biến này dùng để lưu dữ liệu ng dùng nhập vào thanh search
-    val id=""// lấy id user
+    var searchQuery by remember { mutableStateOf("") } // lưu text nhập
+    val id = "" // lấy id user
+
     LaunchedEffect(Unit) {
         homeViewModel.processIntent(HomeIntent.LoadByUserID(id))
-    }//load dữ liệu ban đầu theo id user
-    val uiState by homeViewModel.state.collectAsState()//lấy state
-    val documents = uiState.listDocument//lấy document từ state
+    }
+
+    val uiState by homeViewModel.state.collectAsState()
+    val documents = uiState.listDocument
 
     Column(modifier = modifier.padding(16.dp)) {
-//        thanh search
+        // Thanh search
         OutlinedTextField(
             value = searchQuery,
             onValueChange = {
-               searchQuery=it//gán cái gì người dùng nhập vô searchQuery
-
-                if (searchQuery.isNotBlank()) {
-//                    dùng home viewmodel để xử lý intent
-//                    xử lý như nào thì xem ở lớp viewmodel
-                    homeViewModel.processIntent(
-                        //đây là homeintent được đóng gói lại từ searchquery. Vì hành động là tìm kiếm nên  dùng lớp Findtodo
-//                        xem chi tiết hơn thì xem ở lớp file homintent
-                        HomeIntent.FindTodo(searchQuery)
-                    )
-                }
+                searchQuery = it // Chỉ gán giá trị, chưa tìm ngay
             },
             label = { Text("Tìm kiếm") },
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
+            },
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        if (searchQuery.isNotBlank()) {
+                            // Nhấn nút mới tìm kiếm
+                            homeViewModel.processIntent(HomeIntent.FindTodo(searchQuery))
+                        }
+                    }
+                ) {
+                    Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Search Button")
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -188,12 +193,15 @@ fun Content(modifier: Modifier = Modifier) {
             )
 
         )
-// kết thúc thanh search
+        // Kết thúc thanh search
+
         Spacer(modifier = Modifier.height(16.dp))
-//Hiển thị danh sách documents
-        ListDocumentView(documents);
+
+        // Hiển thị danh sách documents
+        ListDocumentView(documents)
     }
 }
+
 
 @Composable
 fun ListDocumentView(documents: List<Document>) {

@@ -1,28 +1,29 @@
+
+
+/*lớp phụ trách lấy dữ liệu cho trang home
+* */
 package com.example.finalexam.usecase.homescreen
 
 import com.example.finalexam.dao.document.DocumentDao
 import com.example.finalexam.entity.Document
-import com.example.finalexam.result.HomeResult
-/*lớp phụ trách lấy dữ liệu cho trang home
-* */
-class HomeLoadDataUseCase {
-    var dao= DocumentDao()
-    // Trả về document theo userID
-    fun loadByUserID(userid: String): List<Document> {
-        var listDocument= listOf<Document>()
-        /*nếu id là null hoặc rỗng thì lấy tất cả doc có thể truy suất
-        * */
-        if(userid.isBlank()){
-            listDocument=dao.getAll()
-        }else{
-            listDocument=dao.getDocumentbyUserID()
+
+class HomeLoadDataUseCase(
+    private val dao: DocumentDao // truyền dao từ bên ngoài
+) {
+    // Sử dụng suspend vì gọi API là bất đồng bộ
+    suspend fun loadByUserID(userid: String): List<Document> {
+        return if (userid.isBlank()) {
+            dao.getAll() // lấy tất cả nếu không có user ID
+        } else {
+            dao.getDocumentbyUserID(userid)
         }
-        return listDocument;
     }
-    fun findDocument(keyword: String):List<Document> {
-        if (keyword.isBlank()){
-            return dao.getDocumentbyUserID()
+
+    suspend fun findDocument(keyword: String): List<Document> {
+        return if (keyword.isBlank()) {
+            dao.getAll()
+        } else {
+            dao.getDocumentsByKeyword(keyword)
         }
-        return dao.getDocumentsByKeyword(keyword);
     }
 }
