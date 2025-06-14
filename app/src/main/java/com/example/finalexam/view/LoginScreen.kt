@@ -1,13 +1,18 @@
 package com.example.finalexam.ui.screens
 
+import android.text.style.BackgroundColorSpan
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.intent.AuthIntent
 import com.example.finalexam.viewmodel.AuthViewModel
 import com.example.finalexam.ui.theme.*
+import androidx.compose.material3.MaterialTheme
 
 // thiện làm: LoginScreen theo MVI
 @Composable
@@ -83,7 +89,7 @@ fun LoginScreen(
                     if (state.isSuccess) onLoginSuccess()
                 },
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Purple40),
+                colors = ButtonDefaults.buttonColors(containerColor = Purple40),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
