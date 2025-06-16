@@ -1,4 +1,4 @@
-package com.example.finalexam.dao.document
+package com.example.finalexam.data.dao.document
 
 import com.example.finalexam.data.api.DocumentApi
 import com.example.finalexam.data.response.BaseResponse

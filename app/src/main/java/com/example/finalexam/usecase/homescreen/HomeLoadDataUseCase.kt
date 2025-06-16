@@ -4,7 +4,7 @@
 * */
 package com.example.finalexam.usecase.homescreen
 
-import com.example.finalexam.dao.document.DocumentDao
+import com.example.finalexam.data.dao.document.DocumentDao
 import com.example.finalexam.entity.Document
 
 class HomeLoadDataUseCase(

@@ -1,7 +1,7 @@
 package com.example.finalexam.viewmodel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
-import com.example.finalexam.dao.document.DocumentDao
+import com.example.finalexam.data.dao.document.DocumentDao
 import com.example.finalexam.data.api.DocumentApi
 import com.example.finalexam.handler.HomeScreen.HomeFindHandler
 import com.example.finalexam.handler.HomeScreen.HomeLoadByUerIDHandler
