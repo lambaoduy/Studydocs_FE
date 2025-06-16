@@ -16,12 +16,7 @@ class NotificationInitialHandler : IntentHandler<NotificationIntent, Notificatio
     ) {
         setResult(NotificationResult.Loading)
         try {
-            val userId = when (intent) {
-                is NotificationIntent.Initial -> intent.userId
-                is NotificationIntent.Refresh -> intent.userId
-                else -> throw IllegalArgumentException("Unsupported intent")
-            }
-            val notifications = notificationInitialUseCase.invoke(userId)
+            val notifications = notificationInitialUseCase.invoke()
             setResult(NotificationResult.GetNotifications(notifications))
         } catch (e: Exception) {
             setResult(NotificationResult.Error(e.message ?: "Unknown error"))
