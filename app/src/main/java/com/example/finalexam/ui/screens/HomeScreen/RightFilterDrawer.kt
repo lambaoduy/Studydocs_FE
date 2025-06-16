@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,9 +29,13 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun RightFilterDrawer(
     isVisible: Boolean,
+    school: String,
+    onSchoolChange: (String) -> Unit,
+    subject: String,
+    onSubjectChange: (String) -> Unit,
     onClose: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) { // 👈 Thêm Box ở đây để có scope cho .align
+    Box(modifier = Modifier.fillMaxSize()) {
         AnimatedVisibility(
             visible = isVisible,
             enter = slideInHorizontally(initialOffsetX = { it }),
@@ -37,7 +43,7 @@ fun RightFilterDrawer(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(0.75f)
-                .align(Alignment.TopEnd) // 👈 Bây giờ hợp lệ
+                .align(Alignment.TopEnd)
                 .background(Color.White)
         ) {
             Column(
@@ -46,11 +52,19 @@ fun RightFilterDrawer(
                     .padding(16.dp)
             ) {
                 Text("Bộ lọc", style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.weight(0.5f))
 
-                FilterItem("Lọc theo ngày", onClick = onClose)
-                FilterItem("Lọc theo trạng thái", onClick = onClose)
-                FilterItem("Đã hoàn thành", onClick = onClose)
+                TextField(
+                    value = school,
+                    onValueChange = onSchoolChange,
+                    label = { Text("Lọc theo trường") }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                TextField(
+                    value = subject,
+                    onValueChange = onSubjectChange,
+                    label = { Text("Lọc theo môn học") }
+                )
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -66,20 +80,12 @@ fun RightFilterDrawer(
 }
 
 
-@Composable
-fun FilterItem(text: String, onClick: () -> Unit) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 8.dp)
-    )
-}
+
+
 
 @Preview
 @Composable
 fun RightFilterDrawerScreenPreview() {
-    RightFilterDrawer(true, onClose = {})
+    RightFilterDrawer(true, school = "",
+        subject = "", onSubjectChange = {},onSchoolChange = {}, onClose = {})
 }

@@ -26,4 +26,20 @@ class HomeLoadDataUseCase(
             dao.getDocumentsByKeyword(keyword)
         }
     }
+
+    suspend fun findDocumentBySubject(keyword: String): List<Document> {
+        return if (keyword.isBlank()) {
+            dao.getAll()
+        } else {
+            dao.getDocumentsBy(keyword)
+        }
+    }
+
+    suspend fun findDocumentBySchool(keyword: String): List<Document> {
+        return if (keyword.isBlank()) {
+            dao.getAll()
+        } else {
+            dao.getDocumentsBySchool(keyword)
+        }
+    }
 }

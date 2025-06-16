@@ -3,6 +3,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
 import com.example.finalexam.data.dao.document.DocumentDao
 import com.example.finalexam.data.api.DocumentApi
+import com.example.finalexam.handler.HomeScreen.HomFindBySubject
+import com.example.finalexam.handler.HomeScreen.HomeFindBySchool
 import com.example.finalexam.handler.HomeScreen.HomeFindHandler
 import com.example.finalexam.handler.HomeScreen.HomeLoadByUerIDHandler
 import com.example.finalexam.handler.IntentHandler
@@ -36,7 +38,8 @@ class HomeViewModel : ViewModel() {
     private val handlers: List<IntentHandler<HomeIntent,HomeResult>> = listOf(
        HomeFindHandler(documentDao),//tìm kiếm
         HomeLoadByUerIDHandler(documentDao),//lấy dữ liệu theo id user
-
+        HomeFindBySchool(documentDao),//lấy dữ liệu theo school
+        HomFindBySubject(documentDao)//lấy dữ liệu theo subject
     )
     // xử lý intent truyền vào từ trang home ở đây
     fun processIntent(intent: HomeIntent) {

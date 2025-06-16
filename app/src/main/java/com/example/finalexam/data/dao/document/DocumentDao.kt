@@ -6,7 +6,7 @@ import com.example.finalexam.entity.Document
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-
+//lớp này chưa xong
 class DocumentDao(private val api: DocumentApi) {
 
     suspend fun getAll(): List<Document> = withContext(Dispatchers.IO) {
@@ -20,7 +20,13 @@ class DocumentDao(private val api: DocumentApi) {
     suspend fun getDocumentbyUserID(userId: String): List<Document> = withContext(Dispatchers.IO) {
         safeApiCall { api.getDocumentsByUserID(userId) }
     }
+    suspend fun getDocumentsBySubject(keyword: String): List<Document> = withContext(Dispatchers.IO){
+        safeApiCall { api.getDocumentsByUserID(keyword) }
+    }
 
+    suspend fun getDocumentsBySchool(keyword: String): List<Document> = withContext(Dispatchers.IO ){
+        safeApiCall { api.searchDocuments(keyword) }
+    }
     // --- Helper function chung ---
 
     private suspend fun <T> safeApiCall(apiCall: suspend () -> Response<BaseResponse<List<T>>>): List<T> {
@@ -35,4 +41,6 @@ class DocumentDao(private val api: DocumentApi) {
             emptyList()
         }
     }
+
+
 }
