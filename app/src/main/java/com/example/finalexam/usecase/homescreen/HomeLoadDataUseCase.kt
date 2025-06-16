@@ -31,7 +31,7 @@ class HomeLoadDataUseCase(
         return if (keyword.isBlank()) {
             dao.getAll()
         } else {
-            dao.getDocumentsBy(keyword)
+            dao.getDocumentsBySubject(keyword)
         }
     }
 
