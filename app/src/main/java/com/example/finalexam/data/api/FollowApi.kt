@@ -12,6 +12,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Query
 
+
 interface FollowApi {
     @POST("/user/follow")
     suspend fun follow(@Body followRequest: FollowRequest): BaseResponse<Following>

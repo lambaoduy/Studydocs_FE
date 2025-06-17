@@ -1,5 +1,6 @@
 package com.example.finalexam.entity
 
+
 import com.example.finalexam.data.enums.FollowType
 
 data class Following(
@@ -10,3 +11,4 @@ data class Following(
     val notifyEnables: Boolean,
     val targetType: FollowType
 )
+
