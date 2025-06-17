@@ -5,17 +5,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material.icons.outlined.DoneAll
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -39,9 +39,11 @@ import com.example.finalexam.ui.screens.NotificationColors
 @Composable
 fun NotificationTopBar(
     unreadCount: Int,
+    hasNotification: Boolean,
     onBackClick: () -> Unit,
     onMarkAllRead: () -> Unit,
-    onDeleteAll: () -> Unit
+    onDeleteAll: () -> Unit,
+    onOpenNotificationSettings: () -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -74,7 +76,7 @@ fun NotificationTopBar(
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(
-                    Icons.Default.ArrowBack,
+                    Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Quay lại",
                     tint = NotificationColors.OnSurface
                 )
@@ -109,27 +111,37 @@ fun NotificationTopBar(
                 DropdownMenuItem(
                     text = { Text("Đánh dấu tất cả đã đọc") },
                     onClick = {
-                        onMarkAllRead()
+                        if (unreadCount > 0) {
+                            onMarkAllRead()
+                        }
                         showMenu = false
                     },
                     leadingIcon = {
                         Icon(Icons.Outlined.DoneAll, contentDescription = null)
-                    }
+                    },
+                    enabled = unreadCount > 0
                 )
+
                 DropdownMenuItem(
                     text = { Text("Xóa tất cả") },
                     onClick = {
-                        onDeleteAll()
+                        if (hasNotification) {
+                            onDeleteAll()
+                        }
                         showMenu = false
                     },
                     leadingIcon = {
                         Icon(Icons.Outlined.DeleteSweep, contentDescription = null)
-                    }
+                    },
+                    enabled = hasNotification
                 )
-                Divider()
+                HorizontalDivider()
                 DropdownMenuItem(
                     text = { Text("Cài đặt thông báo") },
-                    onClick = { showMenu = false },
+                    onClick = {
+                        onOpenNotificationSettings()
+                        showMenu = false
+                    },
                     leadingIcon = {
                         Icon(Icons.Outlined.Settings, contentDescription = null)
                     }

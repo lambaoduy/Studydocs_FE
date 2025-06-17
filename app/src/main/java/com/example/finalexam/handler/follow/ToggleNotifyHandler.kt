@@ -1,26 +1,35 @@
 package com.example.finalexam.handler.follow
 
-
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.FollowIntent
 import com.example.finalexam.result.FollowResult
-import com.example.finalexam.usecase.follow.GetFollowingsUseCase
+import com.example.finalexam.usecase.follow.ToggleNotifyEnableUseCase
 import com.google.gson.Gson
 import retrofit2.HttpException
 
-class GetFollowingsHandler : IntentHandler<FollowIntent, FollowResult> {
-    private val getFollowingsUseCase = GetFollowingsUseCase()
-    override fun canHandle(intent: FollowIntent): Boolean = intent is FollowIntent.GetFollowings
+class ToggleNotifyHandler : IntentHandler<FollowIntent, FollowResult> {
+    private val toggleNotifyEnableHandler = ToggleNotifyEnableUseCase()
+    override fun canHandle(intent: FollowIntent): Boolean =
+        intent is FollowIntent.ToggleNotifyEnable
 
     override suspend fun handle(
         intent: FollowIntent,
         setResult: (FollowResult) -> Unit
     ) {
         setResult(FollowResult.Loading)
+        val toggleNotifyEnableIntent = intent as FollowIntent.ToggleNotifyEnable
         try {
-            var result = getFollowingsUseCase.invoke()
-            setResult(FollowResult.GetFollowings(result))
+            toggleNotifyEnableHandler.invoke(
+                toggleNotifyEnableIntent.followingId,
+                toggleNotifyEnableIntent.notifyEnable
+            )
+            setResult(
+                FollowResult.ToggleNotifyEnableResult(
+                    toggleNotifyEnableIntent.followingId,
+                    toggleNotifyEnableIntent.notifyEnable
+                )
+            )
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
             val message = try {
@@ -31,5 +40,6 @@ class GetFollowingsHandler : IntentHandler<FollowIntent, FollowResult> {
             }
             setResult(FollowResult.Error(message))
         }
+
     }
 }

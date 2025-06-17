@@ -5,7 +5,7 @@ import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.handler.follow.FollowHandler
 import com.example.finalexam.handler.follow.GetFollowersHandler
 import com.example.finalexam.handler.follow.GetFollowingsHandler
-import com.example.finalexam.handler.follow.ToggleNotifyEnableHandler
+import com.example.finalexam.handler.follow.ToggleNotifyHandler
 import com.example.finalexam.handler.follow.UnfollowHandler
 import com.example.finalexam.intent.FollowIntent
 import com.example.finalexam.reduce.FollowReducer
@@ -23,7 +23,7 @@ class FollowViewModel : ViewModel() {
         GetFollowingsHandler(),
         FollowHandler(),
         UnfollowHandler(),
-        ToggleNotifyEnableHandler(),
+        ToggleNotifyHandler(),
     )
 
     suspend fun processIntent(intent: FollowIntent) {

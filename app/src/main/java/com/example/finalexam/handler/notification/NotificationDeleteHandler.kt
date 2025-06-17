@@ -1,9 +1,12 @@
 package com.example.finalexam.handler.notification
 
+import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.NotificationIntent
 import com.example.finalexam.result.NotificationResult
 import com.example.finalexam.usecase.notification.NotificationDeleteUseCase
+import com.google.gson.Gson
+import retrofit2.HttpException
 
 class NotificationDeleteHandler : IntentHandler<NotificationIntent, NotificationResult> {
     private val notificationDeleteUseCase = NotificationDeleteUseCase()
@@ -21,8 +24,15 @@ class NotificationDeleteHandler : IntentHandler<NotificationIntent, Notification
                 notificationDeleteIntent.notificationId
             )
             setResult(NotificationResult.Delete(notificationDeleteIntent.notificationId))
-        } catch (e: Exception) {
-            setResult(NotificationResult.Error(e.message ?: "Unknown error"))
+        } catch (e: HttpException) {
+            val errorBody = e.response()?.errorBody()?.string()
+            val message = try {
+                val errorResponse = Gson().fromJson(errorBody, BaseResponse::class.java)
+                errorResponse?.message ?: "Unknown error"
+            } catch (ex: Exception) {
+                "Unknown error"
+            }
+            setResult(NotificationResult.Error(message))
         }
     }
 }

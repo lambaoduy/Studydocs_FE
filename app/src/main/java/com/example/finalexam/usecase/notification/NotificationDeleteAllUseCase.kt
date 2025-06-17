@@ -7,6 +7,7 @@ class NotificationDeleteAllUseCase {
     private val notificationApi = RetrofitClient.createApi(NotificationApi::class.java)
 
     suspend fun invoke() {
+        notificationApi.deleteAllNotification()
       var response=  notificationApi.deleteAllNotification()
         if(response.status!=200){
             throw Exception(response.message)
