@@ -27,7 +27,7 @@ class UploadDocumentReducer {
             is UploadDocumentResult.SelectCourseSuccess ->
                 state.copy(
                     isUploading = false,
-                    university = state.university?.copy(selectedCourseIndex = result.courseIndex),
+                    university = state.university?.copy(selectedSubjectIndex = result.courseIndex),
                     error = null
                 )
 

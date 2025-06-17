@@ -148,11 +148,13 @@ fun RoundedInputField(
         },
         placeholder = { Text(text = placeholder, color = Color.Gray) },
         visualTransformation = visualTransformation,
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent,
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
             focusedIndicatorColor = Color.Black,
             unfocusedIndicatorColor = Color.Gray,
-            textColor = Color.Black
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
         ),
         shape = RoundedCornerShape(50),
         modifier = Modifier

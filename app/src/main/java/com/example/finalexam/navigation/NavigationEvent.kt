@@ -8,6 +8,9 @@ sealed class NavigationEvent {
     // Sự kiện quay lại màn hình trước đó
     data object NavigateBack : NavigationEvent()
     
+    // Sự kiện quay về trang chủ
+    data object NavigateToHome : NavigationEvent()
+    
     // Sự kiện chuyển đến màn hình chi tiết tài liệu
     data class NavigateToDocumentDetail(val documentId: String) : NavigationEvent()
 }

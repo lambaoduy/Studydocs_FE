@@ -1,36 +1,63 @@
 package com.example.finalexam.view.myLibraryScreen
 
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.entity.University
 import com.example.finalexam.entity.UploadDocument
 import com.example.finalexam.intent.UploadDocumentIntent
 import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.UploadDocumentViewModel
-import android.content.Context
-import android.net.Uri
-import android.provider.OpenableColumns
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.platform.LocalContext
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,14 +66,12 @@ fun UploadDocumentScreen(
     viewModel: UploadDocumentViewModel = viewModel(),
     onBackClick: () -> Unit = {},
     onUploadClick: (UploadDocument?) -> Unit = {},
-    onCourseSelected: (Int) -> Unit = {},
 ) {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            // Tạo UploadDocument từ URI đã chọn
             val document = UploadDocument(
                 id = UUID.randomUUID().toString(),
                 name = getFileName(context, uri),
@@ -57,7 +82,6 @@ fun UploadDocumentScreen(
     }
 
     val state by viewModel.state.collectAsState()
-    var showCreateSubjectDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadMockData()
@@ -68,6 +92,7 @@ fun UploadDocumentScreen(
             .fillMaxSize()
             .background(AppColors.Background)
     ) {
+        // ===== AppBar =====
         TopAppBar(
             title = { Text("Studocu") },
             navigationIcon = {
@@ -75,22 +100,18 @@ fun UploadDocumentScreen(
                     viewModel.processIntent(UploadDocumentIntent.Back)
                     onBackClick()
                 }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                 }
-            },
-            modifier = Modifier.fillMaxWidth()
+            }
         )
 
         Column(
             modifier = Modifier
+                .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
-                .weight(1f)
         ) {
-            // Title Input
+            // ===== Nhập tiêu đề =====
             OutlinedTextField(
                 value = state.title,
                 onValueChange = { viewModel.processIntent(UploadDocumentIntent.SetTitle(it)) },
@@ -100,7 +121,7 @@ fun UploadDocumentScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // Description Input
+            // ===== Nhập mô tả =====
             OutlinedTextField(
                 value = state.description,
                 onValueChange = { viewModel.processIntent(UploadDocumentIntent.SetDescription(it)) },
@@ -111,11 +132,9 @@ fun UploadDocumentScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // Nút chọn tài liệu từ máy
+            // ===== Nút chọn tài liệu =====
             Button(
-                onClick = {
-                    launcher.launch("*/*") // Cho phép chọn tất cả các loại file
-                },
+                onClick = { launcher.launch("*/*") },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(if (state.selectedDocument == null) "Chọn tài liệu từ máy" else "Chọn tài liệu khác")
@@ -123,7 +142,7 @@ fun UploadDocumentScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // Hiển thị file đã chọn (nếu có)
+            // ===== Hiển thị file đã chọn =====
             state.selectedDocument?.let { doc ->
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -136,108 +155,47 @@ fun UploadDocumentScreen(
                             .fillMaxWidth()
                             .padding(12.dp)
                     ) {
-                        Text(
-                            text = doc.name,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f)
-                        )
+                        Text(doc.name, modifier = Modifier.weight(1f))
                         IconButton(onClick = {
-                            // Bỏ file đã chọn
                             viewModel.processIntent(UploadDocumentIntent.RemoveSelectedDocument)
                         }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Bỏ tài liệu")
+                            Icon(Icons.Default.Close, contentDescription = "Bỏ tài liệu")
                         }
                     }
                 }
                 Spacer(Modifier.height(16.dp))
             }
 
-            // University Section
-            state.university?.let { uni ->
+            // ===== Chọn trường và môn học =====
+            if (state.universityList.isNotEmpty()) {
                 UniversitySelectionSection(
-                    university = uni,
+                    university = state.university ?: state.universityList.first(),
                     universityList = state.universityList,
-                    onUniversitySelected = { universityId ->
-                        viewModel.processIntent(UploadDocumentIntent.SelectUniversity(universityId))
+                    onUniversitySelected = {
+                        viewModel.processIntent(UploadDocumentIntent.SelectUniversity(it))
                     },
-                    onCourseSelected = { index ->
-                        viewModel.processIntent(UploadDocumentIntent.SelectCourse(index))
-                        onCourseSelected(index)
+                    onSubjectSelected = { index ->
+                        viewModel.processIntent(UploadDocumentIntent.SelectSubjectIndex(index))
+                    },
+                    onAddSubject = { name ->
+                        viewModel.processIntent(UploadDocumentIntent.AddSubject(name))
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            Spacer(Modifier.height(16.dp))
-
-            // Subject Section
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Môn học",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Dropdown chọn môn học
-                    ExposedDropdownMenuBox(
-                        expanded = false,
-                        onExpandedChange = { },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        TextField(
-                            value = state.subject,
-                            onValueChange = { },
-                            readOnly = true,
-                            label = { Text("Chọn môn học") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        ExposedDropdownMenu(
-                            expanded = false,
-                            onDismissRequest = { }
-                        ) {
-                            state.subjectList.forEach { subject ->
-                                DropdownMenuItem(
-                                    text = { Text(subject) },
-                                    onClick = {
-                                        viewModel.processIntent(
-                                            UploadDocumentIntent.SelectSubject(
-                                                subject
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    // Nút tạo môn học mới
-                    Button(
-                        onClick = { showCreateSubjectDialog = true },
-                        modifier = Modifier.padding(start = 8.dp)
-                    ) {
-                        Text("Tạo môn mới")
-                    }
-                }
-            }
-
             Spacer(Modifier.height(24.dp))
 
-            // Upload Button
+            // ===== Nút Upload =====
             Button(
                 onClick = {
                     viewModel.processIntent(UploadDocumentIntent.Upload)
                     onUploadClick(state.selectedDocument)
                 },
-                enabled = state.selectedDocument != null && state.title.isNotBlank() && state.description.isNotBlank() && state.subject.isNotBlank(),
+                enabled = state.selectedDocument != null
+                        && state.title.isNotBlank()
+                        && state.description.isNotBlank()
+                        && state.university?.selectedSubject?.isNotBlank() == true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -255,31 +213,131 @@ fun UploadDocumentScreen(
             }
         }
     }
+}
 
-    // Dialog tạo môn học mới
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UniversitySelectionSection(
+    modifier: Modifier = Modifier,
+    university: University,
+    universityList: List<University>,
+    onUniversitySelected: (String) -> Unit,
+    onSubjectSelected: (Int) -> Unit,
+    onAddSubject: (String) -> Unit
+) {
+    var universityExpanded by remember { mutableStateOf(false) }
+    var subjectExpanded by remember { mutableStateOf(false) }
+    var showCreateSubjectDialog by remember { mutableStateOf(false) }
+    var newSubjectName by remember { mutableStateOf("") }
+
+    Column(modifier = modifier) {
+        // Dropdown chọn trường
+        Text(
+            text = "Trường đại học",
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        ExposedDropdownMenuBox(
+            expanded = universityExpanded,
+            onExpandedChange = { universityExpanded = !universityExpanded }
+        ) {
+            TextField(
+                value = university.name,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = universityExpanded) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor()
+            )
+
+            ExposedDropdownMenu(
+                expanded = universityExpanded,
+                onDismissRequest = { universityExpanded = false }
+            ) {
+                universityList.forEach { uni ->
+                    DropdownMenuItem(
+                        text = { Text(uni.name) },
+                        onClick = {
+                            onUniversitySelected(uni.name)
+                            universityExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        // Dropdown chọn môn học
+        Text(
+            text = "Môn học",
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        ExposedDropdownMenuBox(
+            expanded = subjectExpanded,
+            onExpandedChange = { subjectExpanded = !subjectExpanded }
+        ) {
+            TextField(
+                value = university.selectedSubject,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = subjectExpanded) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor()
+            )
+
+            ExposedDropdownMenu(
+                expanded = subjectExpanded,
+                onDismissRequest = { subjectExpanded = false }
+            ) {
+                university.subjects.forEachIndexed { index, subject ->
+                    DropdownMenuItem(
+                        text = { Text(subject) },
+                        onClick = {
+                            onSubjectSelected(index)
+                            subjectExpanded = false
+                        }
+                    )
+                }
+                DropdownMenuItem(
+                    text = { Text("+ Thêm môn học mới") },
+                    onClick = {
+                        showCreateSubjectDialog = true
+                        subjectExpanded = false
+                    }
+                )
+            }
+        }
+    }
+
+    // Dialog thêm môn học mới
     if (showCreateSubjectDialog) {
-        var newSubject by remember { mutableStateOf("") }
         AlertDialog(
             onDismissRequest = { showCreateSubjectDialog = false },
-            title = { Text("Tạo môn học mới") },
+            title = { Text("Thêm môn học mới") },
             text = {
-
-                OutlinedTextField(
-                    value = newSubject,
-                    onValueChange = { newSubject = it },
-                    label = { Text("Tên môn học") },
-                    modifier = Modifier.fillMaxWidth()
+                TextField(
+                    value = newSubjectName,
+                    onValueChange = { newSubjectName = it },
+                    label = { Text("Tên môn học") }
                 )
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        // Gửi intent tạo môn học mới
-                        viewModel.processIntent(UploadDocumentIntent.CreateSubject(newSubject))
-                        showCreateSubjectDialog = false
+                        if (newSubjectName.isNotBlank()) {
+                            onAddSubject(newSubjectName)
+                            newSubjectName = ""
+                            showCreateSubjectDialog = false
+                        }
                     }
                 ) {
-                    Text("Tạo")
+                    Text("Thêm")
                 }
             },
             dismissButton = {
@@ -288,114 +346,6 @@ fun UploadDocumentScreen(
                 }
             }
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun UniversitySelectionSection(
-    modifier: Modifier = Modifier,
-    university: University,
-    universityList: List<University>,
-    onUniversitySelected: (String) -> Unit,
-    onCourseSelected: (Int) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    var universityExpanded by remember { mutableStateOf(false) }
-
-    Column(modifier = modifier) {
-        Text(
-            text = "University",
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
-            tonalElevation = 2.dp
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                ExposedDropdownMenuBox(
-                    modifier = Modifier.fillMaxWidth(),
-                    expanded = universityExpanded,
-                    onExpandedChange = { universityExpanded = !universityExpanded }
-                ) {
-                    TextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                        value = university.name,
-                        onValueChange = {},
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = universityExpanded
-                            )
-                        },
-                        colors = ExposedDropdownMenuDefaults.textFieldColors()
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = universityExpanded,
-                        onDismissRequest = { universityExpanded = false }
-                    ) {
-                        universityList.forEach { uni ->
-                            DropdownMenuItem(
-                                text = { Text(uni.name) },
-                                onClick = {
-                                    onUniversitySelected(uni.id)
-                                    universityExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    text = "Course",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-
-                ExposedDropdownMenuBox(
-                    modifier = Modifier.padding(top = 8.dp),
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
-                ) {
-                    TextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                        value = university.courses[university.selectedCourseIndex],
-                        onValueChange = {},
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = expanded
-                            )
-                        },
-                        colors = ExposedDropdownMenuDefaults.textFieldColors()
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        university.courses.forEachIndexed { index, course ->
-                            DropdownMenuItem(
-                                text = { Text(course) },
-                                onClick = {
-                                    onCourseSelected(index)
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 

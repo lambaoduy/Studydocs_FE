@@ -44,7 +44,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "1.5.11"
     }
     packaging {
         resources {
@@ -61,10 +61,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
     // ========== COMPOSE ========== //
-    /* BOM (Bill of Materials) để quản lý phiên bản các thư viện Compose */
-    val composeBom = platform("androidx.compose:compose-bom:2025.05.00")
+    /* BOM (Bill of Materials) để quản lý phiên bản các thư viện   */
+    val composeBom = platform("androidx.compose:compose-bom:2024.04.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)
+
 
     /* Core Compose UI */
     implementation("androidx.compose.ui:ui")
@@ -73,7 +74,7 @@ dependencies {
     /* Công cụ preview trong Android Studio */
     implementation("androidx.compose.ui:ui-tooling-preview")
     /* Material Design 3 components */
-    implementation(libs.androidx.material3)
+    implementation("androidx.compose.material3:material3:1.2.1")
     /*code ở ngoài compose thì phải thêm*/
     implementation("com.google.android.material:material:1.11.0")
 
@@ -83,7 +84,7 @@ dependencies {
     /* Bộ icon mở rộng */
     implementation("androidx.compose.material:material-icons-extended")
     /* Hỗ trợ giao diện adaptive (cho nhiều kích thước màn hình) */
-    implementation("androidx.compose.material3.adaptive:adaptive")
+//    implementation("androidx.compose.material3.adaptive:adaptive")
     /* Tích hợp ViewModel với Compose */
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
     /* Hệ thống điều hướng trong Compose */

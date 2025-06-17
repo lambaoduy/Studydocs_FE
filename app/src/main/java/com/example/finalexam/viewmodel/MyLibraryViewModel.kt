@@ -47,6 +47,11 @@ class MyLibraryViewModel : ViewModel() {
                     _navigationEvent.emit(NavigationEvent.NavigateToDocumentDetail(intent.document.id))
                 }
             }
+            is MyLibraryIntent.NavigateToHome -> {
+                viewModelScope.launch {
+                    _navigationEvent.emit(NavigationEvent.NavigateToHome)
+                }
+            }
         }
     }
 
