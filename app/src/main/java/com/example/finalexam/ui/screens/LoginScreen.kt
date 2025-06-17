@@ -2,14 +2,28 @@ package com.example.finalexam.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,18 +36,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.intent.AuthIntent
+import com.example.finalexam.ui.theme.FinalExamTheme
+import com.example.finalexam.ui.theme.Purple40
+import com.example.finalexam.ui.theme.PurpleGrey40
+import com.example.finalexam.ui.theme.creamy
 import com.example.finalexam.viewmodel.AuthViewModel
-import com.example.finalexam.ui.theme.*
 
-// thiện làm: RegisterScreen theo MVI
+
+// thiện làm: LoginScreen theo MVI
 @Composable
-fun RegisterScreen(
+fun LoginScreen(
     authViewModel: AuthViewModel = viewModel(),
-    onLoginClick: () -> Unit = {},
-    onRegisterSuccess: () -> Unit = {}
+    onRegisterClick: () -> Unit = {},
+    onForgotPasswordClick: () -> Unit = {},
+    onLoginSuccess: () -> Unit = {}
 ) {
     val state by authViewModel.state.collectAsState()
-    var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -50,21 +68,18 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(40.dp))
-            Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Create New Account",
+                text = "Login",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Purple40
             )
-            Spacer(modifier = Modifier.height(24.dp))
-            RoundedInputField(
-                icon = Icons.Default.Person,
-                placeholder = "Username",
-                value = username,
-                onValueChange = { username = it }
+            Text(
+                text = "Sign in to continue",
+                fontSize = 14.sp,
+                color = PurpleGrey40,
+                modifier = Modifier.padding(bottom = 24.dp)
             )
-            Spacer(modifier = Modifier.height(12.dp))
             RoundedInputField(
                 icon = Icons.Default.Email,
                 placeholder = "Email",
@@ -82,38 +97,34 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = {
-                    authViewModel.processIntent(
-                        AuthIntent.Register(username, email, password)
-                    )
-                    if (state.isSuccess) onRegisterSuccess()
+                    authViewModel.processIntent(AuthIntent.Login(email, password))
+                    // Sau khi đăng nhập thành công, gọi callback
+                    if (state.isSuccess) onLoginSuccess()
                 },
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Purple40),
+                colors = ButtonDefaults.buttonColors(containerColor = Purple40),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Text("SIGN UP", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("LOGIN", color = Color.White, fontWeight = FontWeight.Bold)
             }
             if (state.error?.isNotBlank() == true) {
                 Text(state.error ?: "", color = Color.Red)
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable { onLoginClick() }
-            ) {
-                Text(
-                    text = "Already registered? ",
-                    color = PurpleGrey40
-                )
-                Text(
-                    text = "Login",
-                    color = Purple40,
-                    style = TextStyle(textDecoration = TextDecoration.Underline),
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            Text(
+                text = "Create New Account",
+                color = PurpleGrey40,
+                style = TextStyle(textDecoration = TextDecoration.Underline),
+                modifier = Modifier.clickable { onRegisterClick() }
+            )
+            Text(
+                text = "Quên mật khẩu?",
+                color = PurpleGrey40,
+                style = TextStyle(textDecoration = TextDecoration.Underline),
+                modifier = Modifier.clickable { onForgotPasswordClick() }
+            )
         }
         if (state.isLoading) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -121,44 +132,10 @@ fun RegisterScreen(
     }
 }
 
-// Định nghĩa RoundedInputField duy nhất ở đây
-@Composable
-fun RoundedInputField(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    placeholder: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    visualTransformation: androidx.compose.ui.text.input.VisualTransformation = androidx.compose.ui.text.input.VisualTransformation.None
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        leadingIcon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Purple40
-            )
-        },
-        placeholder = { Text(text = placeholder, color = Color.Gray) },
-        visualTransformation = visualTransformation,
-        colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = Color.Transparent,
-            focusedIndicatorColor = Color.Black,
-            unfocusedIndicatorColor = Color.Gray,
-            textColor = Color.Black
-        ),
-        shape = RoundedCornerShape(50),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(55.dp)
-    )
-}
-
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun RegisterScreenPreview() {
+fun LoginScreenPreview() {
     FinalExamTheme {
-        RegisterScreen()
+        LoginScreen()
     }
 }
