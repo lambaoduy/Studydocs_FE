@@ -12,7 +12,6 @@ import com.example.finalexam.ui.screens.ForgotPasswordScreen
 import com.example.finalexam.ui.screens.LoginScreen
 import com.example.finalexam.ui.screens.RegisterScreen
 import com.example.finalexam.ui.theme.FinalExamTheme
-import com.example.finalexam.view.HomeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +41,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("home") {
-                        HomeScreen()
+//                        HomeScreen()
                     }
                 }
             }
