@@ -1,11 +1,14 @@
 package com.example.finalexam.handler.follow
 
+import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.FollowIntent
 import com.example.finalexam.result.FollowResult
 import com.example.finalexam.usecase.follow.ToggleNotifyEnableUseCase
+import com.google.gson.Gson
+import retrofit2.HttpException
 
-class ToggleNotifyEnableHandler : IntentHandler<FollowIntent, FollowResult> {
+class ToggleNotifyHandler : IntentHandler<FollowIntent, FollowResult> {
     private val toggleNotifyEnableHandler = ToggleNotifyEnableUseCase()
     override fun canHandle(intent: FollowIntent): Boolean =
         intent is FollowIntent.ToggleNotifyEnable
@@ -15,8 +18,8 @@ class ToggleNotifyEnableHandler : IntentHandler<FollowIntent, FollowResult> {
         setResult: (FollowResult) -> Unit
     ) {
         setResult(FollowResult.Loading)
+        val toggleNotifyEnableIntent = intent as FollowIntent.ToggleNotifyEnable
         try {
-            val toggleNotifyEnableIntent = intent as FollowIntent.ToggleNotifyEnable
             toggleNotifyEnableHandler.invoke(
                 toggleNotifyEnableIntent.followingId,
                 toggleNotifyEnableIntent.notifyEnable
@@ -27,8 +30,15 @@ class ToggleNotifyEnableHandler : IntentHandler<FollowIntent, FollowResult> {
                     toggleNotifyEnableIntent.notifyEnable
                 )
             )
-        } catch (e: Exception) {
-            setResult(FollowResult.Error(e.message ?: "Unknown error"))
+        } catch (e: HttpException) {
+            val errorBody = e.response()?.errorBody()?.string()
+            val message = try {
+                val errorResponse = Gson().fromJson(errorBody, BaseResponse::class.java)
+                errorResponse?.message ?: "Unknown error"
+            } catch (ex: Exception) {
+                "Unknown error"
+            }
+            setResult(FollowResult.Error(message))
         }
 
     }

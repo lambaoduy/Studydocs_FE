@@ -28,13 +28,18 @@ class FollowReducer {
                 followings = result.followings
             )
 
-            is FollowResult.ToggleNotifyEnableResult -> state.copy(
-                isLoading = false,
-                followings = state.followings.map {
-                    if (it.followingId == result.followingId) it.copy(
-                        notifyEnables = result.notifyEnable
-                    ) else it
-                })
+            is FollowResult.ToggleNotifyEnableResult -> {
+                val updated = state.followings.map {
+                    if (it.followingId == result.followingId) {
+                        if (it.notifyEnables == result.notifyEnable) it
+                        else it.copy(notifyEnables = result.notifyEnable)
+                    } else it
+                }
+                state.copy(
+                    isLoading = false,
+                    followings = if (updated == state.followings) state.followings else updated
+                )
+            }
 
 
         }

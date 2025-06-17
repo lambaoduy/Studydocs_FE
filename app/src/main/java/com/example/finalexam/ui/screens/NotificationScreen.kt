@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.CloudUpload
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -21,9 +20,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.data.enums.NotificationType
 import com.example.finalexam.entity.Notification
 import com.example.finalexam.intent.NotificationIntent
-import com.example.finalexam.ui.components.notification.EmptyNotificationState
-import com.example.finalexam.ui.components.notification.ErrorState
-import com.example.finalexam.ui.components.notification.LoadingState
+import com.example.finalexam.ui.components.common.EmptyStates
+import com.example.finalexam.ui.components.common.ErrorState
+import com.example.finalexam.ui.components.common.LoadingState
 import com.example.finalexam.ui.components.notification.NotificationList
 import com.example.finalexam.ui.components.notification.NotificationTopBar
 import com.example.finalexam.viewmodel.NotificationViewModel
@@ -51,8 +50,6 @@ enum class NotificationTypeUI(
 ) {
     LIKE(Icons.Filled.Favorite, NotificationColors.Error),
     UPLOAD(Icons.Outlined.CloudUpload, NotificationColors.Primary),
-    SYSTEM(Icons.Outlined.Notifications, NotificationColors.Info),
-    DEFAULT(Icons.Outlined.Notifications, NotificationColors.OnSurfaceVariant)
 }
 
 
@@ -60,6 +57,7 @@ enum class NotificationTypeUI(
 @Composable
 fun NotificationScreen(
     viewModel: NotificationViewModel = viewModel(),
+    navigateToFollow: () -> Unit,
     onBackClick: () -> Unit = {},
     onNotificationClick: (Notification) -> Unit = {}
 ) {
@@ -77,6 +75,7 @@ fun NotificationScreen(
         topBar = {
             NotificationTopBar(
                 unreadCount = state.unreadCount,
+                hasNotification = !state.notifications.isEmpty(),
                 onBackClick = onBackClick,
                 onMarkAllRead = {
                     scope.launch {
@@ -87,7 +86,8 @@ fun NotificationScreen(
                     scope.launch {
                         viewModel.processIntent(NotificationIntent.DeleteAll)
                     }
-                }
+                },
+                onOpenNotificationSettings = navigateToFollow
             )
         }
     ) { paddingValues ->
@@ -113,7 +113,7 @@ fun NotificationScreen(
                 }
 
                 state.notifications.isEmpty() -> {
-                    EmptyNotificationState()
+                    EmptyStates.NoNotifications()
                 }
 
                 else -> {

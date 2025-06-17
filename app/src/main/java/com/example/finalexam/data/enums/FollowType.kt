@@ -1,7 +1,8 @@
 package com.example.finalexam.data.enums
 
 enum class FollowType {
-    USER("users");
+    USER("users"),
+    UNIVERSITY("universities");
 
     val value: String
 
