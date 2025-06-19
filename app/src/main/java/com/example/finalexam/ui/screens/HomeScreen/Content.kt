@@ -2,6 +2,7 @@ package com.example.finalexam.ui.screens.HomeScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,22 +40,30 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.HomeIntent
+import com.example.finalexam.ui.theme.AppColors
+import com.example.finalexam.ui.theme.AppColors.Surface
 import com.example.finalexam.viewmodel.HomeViewModel
 
 @Composable
 fun Content(modifier: Modifier = Modifier) {
-    val homeViewModel: HomeViewModel = viewModel()
+//    val homeViewModel: HomeViewModel = viewModel()
     var searchQuery by remember { mutableStateOf("") }
     var isDrawerOpen by remember { mutableStateOf(false) }
     val id = ""
     var school by remember { mutableStateOf("") }
     var subject by remember { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        homeViewModel.processIntent(HomeIntent.LoadByUserID(id))
-    }
+//    LaunchedEffect(Unit) {
+//        homeViewModel.processIntent(HomeIntent.LoadByUserID(id))
+//    }
 
-    val uiState by homeViewModel.state.collectAsState()
-    val documents = uiState.listDocument
+//    val uiState by homeViewModel.state.collectAsState()
+//    val documents = uiState.listDocument
+    val sampleDocs = listOf(
+        Document("1", "Lập trình Android", "CNTT", "UIT"),
+        Document("2", "Trí tuệ nhân tạo", "Khoa học máy tính", "BK"),
+        Document("3", "Cơ sở dữ liệu", "Hệ thống thông tin", "HCMUS")
+    )
+
 
     Box(modifier = modifier.fillMaxSize()) { // 👈 Wrap lại toàn bộ bằng Box
         Column(modifier = Modifier
@@ -69,19 +79,19 @@ fun Content(modifier: Modifier = Modifier) {
                 label = { Text("Tìm kiếm") },
                 leadingIcon = {
                     IconButton(onClick =
-//                    {}
-                    {
-                        if (searchQuery.isNotBlank()) {
-                            homeViewModel.processIntent(HomeIntent.FindTodo(searchQuery))
-                        }
-
-                        if(school.isNotBlank()){
-                            homeViewModel.processIntent(HomeIntent.FindTodoBySchool(school))
-                        }
-                        if(subject.isNotBlank()){
-                            homeViewModel.processIntent(HomeIntent.FindTodoBySubject(subject))
-                        }
-                    }
+                    {}
+//                    {
+//                        if (searchQuery.isNotBlank()) {
+//                            homeViewModel.processIntent(HomeIntent.FindTodo(searchQuery))
+//                        }
+//
+//                        if(school.isNotBlank()){
+//                            homeViewModel.processIntent(HomeIntent.FindTodoBySchool(school))
+//                        }
+//                        if(subject.isNotBlank()){
+//                            homeViewModel.processIntent(HomeIntent.FindTodoBySubject(subject))
+//                        }
+//                    }
                     ) {
                         Icon(Icons.Default.Search, contentDescription = "Search")
                     }
@@ -131,7 +141,7 @@ fun Content(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-//            ListDocumentView(documents)
+            ListDocumentView(sampleDocs)
         }
 
         // 👇 Hiển thị drawer filter bên phải
@@ -151,19 +161,55 @@ fun Content(modifier: Modifier = Modifier) {
 fun ListDocumentView(documents: List<Document>) {
     LazyColumn {
         items(documents) { doc ->
-            DocumentItemView(doc)
+            DocumentItemView(doc, onClick ={})
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
+//@Composable
+//fun DocumentItemView(doc: Document) {
+//    Column {
+//        Text(text = "Title: ${doc.title}")
+//        Text(text = "Subject: ${doc.subject}")
+//        Text(text = "University: ${doc.university}")
+//    }
+//}
+
 @Composable
-fun DocumentItemView(doc: Document) {
-    Column {
-        Text(text = "Title: ${doc.title}")
-        Text(text = "Subject: ${doc.subject}")
-        Text(text = "University: ${doc.university}")
+fun DocumentItemView(
+    document: Document,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(8.dp),
+        tonalElevation = 1.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = document.title,
+                style = MaterialTheme.typography.titleMedium,
+                color = AppColors.TextPrimary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Tác giả: ${document.author}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = AppColors.TextSecondary
+            )
+            Text(
+                text = "Ngày đăng: ${document.createdAt}",
+                style = MaterialTheme.typography.bodySmall,
+                color = AppColors.TextSecondary
+            )
+        }
     }
 }
+
 
 fun onItemSelected(s: String) {}
 @Preview(showBackground = true, widthDp = 400, heightDp = 700)
