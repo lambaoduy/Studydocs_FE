@@ -1,12 +1,13 @@
 package com.example.finalexam.handler.HomeScreen
 
 import com.example.finalexam.data.dao.document.DocumentDao
+import com.example.finalexam.entity.Document
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.HomeIntent
 import com.example.finalexam.result.HomeResult
 import com.example.finalexam.usecase.homescreen.HomeLoadDataUseCase
 
-class HomeFindBySchool (documentDao: DocumentDao) : IntentHandler<HomeIntent, HomeResult> {
+class HomeFindBySchool(documentDao: DocumentDao,private val listDocument: List<Document>) : IntentHandler<HomeIntent, HomeResult> {
     private val usecase= HomeLoadDataUseCase(documentDao)
     override fun canHandle(intent: HomeIntent): Boolean = intent is HomeIntent.FindTodo
 
@@ -16,7 +17,7 @@ class HomeFindBySchool (documentDao: DocumentDao) : IntentHandler<HomeIntent, Ho
             val keyword = intent.school // Lấy keyword từ intent
 
             // Gọi usecase, truyền keyword vào
-            val documents = usecase.findDocumentBySchool(keyword)
+            val documents = usecase.findDocumentBySchool(keyword, listDocument)
 
             // Trả kết quả về
             setResult(HomeResult.Find(documents))

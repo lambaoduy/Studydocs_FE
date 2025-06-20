@@ -46,23 +46,23 @@ import com.example.finalexam.viewmodel.HomeViewModel
 
 @Composable
 fun Content(modifier: Modifier = Modifier) {
-//    val homeViewModel: HomeViewModel = viewModel()
+    val homeViewModel: HomeViewModel = viewModel()
     var searchQuery by remember { mutableStateOf("") }
     var isDrawerOpen by remember { mutableStateOf(false) }
     val id = ""
     var school by remember { mutableStateOf("") }
     var subject by remember { mutableStateOf("") }
-//    LaunchedEffect(Unit) {
-//        homeViewModel.processIntent(HomeIntent.LoadByUserID(id))
-//    }
+    LaunchedEffect(Unit) {
+        homeViewModel.processIntent(HomeIntent.GetAllTodo)
+    }
 
-//    val uiState by homeViewModel.state.collectAsState()
-//    val documents = uiState.listDocument
-    val sampleDocs = listOf(
-        Document("1", "Lập trình Android", "CNTT", "UIT"),
-        Document("2", "Trí tuệ nhân tạo", "Khoa học máy tính", "BK"),
-        Document("3", "Cơ sở dữ liệu", "Hệ thống thông tin", "HCMUS")
-    )
+    val uiState by homeViewModel.state.collectAsState()
+    val documents = uiState.listDocument
+//    val sampleDocs = listOf(
+//        Document("1", "Lập trình Android", "CNTT", "UIT"),
+//        Document("2", "Trí tuệ nhân tạo", "Khoa học máy tính", "BK"),
+//        Document("3", "Cơ sở dữ liệu", "Hệ thống thông tin", "HCMUS")
+//    )
 
 
     Box(modifier = modifier.fillMaxSize()) { // 👈 Wrap lại toàn bộ bằng Box
@@ -71,27 +71,27 @@ fun Content(modifier: Modifier = Modifier) {
             .padding(16.dp)
         ) {
             OutlinedTextField(
-                value = "",
-//                searchQuery,
+                value =
+                searchQuery,
                 onValueChange = {
-//                    searchQuery = it
+                    searchQuery = it
                 },
                 label = { Text("Tìm kiếm") },
                 leadingIcon = {
                     IconButton(onClick =
-                    {}
-//                    {
-//                        if (searchQuery.isNotBlank()) {
-//                            homeViewModel.processIntent(HomeIntent.FindTodo(searchQuery))
-//                        }
-//
-//                        if(school.isNotBlank()){
-//                            homeViewModel.processIntent(HomeIntent.FindTodoBySchool(school))
-//                        }
-//                        if(subject.isNotBlank()){
-//                            homeViewModel.processIntent(HomeIntent.FindTodoBySubject(subject))
-//                        }
-//                    }
+//                    {}
+                    {// nếu search query thay đổi thì gọi db để tìm kiếm
+                        if (searchQuery.isNotBlank()&&!uiState.keyword.equals(searchQuery)) {
+                            homeViewModel.processIntent(HomeIntent.FindTodo(searchQuery))
+                        }
+
+                        if(school.isNotBlank()){
+                            homeViewModel.processIntent(HomeIntent.FindTodoBySchool(school))
+                        }
+                        if(subject.isNotBlank()){
+                            homeViewModel.processIntent(HomeIntent.FindTodoBySubject(subject))
+                        }
+                    }
                     ) {
                         Icon(Icons.Default.Search, contentDescription = "Search")
                     }
@@ -141,7 +141,7 @@ fun Content(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            ListDocumentView(sampleDocs)
+            ListDocumentView(documents)
         }
 
         // 👇 Hiển thị drawer filter bên phải
@@ -197,13 +197,13 @@ fun DocumentItemView(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Tác giả: ${document.author}",
+                text = "Trường: ${document.university ?: "Không rõ"}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = AppColors.TextSecondary
             )
             Text(
-                text = "Ngày đăng: ${document.createdAt}",
-                style = MaterialTheme.typography.bodySmall,
+                text = "Môn học: ${document.subject ?: "Không rõ"}",
+                style = MaterialTheme.typography.bodyMedium,
                 color = AppColors.TextSecondary
             )
         }

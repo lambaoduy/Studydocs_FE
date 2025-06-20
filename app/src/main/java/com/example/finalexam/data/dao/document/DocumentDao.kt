@@ -10,37 +10,48 @@ import retrofit2.Response
 class DocumentDao(private val api: DocumentApi) {
 
     suspend fun getAll(): List<Document> = withContext(Dispatchers.IO) {
+
         safeApiCall { api.getAllDocuments() }
     }
 
     suspend fun getDocumentsByKeyword(keyword: String): List<Document> = withContext(Dispatchers.IO) {
-        safeApiCall { api.searchDocuments(keyword) }
+        safeApiCall { api.searchDocumentByTitle(keyword) }
     }
 
     suspend fun getDocumentbyUserID(userId: String): List<Document> = withContext(Dispatchers.IO) {
         safeApiCall { api.getDocumentsByUserID(userId) }
     }
     suspend fun getDocumentsBySubject(keyword: String): List<Document> = withContext(Dispatchers.IO){
-        safeApiCall { api.getDocumentsByUserID(keyword) }
+        safeApiCall { api.searchDocumentBySubject(keyword) }
     }
 
-    suspend fun getDocumentsBySchool(keyword: String): List<Document> = withContext(Dispatchers.IO ){
-        safeApiCall { api.searchDocuments(keyword) }
+    suspend fun getDocumentsByUniversity(keyword: String): List<Document> = withContext(Dispatchers.IO ){
+        safeApiCall { api.searchDocumentByUniversity(keyword) }
     }
     // --- Helper function chung ---
 
     private suspend fun <T> safeApiCall(apiCall: suspend () -> Response<BaseResponse<List<T>>>): List<T> {
         return try {
             val response = apiCall()
-            if (response.isSuccessful && response.body()?.stautus == 200) {
-                response.body()?.data ?: emptyList()
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.status == 200) {
+                    println("✅ [safeApiCall] Success - dữ liệu: ${body.data?.size} item")
+                    body.data ?: emptyList()
+                } else {
+                    println("⚠️ [safeApiCall] API trả về status != 200: ${body?.status}")
+                    emptyList()
+                }
             } else {
+                println("❌ [safeApiCall] API response lỗi: ${response.code()} - ${response.errorBody()?.string()}")
                 emptyList()
             }
         } catch (e: Exception) {
+            println("🔥 [safeApiCall] Exception khi gọi API: ${e.message}")
             emptyList()
         }
     }
+
 
 
 }

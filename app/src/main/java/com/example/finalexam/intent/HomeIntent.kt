@@ -5,5 +5,5 @@ sealed class HomeIntent {
     data class LoadByUserID(val userid: String):HomeIntent()//load dữ liệu theo userID
     data class FindTodoBySchool(val school: String) : HomeIntent() //tìm kiếm theo school
     data class FindTodoBySubject(val subject: String) : HomeIntent()//tìm kiếm theo subject
-
+    object  GetAllTodo: HomeIntent() //lấy tất cả doc trong cơ sở dữ liệu
 }
