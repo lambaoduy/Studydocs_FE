@@ -2,17 +2,29 @@ package com.example.finalexam.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.finalexam.entity.University
 import com.example.finalexam.intent.UploadDocumentIntent
 import com.example.finalexam.state.UploadDocumentState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class UploadDocumentViewModel : ViewModel() {
+// ===== Hảo làm phần này (Đồng bộ dữ liệu trường và môn học từ UniversityViewModel) =====
+class UploadDocumentViewModel(
+    private val universityViewModel: UniversityViewModel // Inject hoặc truyền vào từ Activity/Fragment
+) : ViewModel() {
 
     private val _state = MutableStateFlow(UploadDocumentState())
     val state: StateFlow<UploadDocumentState> = _state
+
+    init {
+        // Lắng nghe state của UniversityViewModel để đồng bộ danh sách trường
+        viewModelScope.launch {
+            universityViewModel.state.collect { uniState ->
+                _state.update { it.copy(universityList = uniState.universityList) }
+            }
+        }
+    }
 
     fun processIntent(intent: UploadDocumentIntent) {
         when (intent) {
@@ -29,7 +41,7 @@ class UploadDocumentViewModel : ViewModel() {
             }
 
             is UploadDocumentIntent.SelectUniversity -> {
-                // Giả lập chọn 1 trường từ danh sách
+                // Lấy trường từ danh sách đã đồng bộ từ UniversityViewModel
                 val university = _state.value.universityList.find { it.id == intent.universityId }
                 if (university != null) {
                     _state.value = _state.value.copy(university = university)
@@ -44,13 +56,10 @@ class UploadDocumentViewModel : ViewModel() {
             }
 
             is UploadDocumentIntent.AddSubject -> {
+                // Gọi UniversityViewModel để thêm môn học qua API
                 _state.value.university?.let { uni ->
-                    val updatedSubjects = uni.subjects + intent.subjectName
-                    val updatedUni = uni.copy(
-                        subjects = updatedSubjects,
-                        selectedSubjectIndex = updatedSubjects.lastIndex
-                    )
-                    _state.value = _state.value.copy(university = updatedUni)
+                    universityViewModel.addSubject(uni.id, intent.subjectName)
+                    // Khi UniversityViewModel cập nhật xong, danh sách trường sẽ tự đồng bộ lại qua collect ở trên
                 }
             }
 
@@ -84,22 +93,5 @@ class UploadDocumentViewModel : ViewModel() {
             }
         }
     }
-
-    fun loadMockData() {
-        val university1 = University(
-            id = "1",
-            name = "Đại học Nông Lâm TP.HCM",
-            subjects = listOf("Công nghệ thông tin", "Khoa học dữ liệu", "Kỹ thuật phần mềm"),
-            selectedSubjectIndex = 0
-        )
-
-        val university2 = University(
-            id = "2",
-            name = "Đại học Khoa Học Tự Nhiên",
-            subjects = listOf("Hệ thống nhúng", "AI", "Học máy"),
-            selectedSubjectIndex = 1
-        )
-
-        _state.value = _state.value.copy(universityList = listOf(university1, university2))
-    }
 }
+// ===== end Hảo làm phần này =====

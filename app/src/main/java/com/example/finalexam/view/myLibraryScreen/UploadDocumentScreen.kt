@@ -56,6 +56,12 @@ import com.example.finalexam.entity.UploadDocument
 import com.example.finalexam.intent.UploadDocumentIntent
 import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.UploadDocumentViewModel
+import com.example.finalexam.viewmodel.UniversityViewModel
+import com.example.finalexam.viewmodel.UploadDocumentViewModelFactory
+import kotlinx.coroutines.launch
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.rememberCoroutineScope
 import java.io.File
 import java.util.UUID
 
@@ -63,7 +69,10 @@ import java.util.UUID
 @Composable
 fun UploadDocumentScreen(
     modifier: Modifier = Modifier,
-    viewModel: UploadDocumentViewModel = viewModel(),
+    universityViewModel: UniversityViewModel = viewModel(),
+    viewModel: UploadDocumentViewModel = viewModel(
+        factory = UploadDocumentViewModelFactory(universityViewModel)
+    ),
     onBackClick: () -> Unit = {},
     onUploadClick: (UploadDocument?) -> Unit = {},
 ) {
@@ -82,9 +91,22 @@ fun UploadDocumentScreen(
     }
 
     val state by viewModel.state.collectAsState()
+    val universityState by universityViewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        viewModel.loadMockData()
+        universityViewModel.loadUniversities()
+    }
+
+    LaunchedEffect(universityState.error) {
+        universityState.error?.let { err ->
+            if (err.contains("tồn tại")) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(err)
+                }
+            }
+        }
     }
 
     Column(
@@ -166,13 +188,13 @@ fun UploadDocumentScreen(
                 Spacer(Modifier.height(16.dp))
             }
 
-            // ===== Chọn trường và môn học =====
+            // ===== Hảo làm phần này: Chọn trường và môn học =====
             if (state.universityList.isNotEmpty()) {
                 UniversitySelectionSection(
                     university = state.university ?: state.universityList.first(),
                     universityList = state.universityList,
-                    onUniversitySelected = {
-                        viewModel.processIntent(UploadDocumentIntent.SelectUniversity(it))
+                    onUniversitySelected = { id ->
+                        viewModel.processIntent(UploadDocumentIntent.SelectUniversity(id))
                     },
                     onSubjectSelected = { index ->
                         viewModel.processIntent(UploadDocumentIntent.SelectSubjectIndex(index))
@@ -212,6 +234,8 @@ fun UploadDocumentScreen(
                 }
             }
         }
+
+        SnackbarHost(hostState = snackbarHostState)
     }
 }
 
@@ -260,7 +284,7 @@ fun UniversitySelectionSection(
                     DropdownMenuItem(
                         text = { Text(uni.name) },
                         onClick = {
-                            onUniversitySelected(uni.name)
+                            onUniversitySelected(uni.id)
                             universityExpanded = false
                         }
                     )
