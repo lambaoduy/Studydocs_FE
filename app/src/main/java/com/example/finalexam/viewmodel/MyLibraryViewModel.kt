@@ -54,10 +54,11 @@ class MyLibraryViewModel : ViewModel() {
             // TODO: Gọi backend hoặc repository để lấy dữ liệu thật
             // Dưới đây là dữ liệu mẫu
             val documents = listOf(
-                Document("1", "Tài liệu Kotlin", "Nguyễn Văn A", "01/01/2024"),
-                Document("2", "Tài liệu Jetpack Compose", "Trần Thị B", "02/01/2024"),
-                Document("3", "Tài liệu Android", "Lê Văn C", "03/01/2024")
+                Document(id = "1", title = "Tài liệu Kotlin", author = "Nguyễn Văn A", createdDate = "01/01/2024"),
+                Document(id = "2", title = "Tài liệu Jetpack Compose", author = "Trần Thị B", createdDate = "02/01/2024"),
+                Document(id = "3", title = "Tài liệu Android", author = "Lê Văn C", createdDate = "03/01/2024")
             )
+
             _state.value = _state.value.copy(isLoading = false, documents = documents)
         }
     }
