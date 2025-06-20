@@ -1,13 +1,17 @@
 package com.example.finalexam.usecase.notification
 
-import com.example.finalexam.data.dao.notification.NotificationDao
-import com.example.finalexam.data.dao.notification.impl.NotificationDaoImpl
+import com.example.finalexam.data.api.NotificationApi
 import com.example.finalexam.entity.Notification
+import com.example.finalexam.network.RetrofitClient
 
 class NotificationInitialUseCase {
-    private val notificationDao: NotificationDao = NotificationDaoImpl()
+    private val notificationApi = RetrofitClient.createApi(NotificationApi::class.java)
 
-    suspend fun invoke(userId: String): List<Notification> {
-        return notificationDao.getNotifications(userId)
+    suspend fun invoke(): List<Notification> {
+        var response = notificationApi.getNotifications()
+        if (response.status != 200) {
+            throw Exception(response.message)
+        }
+        return response.data
     }
 }

@@ -1,9 +1,12 @@
 package com.example.finalexam.handler.notification
 
+import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.NotificationIntent
 import com.example.finalexam.result.NotificationResult
 import com.example.finalexam.usecase.notification.NotificationMarkAsReadAllUseCase
+import com.google.gson.Gson
+import retrofit2.HttpException
 
 class NotificationMarkAsReadAllHandler : IntentHandler<NotificationIntent, NotificationResult> {
     private val notificationMarkAsReadAllUseCase = NotificationMarkAsReadAllUseCase()
@@ -16,11 +19,17 @@ class NotificationMarkAsReadAllHandler : IntentHandler<NotificationIntent, Notif
     ) {
         setResult(NotificationResult.Loading)
         try {
-            val notificationMarkAsReadAllIntent = intent as NotificationIntent.MarkAsReadAll
-            notificationMarkAsReadAllUseCase.invoke(notificationMarkAsReadAllIntent.userId)
+            notificationMarkAsReadAllUseCase.invoke()
             setResult(NotificationResult.MarkAsReadAll)
-        } catch (e: Exception) {
-            setResult(NotificationResult.Error(e.message ?: "Unknown error"))
+        } catch (e: HttpException) {
+            val errorBody = e.response()?.errorBody()?.string()
+            val message = try {
+                val errorResponse = Gson().fromJson(errorBody, BaseResponse::class.java)
+                errorResponse?.message ?: "Unknown error"
+            } catch (ex: Exception) {
+                "Unknown error"
+            }
+            setResult(NotificationResult.Error(message))
         }
     }
 }

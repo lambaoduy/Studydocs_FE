@@ -11,9 +11,7 @@ import android.os.ParcelFileDescriptor
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -21,6 +19,13 @@ import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.GetApp
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.ThumbUpOffAlt
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +45,12 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.core.content.ContextCompat
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentDetailScreen(documentId: String, userId: String = "currentUserId") {
     val viewModel: DocumentViewModel = viewModel()
@@ -106,6 +116,35 @@ fun DocumentDetailScreen(documentId: String, userId: String = "currentUserId") {
     Scaffold(
         topBar = {
             TopAppBar(
+                title = { Text(state.document?.title ?: "Loading...") },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (state.isLoading) {
+                CircularProgressIndicator()
+            } else if (state.errorMessage != null) {
+                Text(
+                    text = state.errorMessage!!,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else if (pdfBitmap != null) {
+                // Display PDF page
+                Image(
+                    bitmap = pdfBitmap!!.asImageBitmap(),
+                    contentDescription = "PDF page ${currentPage + 1}",
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                )
                 title = { Text(state.document?.title ?: "Loading...", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { /* TODO: Handle back navigation */ }) {
@@ -265,6 +304,9 @@ fun DocumentDetailScreen(documentId: String, userId: String = "currentUserId") {
 
 /**
  * Download file from URL to device
+ * @param context Application context
+ * @param url URL of the file to download
+ * @param fileName Name of the file when saved
  */
 fun downloadFile(context: Context, url: String, fileName: String) {
     val request = android.app.DownloadManager.Request(Uri.parse(url))

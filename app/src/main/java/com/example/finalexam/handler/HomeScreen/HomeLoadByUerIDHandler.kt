@@ -1,6 +1,6 @@
 package com.example.finalexam.handler.HomeScreen
 
-import com.example.finalexam.dao.document.DocumentDao
+import com.example.finalexam.data.dao.document.DocumentDao
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.HomeIntent
 import com.example.finalexam.result.HomeResult
