@@ -1,13 +1,18 @@
-package com.example.finalexam.view
+package com.example.finalexam.ui.screens
 
+import android.text.style.BackgroundColorSpan
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,12 +28,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.intent.AuthIntent
 import com.example.finalexam.viewmodel.AuthViewModel
 import com.example.finalexam.ui.theme.*
+import androidx.compose.material3.MaterialTheme
 
+// thiện làm: LoginScreen theo MVI
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel = viewModel(),
     onRegisterClick: () -> Unit = {},
-    onForgotPasswordClick: () -> Unit = {}
+    onForgotPasswordClick: () -> Unit = {},
+    onLoginSuccess: () -> Unit = {}
 ) {
     val state by authViewModel.state.collectAsState()
     var email by remember { mutableStateOf("") }
@@ -37,11 +45,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = androidx.compose.ui.graphics.Brush.verticalGradient(
-                    colors = listOf(Purple40, PurpleGrey40, creamy)
-                )
-            )
+            .background(creamy)
     ) {
         Column(
             modifier = Modifier
@@ -51,12 +55,6 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(40.dp))
-            Icon(
-                imageVector = Icons.Default.Lock,
-                contentDescription = "Login Icon",
-                tint = Purple40,
-                modifier = Modifier.size(64.dp)
-            )
             Text(
                 text = "Login",
                 fontSize = 30.sp,
@@ -83,26 +81,15 @@ fun LoginScreen(
                 onValueChange = { password = it },
                 visualTransformation = PasswordVisualTransformation()
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Text(
-                    text = "Quên mật khẩu?",
-                    color = Purple40,
-                    style = TextStyle(textDecoration = TextDecoration.Underline),
-                    fontSize = 13.sp,
-                    modifier = Modifier.clickable { onForgotPasswordClick() }
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = {
                     authViewModel.processIntent(AuthIntent.Login(email, password))
+                    // Sau khi đăng nhập thành công, gọi callback
+                    if (state.isSuccess) onLoginSuccess()
                 },
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Purple40),
+                colors = ButtonDefaults.buttonColors(containerColor = Purple40),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
@@ -119,6 +106,12 @@ fun LoginScreen(
                 style = TextStyle(textDecoration = TextDecoration.Underline),
                 modifier = Modifier.clickable { onRegisterClick() }
             )
+            Text(
+                text = "Quên mật khẩu?",
+                color = PurpleGrey40,
+                style = TextStyle(textDecoration = TextDecoration.Underline),
+                modifier = Modifier.clickable { onForgotPasswordClick() }
+            )
         }
         if (state.isLoading) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -132,4 +125,4 @@ fun LoginScreenPreview() {
     FinalExamTheme {
         LoginScreen()
     }
-} 
+}

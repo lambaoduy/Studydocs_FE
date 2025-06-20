@@ -16,11 +16,15 @@ data class Document(
     val createdAt: Timestamp? = null,
     val updatedAt: Timestamp? = null,
     val deletedAt: Timestamp? = null,
+    val author: String = "",
+    val createdDate: String = "",
     val likes: List<Like>? = null
+
 ) {
     data class Like(
         val userId: String = "",
         val type: String = "",
         val createAt: Timestamp? = null
     )
+
 }

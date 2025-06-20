@@ -1,29 +1,49 @@
 package com.example.finalexam.reduce
 
 import com.example.finalexam.result.NotificationResult
-import com.example.finalexam.result.NotificationResult.ViewMode
 import com.example.finalexam.state.NotificationState
 
 class NotificationReducer {
     fun reduce(state: NotificationState, result: NotificationResult): NotificationState =
         when (result) {
-            is NotificationResult.Load -> state.copy(isLoading = true)
-            is NotificationResult.Close -> state.copy(viewMode = ViewMode.NONE)
-            is NotificationResult.Open -> state.copy(
-                documentId = result.documentId,
-                viewMode = ViewMode.NONE
+            is NotificationResult.Loading -> state.copy(isLoading = true)
+            is NotificationResult.Delete -> state.copy(
+                isLoading = false,
+                notifications = state.notifications.filter { it.notificationId != result.notificationId },
+                unreadCount = state.unreadCount - 1
             )
 
-            is NotificationResult.Show -> state.copy(
-                notifications = result.notifications,
-                viewMode = result.viewMode,
+            is NotificationResult.DeleteAll -> state.copy(
                 isLoading = false,
+                notifications = emptyList(),
                 unreadCount = 0
             )
 
+            is NotificationResult.GetNotifications -> state.copy(
+                isLoading = false,
+                notifications = result.notifications,
+                unreadCount = result.notifications.size
+            )
+
+            is NotificationResult.MarkAsRead -> state.copy(
+                isLoading = false,
+                notifications = state.notifications.map {
+                    if (it.notificationId == result.notificationId) {
+                        it.copy(isRead = true)
+                    } else {
+                        it
+                    }
+                })
+
+            is NotificationResult.MarkAsReadAll -> state.copy(
+                isLoading = false,
+                notifications = state.notifications.map {
+                    it.copy(isRead = true)
+                })
+
             is NotificationResult.Error -> state.copy(
-                errorMessage = result.message,
-                isLoading = false
+                isLoading = false,
+                errorMessage = result.message
             )
         }
 
