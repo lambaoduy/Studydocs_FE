@@ -1,9 +1,12 @@
 package com.example.finalexam.handler.notification
 
+import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.NotificationIntent
 import com.example.finalexam.result.NotificationResult
 import com.example.finalexam.usecase.notification.NotificationInitialUseCase
+import com.google.gson.Gson
+import retrofit2.HttpException
 
 class NotificationInitialHandler : IntentHandler<NotificationIntent, NotificationResult> {
     private val notificationInitialUseCase = NotificationInitialUseCase()
@@ -15,17 +18,12 @@ class NotificationInitialHandler : IntentHandler<NotificationIntent, Notificatio
         setResult: (NotificationResult) -> Unit
     ) {
         setResult(NotificationResult.Loading)
-        try {
-            val userId = when (intent) {
-                is NotificationIntent.Initial -> intent.userId
-                is NotificationIntent.Refresh -> intent.userId
-                else -> throw IllegalArgumentException("Unsupported intent")
+        notificationInitialUseCase.invoke()
+            .onSuccess { notifications ->
+                setResult(NotificationResult.GetNotifications(notifications))
             }
-            val notifications = notificationInitialUseCase.invoke(userId)
-            setResult(NotificationResult.GetNotifications(notifications))
-        } catch (e: Exception) {
-            setResult(NotificationResult.Error(e.message ?: "Unknown error"))
-
-        }
+            .onFailure { error ->
+                setResult(NotificationResult.Error(error.message ?: "An unknown error occurred."))
+            }
     }
 }

@@ -7,6 +7,7 @@ import com.example.finalexam.usecase.notification.NotificationDeleteUseCase
 
 class NotificationDeleteHandler : IntentHandler<NotificationIntent, NotificationResult> {
     private val notificationDeleteUseCase = NotificationDeleteUseCase()
+    
     override fun canHandle(intent: NotificationIntent): Boolean =
         intent is NotificationIntent.Delete
 
@@ -15,12 +16,17 @@ class NotificationDeleteHandler : IntentHandler<NotificationIntent, Notification
         setResult: (NotificationResult) -> Unit
     ) {
         setResult(NotificationResult.Loading)
-        try {
-            val notificationDeleteIntent = intent as NotificationIntent.Delete
-            notificationDeleteUseCase.invoke(notificationDeleteIntent.notificationId)
-            setResult(NotificationResult.Delete(notificationDeleteIntent.notificationId))
-        } catch (e: Exception) {
-            setResult(NotificationResult.Error(e.message ?: "Unknown error"))
-        }
+        val deleteIntent = intent as NotificationIntent.Delete
+        notificationDeleteUseCase.invoke(deleteIntent.notificationId)
+            .onSuccess { success ->
+                if (success) {
+                    setResult(NotificationResult.Delete(deleteIntent.notificationId))
+                } else {
+                    setResult(NotificationResult.Error("Failed to delete notification."))
+                }
+            }
+            .onFailure { error ->
+                setResult(NotificationResult.Error(error.message ?: "An unknown error occurred."))
+            }
     }
 }

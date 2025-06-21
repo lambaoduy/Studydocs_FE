@@ -24,15 +24,23 @@
 //        }
 //    }
 //
-//    suspend fun register(username: String, email: String, password: String): Result<Unit> {
+//    suspend fun register(username: String, email: String, password: String, avatarUrl: String? = null): Result<Unit> {
 //        return try {
+//            // Đăng ký tài khoản với Firebase Auth
 //            val authResult = FirebaseAuth.getInstance()
 //                .createUserWithEmailAndPassword(email, password)
 //                .await()
-//            val idToken = authResult.user?.getIdToken(true)?.await()?.token
-//                ?: return Result.failure(Exception("Không lấy được token"))
-//            // Gửi token lên backend
-//            val response = authApi.register(RegisterDTO(idToken))
+//            // Lấy UID do Firebase cấp
+//            val userId = authResult.user?.uid ?: return Result.failure(Exception("Không lấy được UID từ Firebase"))
+//            // Đóng gói thông tin người dùng gửi lên backend để lưu vào Firestore
+//            val registerDTO = RegisterDTO(
+//                userId = userId,
+//                username = username,
+//                email = email,
+//                avatarUrl = avatarUrl // Có thể null nếu chưa có ảnh
+//            )
+//            // Gửi thông tin lên backend
+//            val response = authApi.register(registerDTO)
 //            if (response.success) Result.success(Unit)
 //            else Result.failure(Exception(response.message ?: "Lỗi backend"))
 //        } catch (e: Exception) {
@@ -52,4 +60,28 @@
 //            Result.failure(e)
 //        }
 //    }
+//
+//    // Cập nhật thông tin user lên Firestore
+//    suspend fun updateProfile(user: com.example.finalexam.entity.User): Result<Unit> {
+//        return try {
+//            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+//            // Lưu user vào collection "users" với document id là userId
+//            db.collection("users").document(user.userId).set(user).await()
+//            Result.success(Unit)
+//        } catch (e: Exception) {
+//            Result.failure(e)
+//        }
+//    }
+//
+//    // Lấy thông tin user từ Firestore
+//    suspend fun getProfile(userId: String): Result<com.example.finalexam.entity.User> {
+//        return try {
+//            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+//            val snapshot = db.collection("users").document(userId).get().await()
+//            val user = snapshot.toObject(com.example.finalexam.entity.User::class.java)
+//                ?: return Result.failure(Exception("Không tìm thấy user"))
+//            Result.success(user)
+//        } catch (e: Exception) {
+//            Result.failure(e)
+//        }
 //}

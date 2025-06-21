@@ -1,9 +1,9 @@
 package com.example.finalexam.handler.document
 
 import com.example.finalexam.data.api.DocumentApi
-import com.example.finalexam.network.RetrofitClient
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.DocumentIntent
+import com.example.finalexam.network.RetrofitClient
 import com.example.finalexam.result.DocumentResult
 
 class LikeDocumentHandler : IntentHandler<DocumentIntent, DocumentResult> {

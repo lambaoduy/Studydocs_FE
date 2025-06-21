@@ -7,6 +7,7 @@ import com.example.finalexam.usecase.notification.NotificationMarkAsReadAllUseCa
 
 class NotificationMarkAsReadAllHandler : IntentHandler<NotificationIntent, NotificationResult> {
     private val notificationMarkAsReadAllUseCase = NotificationMarkAsReadAllUseCase()
+    
     override fun canHandle(intent: NotificationIntent): Boolean =
         intent is NotificationIntent.MarkAsReadAll
 
@@ -15,12 +16,16 @@ class NotificationMarkAsReadAllHandler : IntentHandler<NotificationIntent, Notif
         setResult: (NotificationResult) -> Unit
     ) {
         setResult(NotificationResult.Loading)
-        try {
-            val notificationMarkAsReadAllIntent = intent as NotificationIntent.MarkAsReadAll
-            notificationMarkAsReadAllUseCase.invoke(notificationMarkAsReadAllIntent.userId)
-            setResult(NotificationResult.MarkAsReadAll)
-        } catch (e: Exception) {
-            setResult(NotificationResult.Error(e.message ?: "Unknown error"))
-        }
+        notificationMarkAsReadAllUseCase.invoke()
+            .onSuccess { success ->
+                if (success) {
+                    setResult(NotificationResult.MarkAsReadAll)
+                } else {
+                    setResult(NotificationResult.Error("Failed to mark all notifications as read."))
+                }
+            }
+            .onFailure { error ->
+                setResult(NotificationResult.Error(error.message ?: "An unknown error occurred."))
+            }
     }
 }

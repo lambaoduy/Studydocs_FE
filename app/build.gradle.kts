@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     // Plugin hỗ trợ Jetpack Compose với Kotlin
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
 }
 
 android {

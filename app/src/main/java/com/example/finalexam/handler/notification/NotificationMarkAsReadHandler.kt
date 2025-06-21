@@ -15,12 +15,17 @@ class NotificationMarkAsReadHandler : IntentHandler<NotificationIntent, Notifica
         setResult: (NotificationResult) -> Unit
     ) {
         setResult(NotificationResult.Loading)
-        try {
-            val notificationMarkAsReadIntent = intent as NotificationIntent.MarkAsRead
-            notificationMarkAsReadUseCase.invoke(notificationMarkAsReadIntent.notificationId)
-            setResult(NotificationResult.MarkAsRead(notificationMarkAsReadIntent.notificationId))
-        } catch (e: Exception) {
-            setResult(NotificationResult.Error(e.message ?: "Unknown error"))
-        }
+        val markAsReadIntent = intent as NotificationIntent.MarkAsRead
+        notificationMarkAsReadUseCase.invoke(markAsReadIntent.notificationId)
+            .onSuccess { success ->
+                if (success) {
+                    setResult(NotificationResult.MarkAsRead(markAsReadIntent.notificationId))
+                } else {
+                    setResult(NotificationResult.Error("Failed to mark notification as read."))
+                }
+            }
+            .onFailure { error ->
+                setResult(NotificationResult.Error(error.message ?: "An unknown error occurred."))
+            }
     }
 }

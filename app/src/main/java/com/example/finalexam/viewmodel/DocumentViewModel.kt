@@ -3,7 +3,10 @@ package com.example.finalexam.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.finalexam.handler.IntentHandler
-import com.example.finalexam.handler.document.*
+import com.example.finalexam.handler.document.DownloadDocumentHandler
+import com.example.finalexam.handler.document.LikeDocumentHandler
+import com.example.finalexam.handler.document.LoadDocumentHandler
+import com.example.finalexam.handler.document.UnlikeDocumentHandler
 import com.example.finalexam.intent.DocumentIntent
 import com.example.finalexam.reduce.DocumentReducer
 import com.example.finalexam.result.DocumentResult

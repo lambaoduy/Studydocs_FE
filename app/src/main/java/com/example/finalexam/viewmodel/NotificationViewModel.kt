@@ -14,7 +14,7 @@ import com.example.finalexam.state.NotificationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class NotificationViewModel : ViewModel() {
+class NotificationViewModel: ViewModel() {
     private val reducer = NotificationReducer()
     private val _state = MutableStateFlow(NotificationState())
     val state = _state.asStateFlow()
