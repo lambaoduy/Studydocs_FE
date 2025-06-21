@@ -11,7 +11,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 // ViewModel cho chức năng cập nhật profile
-class UpdateProfileViewModel(private val useCase: UpdateProfileUseCase) : ViewModel() {
+class UpdateProfileViewModel( ) : ViewModel() {
+    private val useCase= UpdateProfileUseCase()
     private val handler = UpdateProfileHandler(useCase)
     private val _state = MutableStateFlow(UpdateProfileState())
     val state: StateFlow<UpdateProfileState> = _state

@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 
 
 //file này duy viết
-class HomeViewModel(private val app: Application) : ViewModel() {
+class HomeViewModel() : ViewModel() {
 
 //     biến reducer để chuyển tất cả những gì mà usecase nhận được thành state
     private val reducer = HomeReducer()

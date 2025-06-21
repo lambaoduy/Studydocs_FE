@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.finalexam.data.datastore.UserProvider
 import com.example.finalexam.ui.document.DocumentDetailScreen
+import com.example.finalexam.ui.screens.EditProfileScreen
 import com.example.finalexam.ui.screens.ForgotPasswordScreen
 import com.example.finalexam.ui.screens.HomeScreen
 import com.example.finalexam.ui.screens.LoginScreen
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             FinalExamTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "home") {
+                NavHost(navController = navController, startDestination = "login") {
                     composable("login") {
                         LoginScreen(
                             onRegisterClick = { navController.navigate("register") },
@@ -70,6 +71,7 @@ class MainActivity : ComponentActivity() {
                             onBottomNavItemSelected = { route ->
                                 navController.navigate(route)
                             }
+
                         )
                     }
                     composable("profile") {
@@ -77,6 +79,14 @@ class MainActivity : ComponentActivity() {
                             userId = UserProvider.getUserId(),
                             onEditProfile = { navController.navigate("edit_profile") }
                         )
+                    }
+                    composable("edit_profile") {
+
+                            EditProfileScreen(
+                                userId = UserProvider.getUserId().toString(),
+                                onBack = { navController.popBackStack() }
+                            )
+
                     }
                     composable("notification") {
                         NotificationScreen(
