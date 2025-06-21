@@ -35,6 +35,30 @@
 //                ))
 //            }
 //            is AuthIntent.ClearError -> setResult(AuthResult.Error(Exception("")))
+//            is AuthIntent.UpdateProfile -> {
+//                setResult(AuthResult.Loading)
+//                // Cập nhật thông tin user lên Firebase
+//                val updateResult = useCase.updateProfile(intent.user)
+//                if (updateResult.isSuccess) {
+//                    // Sau khi update thành công, lấy lại thông tin user mới nhất từ Firebase
+//                    val profileResult = useCase.getProfile(intent.user.userId)
+//                    setResult(profileResult.fold(
+//                        onSuccess = { AuthResult.ProfileUpdated(it) },
+//                        onFailure = { AuthResult.Error(it) }
+//                    ))
+//                } else {
+//                    setResult(AuthResult.Error(updateResult.exceptionOrNull() ?: Exception("Lỗi cập nhật")))
+//                }
+//            }
+//            is AuthIntent.LoadProfile -> {
+//                setResult(AuthResult.Loading)
+//                // Lấy thông tin user từ Firebase
+//                val profileResult = useCase.getProfile(intent.userId)
+//                setResult(profileResult.fold(
+//                    onSuccess = { AuthResult.ProfileLoaded(it) },
+//                    onFailure = { AuthResult.Error(it) }
+//                ))
+//            }
 //        }
 //    }
 //}
