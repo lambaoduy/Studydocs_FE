@@ -19,34 +19,34 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-                HomeScreen()
-//            FinalExamTheme {
-//                val navController = rememberNavController()
-//                NavHost(navController = navController, startDestination = "login") {
-//                    composable("login") {
-//                        LoginScreen(
-//                            onRegisterClick = { navController.navigate("register") },
-//                            onForgotPasswordClick = { navController.navigate("forgot_password") },
-//                            onLoginSuccess = { navController.navigate("home") }
-//                        )
-//                    }
-//                    composable("register") {
-//                        RegisterScreen(
-//                            onLoginClick = { navController.popBackStack("login", inclusive = false) },
-//                            onRegisterSuccess = { navController.popBackStack("login", inclusive = false) }
-//                        )
-//                    }
-//                    composable("forgot_password") {
-//                        ForgotPasswordScreen(
-//                            onBackClick = { navController.popBackStack("login", inclusive = false) },
-//                            onSuccess = { navController.popBackStack("login", inclusive = false) }
-//                        )
-//                    }
-//                    composable("home") {
-////                        HomeScreen()
-//                    }
-//                }
-//            }
+//                HomeScreen()
+            FinalExamTheme {
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(
+                            onRegisterClick = { navController.navigate("register") },
+                            onForgotPasswordClick = { navController.navigate("forgot_password") },
+                            onLoginSuccess = { navController.navigate("home") }
+                        )
+                    }
+                    composable("register") {
+                        RegisterScreen(
+                            onLoginClick = { navController.popBackStack("login", inclusive = false) },
+                            onRegisterSuccess = { navController.popBackStack("login", inclusive = false) }
+                        )
+                    }
+                    composable("forgot_password") {
+                        ForgotPasswordScreen(
+                            onBackClick = { navController.popBackStack("login", inclusive = false) },
+                            onSuccess = { navController.popBackStack("login", inclusive = false) }
+                        )
+                    }
+                    composable("home") {
+                        HomeScreen()
+                    }
+                }
+            }
         }
 
     }
