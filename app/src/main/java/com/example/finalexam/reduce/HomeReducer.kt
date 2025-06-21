@@ -26,27 +26,7 @@ class HomeReducer {
             )
         }
 
-        is HomeResult.FindBySubject -> {
-            state.copy(
-                listDocument = result.data,
-                isLoading = false,
-                error = null,
-                subject = result.data.firstOrNull()?.subject ?: state.subject,
-                keyword = null,
-                school = null
-            )
-        }
 
-        is HomeResult.FindByUniversity -> {
-            state.copy(
-                listDocument = result.data,
-                isLoading = false,
-                error = null,
-                school = result.data.firstOrNull()?.university ?: state.school,
-                keyword = null,
-                subject = null
-            )
-        }
 
         is HomeResult.LoadByUserID -> {
             state.copy(
