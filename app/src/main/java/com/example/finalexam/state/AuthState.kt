@@ -1,8 +1,9 @@
 package com.example.finalexam.state
 
-// thiện làm: State cho Auth (Login/Register)
+// State cho Auth (Login/Register)
 data class AuthState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val user: com.example.finalexam.entity.User? = null
 ) 
