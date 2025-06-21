@@ -18,6 +18,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import android.app.Application
+import com.example.finalexam.handler.HomeScreen.HomeFindWithFiltersHandler
+import com.example.finalexam.handler.HomeScreen.NavigateToDocumentDetailHandler
 
 
 //file này duy viết
@@ -37,11 +40,10 @@ class HomeViewModel : ViewModel() {
 //
 
     private val handlers: List<IntentHandler<HomeIntent,HomeResult>> = listOf(
-       HomeFindHandler(documentDao),//tìm kiếm
         HomeLoadByUerIDHandler(documentDao),//lấy dữ liệu theo id user
-        HomeFindBySchool(documentDao,_state.value.listDocument),//lấy dữ liệu theo school
-        HomFindBySubject(documentDao,_state.value.listDocument),//lấy dữ liệu theo subject
-        HomeGetAllHandler(documentDao)// lấy tất cả dữ liệu
+        HomeGetAllHandler(documentDao),// lấy tất cả dữ liệu
+        NavigateToDocumentDetailHandler(),
+        HomeFindWithFiltersHandler(documentDao,state.value.listDocument)
     )
     // xử lý intent truyền vào từ trang home ở đây
     fun processIntent(intent: HomeIntent) {

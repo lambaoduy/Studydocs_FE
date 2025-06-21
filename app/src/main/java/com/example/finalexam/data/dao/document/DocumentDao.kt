@@ -10,7 +10,6 @@ import retrofit2.Response
 class DocumentDao(private val api: DocumentApi) {
 
     suspend fun getAll(): List<Document> = withContext(Dispatchers.IO) {
-
         safeApiCall { api.getAllDocuments() }
     }
 
@@ -21,23 +20,27 @@ class DocumentDao(private val api: DocumentApi) {
     suspend fun getDocumentbyUserID(userId: String): List<Document> = withContext(Dispatchers.IO) {
         safeApiCall { api.getDocumentsByUserID(userId) }
     }
-    suspend fun getDocumentsBySubject(keyword: String): List<Document> = withContext(Dispatchers.IO){
+
+    suspend fun getDocumentsBySubject(keyword: String): List<Document> = withContext(Dispatchers.IO) {
         safeApiCall { api.searchDocumentBySubject(keyword) }
     }
 
-    suspend fun getDocumentsByUniversity(keyword: String): List<Document> = withContext(Dispatchers.IO ){
+    suspend fun getDocumentsByUniversity(keyword: String): List<Document> = withContext(Dispatchers.IO) {
         safeApiCall { api.searchDocumentByUniversity(keyword) }
     }
+
     // --- Helper function chung ---
 
-    private suspend fun <T> safeApiCall(apiCall: suspend () -> Response<BaseResponse<List<T>>>): List<T> {
+    private suspend fun safeApiCall(
+        apiCall: suspend () -> Response<BaseResponse<DocumentListWrapper>>
+    ): List<Document> {
         return try {
             val response = apiCall()
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body?.status == 200) {
-                    println("✅ [safeApiCall] Success - dữ liệu: ${body.data?.size} item")
-                    body.data ?: emptyList()
+                    println("✅ [safeApiCall] Success - dữ liệu: ${body.data?.documents?.size} item")
+                    body.data?.documents ?: emptyList()
                 } else {
                     println("⚠️ [safeApiCall] API trả về status != 200: ${body?.status}")
                     emptyList()

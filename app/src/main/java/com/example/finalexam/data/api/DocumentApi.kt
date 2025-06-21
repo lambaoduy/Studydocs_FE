@@ -1,5 +1,6 @@
 package com.example.finalexam.data.api
 
+import com.example.finalexam.data.dao.document.DocumentListWrapper
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.entity.Document
 import retrofit2.Response
@@ -23,18 +24,26 @@ interface DocumentApi {
     suspend fun unlikeDocument(@Path("documentId") documentId: String, @Query("userId") userId: String): Response<BaseResponse<Void>>
 
     @GET("/controller/getAllDocument")
-    suspend fun getAllDocuments(): Response<BaseResponse<List<Document>>>
+    suspend fun getAllDocuments(): Response<BaseResponse<DocumentListWrapper>>
 
     @GET("/controller/searchByTitle")
-    suspend fun searchDocumentByTitle(@Query("keyword") keyword: String): Response<BaseResponse<List<Document>>>
+    suspend fun searchDocumentByTitle(
+        @Query("keyword") keyword: String
+    ): Response<BaseResponse<DocumentListWrapper>>
 
     @GET("/controller/searchBySubject")
-    suspend fun searchDocumentBySubject(@Query("keyword") keyword: String): Response<BaseResponse<List<Document>>>
+    suspend fun searchDocumentBySubject(
+        @Query("keyword") keyword: String
+    ): Response<BaseResponse<DocumentListWrapper>>
 
     @GET("/controller/searchByUniversity")
-    suspend fun searchDocumentByUniversity(@Query("keyword") keyword: String): Response<BaseResponse<List<Document>>>
+    suspend fun searchDocumentByUniversity(
+        @Query("keyword") keyword: String
+    ): Response<BaseResponse<DocumentListWrapper>>
 
     @GET("/documents/user")
-    suspend fun getDocumentsByUserID(@Query("userId") userId: String): Response<BaseResponse<List<Document>>>
+    suspend fun getDocumentsByUserID(
+        @Query("userId") userId: String
+    ): Response<BaseResponse<DocumentListWrapper>>
 
 }

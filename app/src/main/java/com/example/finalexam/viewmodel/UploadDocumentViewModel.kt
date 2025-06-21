@@ -1,82 +1,97 @@
+package com.example.finalexam.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.finalexam.entity.University
-import com.example.finalexam.entity.UploadDocument
 import com.example.finalexam.intent.UploadDocumentIntent
 import com.example.finalexam.state.UploadDocumentState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-// ViewModel cho màn hình UploadDocument
-// Nhận Intent từ UI, xử lý logic và cập nhật State
-class UploadDocumentViewModel : ViewModel() {
-    // StateFlow để quản lý trạng thái UI
+// ===== Hảo làm phần này (Đồng bộ dữ liệu trường và môn học từ UniversityViewModel) =====
+class UploadDocumentViewModel(
+    private val universityViewModel: UniversityViewModel // Inject hoặc truyền vào từ Activity/Fragment
+) : ViewModel() {
+
     private val _state = MutableStateFlow(UploadDocumentState())
     val state: StateFlow<UploadDocumentState> = _state
 
-    // Hàm nhận Intent từ UI
+    init {
+        // Lắng nghe state của UniversityViewModel để đồng bộ danh sách trường
+        viewModelScope.launch {
+            universityViewModel.state.collect { uniState ->
+                _state.update { it.copy(universityList = uniState.universityList) }
+            }
+        }
+    }
+
     fun processIntent(intent: UploadDocumentIntent) {
         when (intent) {
-            is UploadDocumentIntent.SelectDocument -> {
-                // Đánh dấu tài liệu được chọn hoặc bỏ chọn
-                val updatedDocs = _state.value.documents.map {
-                    if (it.id == intent.documentId) it.copy(isSelected = !it.isSelected) else it
-                }
-                _state.value = _state.value.copy(documents = updatedDocs)
+            is UploadDocumentIntent.PickDocument -> {
+                // UI sẽ handle mở file picker
             }
+
+            is UploadDocumentIntent.SetSelectedDocument -> {
+                _state.value = _state.value.copy(selectedDocument = intent.document)
+            }
+
+            is UploadDocumentIntent.RemoveSelectedDocument -> {
+                _state.value = _state.value.copy(selectedDocument = null)
+            }
+
             is UploadDocumentIntent.SelectUniversity -> {
-                // Chọn trường đại học (giả lập)
-                // TODO: Lấy thông tin trường từ backend nếu cần
-                val university = University(
-                    id = intent.universityId,
-                    name = "Đại học Nông Lâm TP.HCM",
-                    courses = listOf("Công nghệ thông tin", "Khoa học dữ liệu", "Kỹ thuật phần mềm"),
-                    selectedCourseIndex = 0
-                )
-                _state.value = _state.value.copy(university = university)
+                // Lấy trường từ danh sách đã đồng bộ từ UniversityViewModel
+                val university = _state.value.universityList.find { it.id == intent.universityId }
+                if (university != null) {
+                    _state.value = _state.value.copy(university = university)
+                }
             }
-            is UploadDocumentIntent.SelectCourse -> {
-                // Chọn khóa học trong trường
-                val updatedUni = _state.value.university?.copy(selectedCourseIndex = intent.courseIndex)
-                _state.value = _state.value.copy(university = updatedUni)
+
+            is UploadDocumentIntent.SelectSubjectIndex -> {
+                _state.value.university?.let { uni ->
+                    val updatedUni = uni.copy(selectedSubjectIndex = intent.index)
+                    _state.value = _state.value.copy(university = updatedUni)
+                }
             }
+
+            is UploadDocumentIntent.AddSubject -> {
+                // Gọi UniversityViewModel để thêm môn học qua API
+                _state.value.university?.let { uni ->
+                    universityViewModel.addSubject(uni.id, intent.subjectName)
+                    // Khi UniversityViewModel cập nhật xong, danh sách trường sẽ tự đồng bộ lại qua collect ở trên
+                }
+            }
+
+            is UploadDocumentIntent.SetTitle -> {
+                _state.value = _state.value.copy(title = intent.title)
+            }
+
+            is UploadDocumentIntent.SetDescription -> {
+                _state.value = _state.value.copy(description = intent.description)
+            }
+
+            is UploadDocumentIntent.SelectSubjectByName -> {
+                _state.value = _state.value.copy(subject = intent.subject)
+            }
+
             is UploadDocumentIntent.Upload -> {
-                // Xử lý upload tài liệu (giả lập)
-                uploadDocuments()
+                if (_state.value.selectedDocument != null) {
+                    _state.value = _state.value.copy(isUploading = true)
+                    viewModelScope.launch {
+                        kotlinx.coroutines.delay(1000)
+                        _state.value = _state.value.copy(
+                            isUploading = false,
+                            uploadSuccess = true
+                        )
+                    }
+                }
             }
+
             is UploadDocumentIntent.Back -> {
-                // Xử lý quay lại (có thể điều hướng về màn trước)
-                // TODO: Thực hiện logic quay lại
+                // Nếu cần xử lý riêng khi back
             }
         }
-    }
-
-    // Hàm upload tài liệu (giả lập, có thể thay bằng gọi backend)
-    private fun uploadDocuments() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(isUploading = true)
-            // TODO: Gọi backend hoặc repository để upload thật
-            // Giả lập upload thành công
-            kotlinx.coroutines.delay(1000)
-            _state.value = _state.value.copy(isUploading = false, uploadSuccess = true)
-        }
-    }
-
-    // Hàm khởi tạo dữ liệu mẫu (có thể gọi khi vào màn hình)
-    fun loadMockData() {
-        val mockDocuments = listOf(
-            UploadDocument("1", "Chao_cau.docx", true),
-            UploadDocument("2", "Bai_tap.pdf"),
-            UploadDocument("3", "Assignment.docx")
-        )
-        val mockUniversity = University(
-            id = "uni1",
-            name = "Đại học Nông Lâm TP.HCM",
-            courses = listOf("Công nghệ thông tin", "Khoa học dữ liệu", "Kỹ thuật phần mềm"),
-            selectedCourseIndex = 0
-        )
-        _state.value = _state.value.copy(documents = mockDocuments, university = mockUniversity)
     }
 }
+// ===== end Hảo làm phần này =====

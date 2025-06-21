@@ -1,5 +1,6 @@
 package com.example.finalexam.ui.components.HomeScreen
 
+import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -40,10 +42,14 @@ import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.HomeIntent
 import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.HomeViewModel
+import com.example.finalexam.viewmodel.HomeViewModelFactory
 
 @Composable
 fun Content(modifier: Modifier = Modifier) {
-    val homeViewModel: HomeViewModel = viewModel()
+    val app = LocalContext.current.applicationContext as Application
+    val homeViewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(app)
+    )
     var searchQuery by remember { mutableStateOf("") }
     var isDrawerOpen by remember { mutableStateOf(false) }
     val id = ""
@@ -75,21 +81,16 @@ fun Content(modifier: Modifier = Modifier) {
                 },
                 label = { Text("Tìm kiếm") },
                 leadingIcon = {
-                    IconButton(onClick =
-//                    {}
-                    {// nếu search query thay đổi thì gọi db để tìm kiếm
-                        if (searchQuery.isNotBlank()&&!uiState.keyword.equals(searchQuery)) {
-                            homeViewModel.processIntent(HomeIntent.FindTodo(searchQuery))
-                        }
-
-                        if(school.isNotBlank()){
-                            homeViewModel.processIntent(HomeIntent.FindTodoBySchool(school))
-                        }
-                        if(subject.isNotBlank()){
-                            homeViewModel.processIntent(HomeIntent.FindTodoBySubject(subject))
-                        }
-                    }
-                    ) {
+                    IconButton(onClick = {
+                        homeViewModel.processIntent(
+                            HomeIntent.FindWithFilters(
+                                keyword = searchQuery.takeIf { it.isNotBlank() },
+                                school = school.takeIf { it.isNotBlank() },
+                                subject = subject.takeIf { it.isNotBlank() }
+                            )
+                        )
+                    })
+                    {
                         Icon(Icons.Default.Search, contentDescription = "Search")
                     }
                 },
@@ -138,7 +139,7 @@ fun Content(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            ListDocumentView(documents)
+            ListDocumentView(documents, onNavigateToDetail = {})
         }
 
         // 👇 Hiển thị drawer filter bên phải
@@ -155,22 +156,17 @@ fun Content(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun ListDocumentView(documents: List<Document>) {
+fun ListDocumentView(documents: List<Document>,
+                     onNavigateToDetail: (String) -> Unit) {
     LazyColumn {
         items(documents) { doc ->
-            DocumentItemView(doc, onClick ={})
+            DocumentItemView(doc, onClick = { onNavigateToDetail(doc.id) })
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
-//@Composable
-//fun DocumentItemView(doc: Document) {
-//    Column {
-//        Text(text = "Title: ${doc.title}")
-//        Text(text = "Subject: ${doc.subject}")
-//        Text(text = "University: ${doc.university}")
-//    }
-//}
+
+
 
 @Composable
 fun DocumentItemView(
