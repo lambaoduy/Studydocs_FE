@@ -2,6 +2,9 @@ package com.example.finalexam.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.finalexam.usecase.upload.UploadDocumentsUseCase
+import com.example.finalexam.viewmodel.UniversityViewModel
+import com.example.finalexam.viewmodel.UploadDocumentViewModel
 
 /**
  * Factory class để tạo UploadDocumentViewModel với dependency injection
@@ -13,16 +16,14 @@ import androidx.lifecycle.ViewModelProvider
  * 4. UploadDocumentViewModel có thể truy cập university data để upload
  */
 class UploadDocumentViewModelFactory(
-    private val universityViewModel: UniversityViewModel
+    private val universityViewModel: UniversityViewModel,
+    private val uploadDocumentsUseCase: UploadDocumentsUseCase
 ) : ViewModelProvider.Factory {
-    
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        // Kiểm tra xem class có phải là UploadDocumentViewModel không
         if (modelClass.isAssignableFrom(UploadDocumentViewModel::class.java)) {
-            // Tạo UploadDocumentViewModel với universityViewModel dependency
-            // TODO: Cần cập nhật UploadDocumentViewModel constructor để nhận universityViewModel
-            return UploadDocumentViewModel(universityViewModel) as T
+            return UploadDocumentViewModel(universityViewModel, uploadDocumentsUseCase) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
