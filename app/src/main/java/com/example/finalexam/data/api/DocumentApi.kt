@@ -23,20 +23,20 @@ interface DocumentApi {
     @DELETE("/{documentId}/like")
     suspend fun unlikeDocument(@Path("documentId") documentId: String, @Query("userId") userId: String): Response<BaseResponse<Void>>
 
-    @GET("/controller/getAllDocument")
+    @GET("/document/getAllDocument")
     suspend fun getAllDocuments(): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/controller/searchByTitle")
+    @GET("/document/searchByTitle")
     suspend fun searchDocumentByTitle(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/controller/searchBySubject")
+    @GET("/document/searchBySubject")
     suspend fun searchDocumentBySubject(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/controller/searchByUniversity")
+    @GET("/document/searchByUniversity")
     suspend fun searchDocumentByUniversity(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
