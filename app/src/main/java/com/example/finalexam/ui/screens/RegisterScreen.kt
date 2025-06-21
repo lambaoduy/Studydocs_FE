@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,24 +42,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.finalexam.intent.AuthIntent
+import com.example.finalexam.intent.RegisterIntent
 import com.example.finalexam.ui.theme.FinalExamTheme
 import com.example.finalexam.ui.theme.Purple40
 import com.example.finalexam.ui.theme.PurpleGrey40
 import com.example.finalexam.ui.theme.creamy
-import com.example.finalexam.viewmodel.AuthViewModel
+import com.example.finalexam.viewmodel.RegisterViewModel
+import com.example.finalexam.state.RegisterState
+import androidx.compose.ui.draw.clip
 
 // thiện làm: RegisterScreen theo MVI
 @Composable
 fun RegisterScreen(
-    authViewModel: AuthViewModel = viewModel(),
+    registerViewModel: RegisterViewModel = viewModel(),
     onLoginClick: () -> Unit = {},
     onRegisterSuccess: () -> Unit = {}
 ) {
-    val state by authViewModel.state.collectAsState()
+    val state by registerViewModel.state.collectAsState()
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    // Khi đăng ký thành công thì gọi callback
+    LaunchedEffect(state.user) {
+        if (state.user != null) onRegisterSuccess()
+    }
 
     Box(
         modifier = Modifier
@@ -81,7 +89,6 @@ fun RegisterScreen(
                 imageVector = Icons.Default.Person,
                 contentDescription = "Register Icon",
                 tint = Purple40,
-                modifier = Modifier.size(64.dp)
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
@@ -115,10 +122,9 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = {
-                    authViewModel.processIntent(
-                        AuthIntent.Register(username, email, password)
+                    registerViewModel.processIntent(
+                        RegisterIntent.Register(username, email, password)
                     )
-                    if (state.isSuccess) onRegisterSuccess()
                 },
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(containerColor = Purple40),
@@ -128,8 +134,8 @@ fun RegisterScreen(
             ) {
                 Text("SIGN UP", color = Color.White, fontWeight = FontWeight.Bold)
             }
-            if (state.error?.isNotBlank() == true) {
-                Text(state.error ?: "", color = Color.Red)
+            if (state.error != null) {
+                Text(state.error?.localizedMessage ?: "", color = Color.Red)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(
