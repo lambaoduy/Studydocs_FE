@@ -50,43 +50,43 @@ fun HomeScreen() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 400, heightDp = 700)
-@Composable
-fun HomeScreenPreview() {
-    FinalExamTheme {
-        Scaffold(
-            topBar = { TopBar() },
-            bottomBar = { BottomBar() },
-            content = { padding ->
-                ContentPreview(modifier = Modifier.padding(padding))
-            }
-        )
-    }
-}
-@Composable
-fun ContentPreview(modifier: Modifier = Modifier) {
-    val sampleDocs = listOf(
-        Document("1", "Lập trình Android", "CNTT", "UIT"),
-        Document("2", "Trí tuệ nhân tạo", "Khoa học máy tính", "BK"),
-        Document("3", "Cơ sở dữ liệu", "Hệ thống thông tin", "HCMUS")
-    )
-
-    Column(modifier = modifier.padding(16.dp)) {
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            label = { Text("Tìm kiếm") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-            trailingIcon = { Icon(Icons.Default.FilterList, contentDescription = "Filter") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ListDocumentView(sampleDocs)
-    }
-}
+//@Preview(showBackground = true, widthDp = 400, heightDp = 700)
+//@Composable
+//fun HomeScreenPreview() {
+//    FinalExamTheme {
+//        Scaffold(
+//            topBar = { TopBar() },
+//            bottomBar = { BottomBar() },
+//            content = { padding ->
+//                ContentPreview(modifier = Modifier.padding(padding))
+//            }
+//        )
+//    }
+//}
+//@Composable
+//fun ContentPreview(modifier: Modifier = Modifier) {
+//    val sampleDocs = listOf(
+//        Document("1", "Lập trình Android", "CNTT", "UIT"),
+//        Document("2", "Trí tuệ nhân tạo", "Khoa học máy tính", "BK"),
+//        Document("3", "Cơ sở dữ liệu", "Hệ thống thông tin", "HCMUS")
+//    )
+//
+//    Column(modifier = modifier.padding(16.dp)) {
+//        OutlinedTextField(
+//            value = "",
+//            onValueChange = {},
+//            label = { Text("Tìm kiếm") },
+//            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+//            trailingIcon = { Icon(Icons.Default.FilterList, contentDescription = "Filter") },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(56.dp),
+//            shape = RoundedCornerShape(12.dp)
+//        )
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        ListDocumentView(sampleDocs)
+//    }
+//}
 

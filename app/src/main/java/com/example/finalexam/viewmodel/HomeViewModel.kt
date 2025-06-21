@@ -11,7 +11,7 @@ import com.example.finalexam.handler.HomeScreen.HomeLoadByUerIDHandler
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.HomeIntent
 import com.example.finalexam.network.RetrofitClient
-import com.example.finalexam.network.AuthFilter
+//import com.example.finalexam.network.AuthFilter
 import com.example.finalexam.reduce.HomeReducer
 import com.example.finalexam.result.HomeResult
 import com.example.finalexam.state.HomeState
@@ -51,7 +51,7 @@ class HomeViewModel(private val app: Application) : ViewModel() {
     // xử lý intent truyền vào từ trang home ở đây
     fun processIntent(intent: HomeIntent) {
         // Kiểm tra đăng nhập trước khi xử lý intent
-        AuthFilter.requireLogin(app)
+//        AuthFilter.requireLogin(app)
         viewModelScope.launch {
             val handler = handlers.find { it.canHandle(intent) }//tạo handler để xử lý
             handler?.handle(intent) {//kiểm tra intent có trong các intent xử lý được không
