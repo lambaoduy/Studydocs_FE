@@ -21,6 +21,11 @@ class DocumentDao(private val api: DocumentApi) {
         safeApiCall { api.getDocumentsByUserID(userId) }
     }
 
+    // Thêm method lấy tài liệu của tôi
+    suspend fun getMyDocuments(): List<Document> = withContext(Dispatchers.IO) {
+        safeApiCall { api.getMyDocuments() }
+    }
+
     // --- Helper function chung ---
 
     private suspend fun <T> safeApiCall(apiCall: suspend () -> Response<BaseResponse<List<T>>>): List<T> {

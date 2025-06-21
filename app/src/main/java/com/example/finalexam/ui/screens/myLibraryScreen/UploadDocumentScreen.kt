@@ -77,38 +77,6 @@ fun UploadDocumentScreen(
 ) {
     val context = LocalContext.current
 
-    // === API & Repository ===
-//    val universityApi = remember { RetrofitClient.createApi(UniversityApi::class.java) }
-//    val universityRepository = remember(universityApi) {
-//        UniversityRepository(universityApi)
-//    }
-//
-//    // === UseCase ===
-//    val getAllUniversitiesUseCase = remember(universityRepository) {
-//        GetAllUniversitiesUseCase(universityRepository)
-//    }
-//    val addSubjectUseCase = remember(universityRepository) {
-//        AddSubjectUseCase(universityRepository)
-//    }
-//    val uploadDocumentsUseCase = remember {
-//        UploadDocumentsUseCase()
-//    }
-//
-//    // === ViewModel Factory & ViewModels ===
-//    val universityViewModelFactory = remember {
-//        UniversityViewModelFactory(
-//            getAllUniversitiesUseCase = getAllUniversitiesUseCase,
-//            addSubjectUseCase = addSubjectUseCase
-//        )
-//    }
-//
-//    val uploadDocumentViewModelFactory = remember {
-//        UploadDocumentViewModelFactory(uploadDocumentsUseCase)
-//    }
-
-//    val universityViewModel: UniversityViewModel = viewModel(factory = universityViewModelFactory)
-//    val uploadDocumentViewModel: UploadDocumentViewModel = viewModel(factory = uploadDocumentViewModelFactory)
-
     val universityViewModel: UniversityViewModel = viewModel(
         factory = remember {
             UniversityViewModelFactory(

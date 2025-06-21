@@ -26,4 +26,13 @@ interface DocumentApi {
     @GET("/documents/user")
     suspend fun getDocumentsByUserID(@Query("userId") userId: String): Response<BaseResponse<List<Document>>>
 
+    //===Phần này của Hảo===
+    @POST("contronller/upload")
+    suspend fun uploadDocument(@Body document: Document, @Part file: MultipartBody.Part): Response<BaseResponse<Document>>
+    //===Phần này của Hảo end===
+
+    //===Phần này của Hảo end===
+    @GET("controller/my-documents")
+    suspend fun getMyDocuments(): Response<BaseResponse<List<Document>>>
+    //===Phần này của Hảo end===
 }
