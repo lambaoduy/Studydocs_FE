@@ -8,4 +8,4 @@ sealed class MyLibraryResult {
     data class SearchSuccess(val documents: List<Document>) : MyLibraryResult()
     data class SelectDocumentSuccess(val document: Document) : MyLibraryResult()
     data class Error(val message: String) : MyLibraryResult()
-} 
+}

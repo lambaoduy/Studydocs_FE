@@ -106,7 +106,8 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
     /* Push notification */
     implementation("com.google.firebase:firebase-messaging")
-
+    // Jetpack DataStore Preferences
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     // ========== NETWORKING ========== //
     /* HTTP client */
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

@@ -10,24 +10,9 @@ class UploadDocumentReducer {
             is UploadDocumentResult.Loading ->
                 state.copy(isUploading = true, error = null)
 
-            is UploadDocumentResult.SetSelectedDocument ->
+            is UploadDocumentResult.DocumentSelected ->
                 state.copy(
-                    isUploading = false,
                     selectedDocument = result.document,
-                    error = null
-                )
-
-            is UploadDocumentResult.SelectUniversitySuccess ->
-                state.copy(
-                    isUploading = false,
-                    university = result.university,
-                    error = null
-                )
-
-            is UploadDocumentResult.SelectCourseSuccess ->
-                state.copy(
-                    isUploading = false,
-                    university = state.university?.copy(selectedSubjectIndex = result.courseIndex),
                     error = null
                 )
 
@@ -45,19 +30,10 @@ class UploadDocumentReducer {
                     error = result.message
                 )
 
-            is UploadDocumentResult.SetTitleSuccess ->
+            is UploadDocumentResult.SetTitle ->
                 state.copy(title = result.title)
 
-            is UploadDocumentResult.SetDescriptionSuccess ->
+            is UploadDocumentResult.SetDescription ->
                 state.copy(description = result.description)
-
-            is UploadDocumentResult.SubjectListLoaded ->
-                state.copy(subjectList = result.subjects)
-
-            is UploadDocumentResult.SubjectCreated ->
-                state.copy(
-                    subject = result.subject,
-                    isCreatingSubject = false
-                )
         }
 }

@@ -32,6 +32,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -43,6 +45,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,17 +54,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.finalexam.data.api.UniversityApi
+import com.example.finalexam.data.repository.UniversityRepository
 import com.example.finalexam.entity.University
 import com.example.finalexam.entity.UploadDocument
+import com.example.finalexam.intent.UniversityIntent
 import com.example.finalexam.intent.UploadDocumentIntent
+import com.example.finalexam.network.RetrofitClient
 import com.example.finalexam.ui.theme.AppColors
-import com.example.finalexam.viewmodel.UploadDocumentViewModel
+import com.example.finalexam.usecase.university.AddSubjectUseCase
+import com.example.finalexam.usecase.university.GetAllUniversitiesUseCase
+import com.example.finalexam.usecase.upload.UploadDocumentsUseCase
 import com.example.finalexam.viewmodel.UniversityViewModel
+import com.example.finalexam.viewmodel.UniversityViewModelFactory
+import com.example.finalexam.viewmodel.UploadDocumentViewModel
 import com.example.finalexam.viewmodel.UploadDocumentViewModelFactory
 import kotlinx.coroutines.launch
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.rememberCoroutineScope
 import java.io.File
 import java.util.UUID
 
@@ -69,14 +77,46 @@ import java.util.UUID
 @Composable
 fun UploadDocumentScreen(
     modifier: Modifier = Modifier,
-    universityViewModel: UniversityViewModel = viewModel(),
-    viewModel: UploadDocumentViewModel = viewModel(
-        factory = UploadDocumentViewModelFactory(universityViewModel)
-    ),
     onBackClick: () -> Unit = {},
-    onUploadClick: (UploadDocument?) -> Unit = {},
+    onUploadClick: (UploadDocument?) -> Unit = {}
 ) {
     val context = LocalContext.current
+
+    // === API & Repository ===
+    val universityApi = remember { RetrofitClient.createApi(UniversityApi::class.java) }
+    val universityRepository = remember(universityApi) {
+        UniversityRepository(universityApi)
+    }
+
+    // === UseCase ===
+    val getAllUniversitiesUseCase = remember(universityRepository) {
+        GetAllUniversitiesUseCase(universityRepository)
+    }
+    val addSubjectUseCase = remember(universityRepository) {
+        AddSubjectUseCase(universityRepository)
+    }
+    val uploadDocumentsUseCase = remember {
+        UploadDocumentsUseCase()
+    }
+
+    // === ViewModel Factory & ViewModels ===
+    val universityViewModelFactory = remember {
+        UniversityViewModelFactory(
+            getAllUniversitiesUseCase = getAllUniversitiesUseCase,
+            addSubjectUseCase = addSubjectUseCase
+        )
+    }
+
+    val uploadDocumentViewModelFactory = remember {
+        UploadDocumentViewModelFactory(uploadDocumentsUseCase)
+    }
+
+    val universityViewModel: UniversityViewModel = viewModel(factory = universityViewModelFactory)
+    val uploadDocumentViewModel: UploadDocumentViewModel = viewModel(factory = uploadDocumentViewModelFactory)
+
+    val uploadState by uploadDocumentViewModel.state.collectAsState()
+    val universityState by universityViewModel.state.collectAsState()
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -86,17 +126,15 @@ fun UploadDocumentScreen(
                 name = getFileName(context, uri),
                 fileUrl = uri.toString()
             )
-            viewModel.processIntent(UploadDocumentIntent.SetSelectedDocument(document))
+            uploadDocumentViewModel.processIntent(UploadDocumentIntent.SetSelectedDocument(document))
         }
     }
 
-    val state by viewModel.state.collectAsState()
-    val universityState by universityViewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        universityViewModel.loadUniversities()
+        universityViewModel.processIntent(UniversityIntent.LoadUniversities)
     }
 
     LaunchedEffect(universityState.error) {
@@ -119,7 +157,7 @@ fun UploadDocumentScreen(
             title = { Text("Studocu") },
             navigationIcon = {
                 IconButton(onClick = {
-                    viewModel.processIntent(UploadDocumentIntent.Back)
+                    uploadDocumentViewModel.processIntent(UploadDocumentIntent.Back)
                     onBackClick()
                 }) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -135,8 +173,10 @@ fun UploadDocumentScreen(
         ) {
             // ===== Nhập tiêu đề =====
             OutlinedTextField(
-                value = state.title,
-                onValueChange = { viewModel.processIntent(UploadDocumentIntent.SetTitle(it)) },
+                value = uploadState.title,
+                onValueChange = {
+                    uploadDocumentViewModel.processIntent(UploadDocumentIntent.SetTitle(it))
+                },
                 label = { Text("Tiêu đề") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -145,8 +185,10 @@ fun UploadDocumentScreen(
 
             // ===== Nhập mô tả =====
             OutlinedTextField(
-                value = state.description,
-                onValueChange = { viewModel.processIntent(UploadDocumentIntent.SetDescription(it)) },
+                value = uploadState.description,
+                onValueChange = {
+                    uploadDocumentViewModel.processIntent(UploadDocumentIntent.SetDescription(it))
+                },
                 label = { Text("Mô tả") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
@@ -159,13 +201,13 @@ fun UploadDocumentScreen(
                 onClick = { launcher.launch("*/*") },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (state.selectedDocument == null) "Chọn tài liệu từ máy" else "Chọn tài liệu khác")
+                Text(if (uploadState.selectedDocument == null) "Chọn tài liệu từ máy" else "Chọn tài liệu khác")
             }
 
             Spacer(Modifier.height(16.dp))
 
             // ===== Hiển thị file đã chọn =====
-            state.selectedDocument?.let { doc ->
+            uploadState.selectedDocument?.let { doc ->
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
@@ -179,7 +221,7 @@ fun UploadDocumentScreen(
                     ) {
                         Text(doc.name, modifier = Modifier.weight(1f))
                         IconButton(onClick = {
-                            viewModel.processIntent(UploadDocumentIntent.RemoveSelectedDocument)
+                            uploadDocumentViewModel.processIntent(UploadDocumentIntent.RemoveSelectedDocument)
                         }) {
                             Icon(Icons.Default.Close, contentDescription = "Bỏ tài liệu")
                         }
@@ -188,19 +230,29 @@ fun UploadDocumentScreen(
                 Spacer(Modifier.height(16.dp))
             }
 
-            // ===== Hảo làm phần này: Chọn trường và môn học =====
-            if (state.universityList.isNotEmpty()) {
+            // ===== Chọn trường và môn học =====
+            if (universityState.universityList.isNotEmpty()) {
                 UniversitySelectionSection(
-                    university = state.university ?: state.universityList.first(),
-                    universityList = state.universityList,
+                    university = universityState.selectedUniversity ?: universityState.universityList.first(),
+                    universityList = universityState.universityList,
                     onUniversitySelected = { id ->
-                        viewModel.processIntent(UploadDocumentIntent.SelectUniversity(id))
+                        val selectedUni = universityState.universityList.find { it.id == id }
+                        selectedUni?.let { uni ->
+                            // Cập nhật selectedUniversity trong state
+                            universityViewModel.processIntent(UniversityIntent.SelectUniversity(id))
+                        }
                     },
                     onSubjectSelected = { index ->
-                        viewModel.processIntent(UploadDocumentIntent.SelectSubjectIndex(index))
+                        universityState.selectedUniversity?.let { uni ->
+                            val updatedUni = uni.copy(selectedSubjectIndex = index)
+                            // Cập nhật selectedUniversity với subject mới
+                            universityViewModel.processIntent(UniversityIntent.SelectSubject(uni.id, index))
+                        }
                     },
                     onAddSubject = { name ->
-                        viewModel.processIntent(UploadDocumentIntent.AddSubject(name))
+                        universityState.selectedUniversity?.let { uni ->
+                            universityViewModel.processIntent(UniversityIntent.AddSubject(uni.id, name))
+                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -211,13 +263,13 @@ fun UploadDocumentScreen(
             // ===== Nút Upload =====
             Button(
                 onClick = {
-                    viewModel.processIntent(UploadDocumentIntent.Upload)
-                    onUploadClick(state.selectedDocument)
+                    uploadDocumentViewModel.processIntent(UploadDocumentIntent.Upload)
+                    onUploadClick(uploadState.selectedDocument)
                 },
-                enabled = state.selectedDocument != null
-                        && state.title.isNotBlank()
-                        && state.description.isNotBlank()
-                        && state.university?.selectedSubject?.isNotBlank() == true,
+                enabled = uploadState.selectedDocument != null
+                        && uploadState.title.isNotBlank()
+                        && uploadState.description.isNotBlank()
+                        && universityState.selectedUniversity?.selectedSubject?.isNotBlank() == true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -227,7 +279,7 @@ fun UploadDocumentScreen(
                     contentColor = Color.White
                 )
             ) {
-                if (state.isUploading) {
+                if (uploadState.isUploading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
                     Text("Upload Document")
@@ -238,6 +290,7 @@ fun UploadDocumentScreen(
         SnackbarHost(hostState = snackbarHostState)
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
