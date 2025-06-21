@@ -14,8 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.finalexam.ui.theme.FinalExamTheme
-import com.example.finalexam.view.myLibraryScreen.MyLibraryScreen
-import com.example.finalexam.view.myLibraryScreen.UploadDocumentScreen
+import com.example.finalexam.ui.screens.myLibraryScreen.MyLibraryScreen
+import com.example.finalexam.ui.screens.myLibraryScreen.UploadDocumentScreen
 
 
 class MainActivity : ComponentActivity() {

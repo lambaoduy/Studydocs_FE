@@ -1,4 +1,4 @@
-package com.example.finalexam.view.myLibraryScreen
+package com.example.finalexam.ui.screens.myLibraryScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

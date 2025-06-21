@@ -1,4 +1,4 @@
-package com.example.finalexam.view.myLibraryScreen
+package com.example.finalexam.ui.screens.myLibraryScreen
 
 import android.content.Context
 import android.net.Uri
