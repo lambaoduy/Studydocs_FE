@@ -1,5 +1,6 @@
 package com.example.finalexam.ui.screens.HomeScreen
 
+import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,10 +45,14 @@ import com.example.finalexam.intent.HomeIntent
 import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.ui.theme.AppColors.Surface
 import com.example.finalexam.viewmodel.HomeViewModel
+import com.example.finalexam.viewmodel.HomeViewModelFactory
 
 @Composable
 fun Content(modifier: Modifier = Modifier) {
-    val homeViewModel: HomeViewModel = viewModel()
+    val app = LocalContext.current.applicationContext as Application
+    val homeViewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(app)
+    )
     var searchQuery by remember { mutableStateOf("") }
     var isDrawerOpen by remember { mutableStateOf(false) }
     val id = ""
@@ -78,21 +84,16 @@ fun Content(modifier: Modifier = Modifier) {
                 },
                 label = { Text("Tìm kiếm") },
                 leadingIcon = {
-                    IconButton(onClick =
-//                    {}
-                    {// nếu search query thay đổi thì gọi db để tìm kiếm
-                        if (searchQuery.isNotBlank()&&!uiState.keyword.equals(searchQuery)) {
-                            homeViewModel.processIntent(HomeIntent.FindTodo(searchQuery))
-                        }
-
-                        if(school.isNotBlank()){
-                            homeViewModel.processIntent(HomeIntent.FindTodoBySchool(school))
-                        }
-                        if(subject.isNotBlank()){
-                            homeViewModel.processIntent(HomeIntent.FindTodoBySubject(subject))
-                        }
-                    }
-                    ) {
+                    IconButton(onClick = {
+                        homeViewModel.processIntent(
+                            HomeIntent.FindWithFilters(
+                                keyword = searchQuery.takeIf { it.isNotBlank() },
+                                school = school.takeIf { it.isNotBlank() },
+                                subject = subject.takeIf { it.isNotBlank() }
+                            )
+                        )
+                    })
+                    {
                         Icon(Icons.Default.Search, contentDescription = "Search")
                     }
                 },

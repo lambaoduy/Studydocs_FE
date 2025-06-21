@@ -65,5 +65,6 @@ class HomeReducer {
                 error = result.throwable.message
             )
         }
+
     }
 }
