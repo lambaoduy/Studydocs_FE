@@ -45,7 +45,8 @@ import com.example.finalexam.viewmodel.HomeViewModel
 import com.example.finalexam.viewmodel.HomeViewModelFactory
 
 @Composable
-fun Content(modifier: Modifier = Modifier) {
+fun Content(modifier: Modifier = Modifier,
+            onNavigateToDocumentDetail: (String) -> Unit) {
     val app = LocalContext.current.applicationContext as Application
     val homeViewModel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(app)
@@ -61,11 +62,6 @@ fun Content(modifier: Modifier = Modifier) {
 
     val uiState by homeViewModel.state.collectAsState()
     val documents = uiState.listDocument
-//    val sampleDocs = listOf(
-//        Document("1", "Lập trình Android", "CNTT", "UIT"),
-//        Document("2", "Trí tuệ nhân tạo", "Khoa học máy tính", "BK"),
-//        Document("3", "Cơ sở dữ liệu", "Hệ thống thông tin", "HCMUS")
-//    )
 
 
     Box(modifier = modifier.fillMaxSize()) { // 👈 Wrap lại toàn bộ bằng Box
@@ -139,7 +135,7 @@ fun Content(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            ListDocumentView(documents, onNavigateToDetail = {})
+            ListDocumentView(documents, onNavigateToDetail = onNavigateToDocumentDetail)
         }
 
         // 👇 Hiển thị drawer filter bên phải
@@ -208,5 +204,5 @@ fun onItemSelected(s: String) {}
 @Preview(showBackground = true, widthDp = 400, heightDp = 700)
 @Composable
 fun ContentPreview() {
-    Content()
+//    Content()
 }

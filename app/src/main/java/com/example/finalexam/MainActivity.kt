@@ -17,6 +17,7 @@ import com.example.finalexam.ui.screens.NotificationScreen
 import com.example.finalexam.ui.screens.ProfileScreen
 import com.example.finalexam.ui.screens.RegisterScreen
 import com.example.finalexam.ui.theme.FinalExamTheme
+import com.example.finalexam.view.myLibraryScreen.MyLibraryScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +32,8 @@ class MainActivity : ComponentActivity() {
                         LoginScreen(
                             onRegisterClick = { navController.navigate("register") },
                             onForgotPasswordClick = { navController.navigate("forgot_password") },
-                            onLoginSuccess = { navController.navigate("home") }
+                            onLoginSuccess = { navController.navigate("home") },
+
                         )
                     }
                     composable("register") {
@@ -62,7 +64,14 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("home") {
-                        HomeScreen()
+                        HomeScreen(
+                            onNavigateToDocumentDetail = { docId ->
+                                navController.navigate("document_detail/$docId")
+                            },
+                            onBottomNavItemSelected = { route ->
+                                navController.navigate(route)
+                            }
+                        )
                     }
                     composable("profile") {
                         ProfileScreen(
@@ -80,6 +89,12 @@ class MainActivity : ComponentActivity() {
                         FollowScreen(
                             userId = UserProvider.getUserId(),
                             onBackClick = { navController.popBackStack() })
+                    }
+                    composable("library") { /* LibraryScreen() */
+                        MyLibraryScreen()
+                    }
+                    composable("Account") { /* LibraryScreen() */
+//                        ProfileScreen()
                     }
                 }
             }

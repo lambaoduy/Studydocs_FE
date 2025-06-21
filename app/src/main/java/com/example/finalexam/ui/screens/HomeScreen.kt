@@ -10,14 +10,16 @@ import com.example.finalexam.ui.screens.HomeScreen.TopBar
 import com.example.finalexam.ui.theme.FinalExamTheme
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onNavigateToDocumentDetail: (String) -> Unit = {},
+               onBottomNavItemSelected: (String) -> Unit = {}) {
     FinalExamTheme {
         Scaffold(
             topBar = { TopBar() },
-            bottomBar = { BottomBar() },
+            bottomBar = { BottomBar(onItemSelected = onBottomNavItemSelected) },
             content =
                 { padding ->
-                    Content(modifier = Modifier.padding(padding))
+                    Content(modifier = Modifier.padding(padding),
+                        onNavigateToDocumentDetail = onNavigateToDocumentDetail)
                 }
         )
     }
