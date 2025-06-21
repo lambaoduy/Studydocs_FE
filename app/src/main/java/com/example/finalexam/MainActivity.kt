@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.finalexam.ui.theme.FinalExamTheme
 import com.example.finalexam.ui.screens.myLibraryScreen.MyLibraryScreen
 import com.example.finalexam.ui.screens.myLibraryScreen.UploadDocumentScreen
+import com.example.finalexam.ui.theme.FinalExamTheme
 
 
 class MainActivity : ComponentActivity() {
@@ -34,7 +33,7 @@ class MainActivity : ComponentActivity() {
                         composable("library") {
                             MyLibraryScreen(
                                 onNavigateToUpload = {
-                                    Log.d("MainActivity", "Executing navigate to upload")
+                                    Log.e("MainActivity", "Executing navigate to upload")
                              navController.navigate("upload") }
                             )
                         }

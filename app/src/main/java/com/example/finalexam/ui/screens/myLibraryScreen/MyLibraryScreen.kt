@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.MyLibraryIntent
+import com.example.finalexam.navigation.NavigationEvent
 import com.example.finalexam.ui.components.HomeScreen.RightFilterDrawer
 import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.MyLibraryViewModel
@@ -57,26 +58,26 @@ import com.example.finalexam.viewmodel.MyLibraryViewModel
 @Composable
 fun MyLibraryScreen(
     viewModel: MyLibraryViewModel = viewModel(),
-//    onNavigateToUpload: () -> Unit = {},
-//    onNavigateToDocumentDetail: (String) -> Unit = {},
-//    onNavigateToHome: () -> Unit = {}
+    onNavigateToUpload: () -> Unit = {},
+    onNavigateToDocumentDetail: (String) -> Unit = {},
+    onNavigateToHome: () -> Unit = {}
 ) {
     var selectedTabIndex by remember { mutableStateOf(1) }
     val state by viewModel.state.collectAsState()
     var isDrawerOpen by remember { mutableStateOf(false) }
     var unversity by remember { mutableStateOf("") }
     var subject by remember { mutableStateOf("") }
-//
-//    LaunchedEffect(Unit) {
-//        viewModel.navigationEvent.collect { event ->
-//            when (event) {
-//                is NavigationEvent.NavigateToUpload -> onNavigateToUpload()
-//                is NavigationEvent.NavigateToDocumentDetail -> onNavigateToDocumentDetail(event.documentId)
-//                is NavigationEvent.NavigateToHome -> onNavigateToHome()
-//                else -> {}
-//            }
-//        }
-//    }
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is NavigationEvent.NavigateToUpload -> onNavigateToUpload()
+                is NavigationEvent.NavigateToDocumentDetail -> onNavigateToDocumentDetail(event.documentId)
+                is NavigationEvent.NavigateToHome -> onNavigateToHome()
+                else -> {}
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadDocuments()
