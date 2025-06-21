@@ -11,11 +11,13 @@ import com.example.finalexam.reduce.DocumentReducer
 import com.example.finalexam.result.DocumentResult
 import com.example.finalexam.state.DocumentState
 import com.example.finalexam.ui.myLibraryScreen.UploadDocumentScreen
+import com.example.finalexam.network.AuthFilter
+import android.app.Application
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class DocumentViewModel : ViewModel() {
+class DocumentViewModel(private val app: Application) : ViewModel() {
     private val reducer = DocumentReducer()
     private val _state = MutableStateFlow(DocumentState())
     val state = _state.asStateFlow()
@@ -33,6 +35,8 @@ class DocumentViewModel : ViewModel() {
      * @param intent Hành động người dùng thực hiện
      */
     fun processIntent(intent: DocumentIntent) {
+        // Kiểm tra đăng nhập trước khi xử lý intent
+        AuthFilter.requireLogin(app)
         viewModelScope.launch {
             val handler = handlers.find { it.canHandle(intent) }
             handler?.handle(intent) { result ->
