@@ -2,44 +2,76 @@ package com.example.finalexam.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.intent.AuthIntent
+import com.example.finalexam.ui.theme.Purple40
+import com.example.finalexam.ui.theme.PurpleGrey40
+import com.example.finalexam.ui.theme.creamy
 import com.example.finalexam.viewmodel.AuthViewModel
-import com.example.finalexam.ui.theme.*
 
 // thiện làm: RegisterScreen theo MVI
 @Composable
 fun RegisterScreen(
     authViewModel: AuthViewModel = viewModel(),
-    onLoginClick: () -> Unit = {}
+    onLoginClick: () -> Unit = {},
+    onRegisterSuccess: () -> Unit
 ) {
     val state by authViewModel.state.collectAsState()
-    var username by remember { mutableStateOf("") }
+    var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess) {
+            onRegisterSuccess()
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(creamy)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Purple40, PurpleGrey40, creamy)
+                )
+            )
     ) {
         Column(
             modifier = Modifier
@@ -49,6 +81,12 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(40.dp))
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Register Icon",
+                tint = Purple40,
+                modifier = Modifier.size(64.dp)
+            )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = "Create New Account",
@@ -59,9 +97,9 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(24.dp))
             RoundedInputField(
                 icon = Icons.Default.Person,
-                placeholder = "Username",
-                value = username,
-                onValueChange = { username = it }
+                placeholder = "Full Name",
+                value = fullName,
+                onValueChange = { fullName = it }
             )
             Spacer(modifier = Modifier.height(12.dp))
             RoundedInputField(
@@ -82,11 +120,11 @@ fun RegisterScreen(
             Button(
                 onClick = {
                     authViewModel.processIntent(
-                        AuthIntent.Register(username, email, password)
+                        AuthIntent.Register(fullName, email, password)
                     )
                 },
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Purple40),
+                colors = ButtonDefaults.buttonColors(containerColor = Purple40),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
@@ -140,23 +178,18 @@ fun RoundedInputField(
         },
         placeholder = { Text(text = placeholder, color = Color.Gray) },
         visualTransformation = visualTransformation,
-        colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = Color.Transparent,
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
             focusedIndicatorColor = Color.Black,
             unfocusedIndicatorColor = Color.Gray,
-            textColor = Color.Black
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            cursorColor = Color.Black
         ),
         shape = RoundedCornerShape(50),
         modifier = Modifier
             .fillMaxWidth()
             .height(55.dp)
     )
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun RegisterScreenPreview() {
-    FinalExamTheme {
-        RegisterScreen()
-    }
 }
