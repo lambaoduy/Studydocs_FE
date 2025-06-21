@@ -36,6 +36,13 @@ class MyLibraryViewModel : ViewModel() {
                 // Xử lý khi chọn một tài liệu (ví dụ: xem chi tiết)
                 // TODO: Thực hiện logic khi chọn tài liệu
             }
+
+            is MyLibraryIntent.FilterBySubject -> {
+                //Xử lý khi lọc bằng subject
+            }
+            is MyLibraryIntent.FilterByUniversity -> {
+                // xử lý khi lọc bằng university
+            }
         }
     }
 
