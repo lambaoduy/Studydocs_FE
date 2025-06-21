@@ -32,8 +32,7 @@ class MainActivity : ComponentActivity() {
                         LoginScreen(
                             onRegisterClick = { navController.navigate("register") },
                             onForgotPasswordClick = { navController.navigate("forgot_password") },
-                            onLoginSuccess = { navController.navigate("home") },
-
+                            onLoginSuccess = { navController.navigate("home") }
                         )
                     }
                     composable("register") {

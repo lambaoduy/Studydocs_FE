@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.finalexam.ui.screens.HomeScreen
+package com.example.finalexam.ui.components.homeScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Doorbell
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,11 +27,15 @@ import androidx.compose.ui.unit.sp
 import com.example.finalexam.R
 
 @Composable
-fun TopBar() {
+fun TopBar(navigateToNotification: () -> Unit) {
     TopAppBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.AccountCircle, contentDescription = "Account", modifier = Modifier.size(32.dp))
+                Icon(
+                    Icons.Default.AccountCircle,
+                    contentDescription = "Account",
+                    modifier = Modifier.size(32.dp)
+                )
 
                 Spacer(Modifier.width(8.dp))
                 Image(
@@ -51,10 +53,15 @@ fun TopBar() {
         },
         actions = {
             IconButton(onClick = {
-                 //action thông báo
-                }) {
-                Icon(Icons.Filled.Notifications, contentDescription = "Bell", modifier = Modifier.size(32.dp))
+                navigateToNotification()
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Notifications,
+                    contentDescription = "Bell",
+                    modifier = Modifier.size(32.dp)
+                )
             }
+
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color(0xFF2B4743),
