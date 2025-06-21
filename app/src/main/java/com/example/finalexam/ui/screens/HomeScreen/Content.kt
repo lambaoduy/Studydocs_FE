@@ -141,7 +141,7 @@ fun Content(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            ListDocumentView(documents)
+            ListDocumentView(documents, onNavigateToDetail = {})
         }
 
         // 👇 Hiển thị drawer filter bên phải
@@ -158,22 +158,17 @@ fun Content(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun ListDocumentView(documents: List<Document>) {
+fun ListDocumentView(documents: List<Document>,
+                     onNavigateToDetail: (String) -> Unit) {
     LazyColumn {
         items(documents) { doc ->
-            DocumentItemView(doc, onClick ={})
+            DocumentItemView(doc, onClick = { onNavigateToDetail(doc.id) })
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
-//@Composable
-//fun DocumentItemView(doc: Document) {
-//    Column {
-//        Text(text = "Title: ${doc.title}")
-//        Text(text = "Subject: ${doc.subject}")
-//        Text(text = "University: ${doc.university}")
-//    }
-//}
+
+
 
 @Composable
 fun DocumentItemView(

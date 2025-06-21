@@ -1,4 +1,7 @@
 package com.example.finalexam.intent
+
+import com.example.finalexam.entity.Document
+
 //file này duy viết
 sealed class HomeIntent {
     data class FindTodo(val search: String):HomeIntent()//tìm kiếm
@@ -6,4 +9,6 @@ sealed class HomeIntent {
     data class FindTodoBySchool(val school: String) : HomeIntent() //tìm kiếm theo school
     data class FindTodoBySubject(val subject: String) : HomeIntent()//tìm kiếm theo subject
     object  GetAllTodo: HomeIntent() //lấy tất cả doc trong cơ sở dữ liệu
+    data class  NavigateToDocDetail(val document:Document):HomeIntent() //xem chi tiết doc
+
 }
