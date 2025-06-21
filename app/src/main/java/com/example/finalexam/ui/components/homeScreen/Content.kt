@@ -1,4 +1,4 @@
-package com.example.finalexam.ui.components.HomeScreen
+package com.example.finalexam.ui.components.homeScreen
 
 import android.app.Application
 import androidx.compose.foundation.background
@@ -45,14 +45,15 @@ import com.example.finalexam.viewmodel.HomeViewModel
 import com.example.finalexam.viewmodel.HomeViewModelFactory
 
 @Composable
-fun Content(modifier: Modifier = Modifier) {
+fun Content(
+    modifier: Modifier = Modifier
+) {
     val app = LocalContext.current.applicationContext as Application
     val homeViewModel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(app)
     )
     var searchQuery by remember { mutableStateOf("") }
     var isDrawerOpen by remember { mutableStateOf(false) }
-    val id = ""
     var school by remember { mutableStateOf("") }
     var subject by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
@@ -69,13 +70,14 @@ fun Content(modifier: Modifier = Modifier) {
 
 
     Box(modifier = modifier.fillMaxSize()) { // 👈 Wrap lại toàn bộ bằng Box
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
             OutlinedTextField(
                 value =
-                searchQuery,
+                    searchQuery,
                 onValueChange = {
                     searchQuery = it
                 },
@@ -124,8 +126,7 @@ fun Content(modifier: Modifier = Modifier) {
                             }
                         }
                     }
-                }
-                ,
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -156,8 +157,10 @@ fun Content(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun ListDocumentView(documents: List<Document>,
-                     onNavigateToDetail: (String) -> Unit) {
+fun ListDocumentView(
+    documents: List<Document>,
+    onNavigateToDetail: (String) -> Unit
+) {
     LazyColumn {
         items(documents) { doc ->
             DocumentItemView(doc, onClick = { onNavigateToDetail(doc.id) })
@@ -165,7 +168,6 @@ fun ListDocumentView(documents: List<Document>,
         }
     }
 }
-
 
 
 @Composable
@@ -205,6 +207,7 @@ fun DocumentItemView(
 
 
 fun onItemSelected(s: String) {}
+
 @Preview(showBackground = true, widthDp = 400, heightDp = 700)
 @Composable
 fun ContentPreview() {

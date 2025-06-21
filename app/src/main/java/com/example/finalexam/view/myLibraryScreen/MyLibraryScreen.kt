@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.MyLibraryIntent
-import com.example.finalexam.ui.components.HomeScreen.RightFilterDrawer
+import com.example.finalexam.ui.components.homeScreen.RightFilterDrawer
 import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.MyLibraryViewModel
 

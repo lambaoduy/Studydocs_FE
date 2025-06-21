@@ -23,10 +23,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            HomeScreen()
             FinalExamTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "login") {
+                NavHost(navController = navController, startDestination = "home") {
                     composable("login") {
                         LoginScreen(
                             onRegisterClick = { navController.navigate("register") },
@@ -62,7 +61,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("home") {
-                        HomeScreen()
+                        HomeScreen(
+                            navigateToNotification = { navController.navigate("notification") }
+                        )
                     }
                     composable("profile") {
                         ProfileScreen(

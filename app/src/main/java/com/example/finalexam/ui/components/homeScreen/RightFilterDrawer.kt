@@ -1,4 +1,4 @@
-package com.example.finalexam.ui.components.HomeScreen
+package com.example.finalexam.ui.components.homeScreen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
