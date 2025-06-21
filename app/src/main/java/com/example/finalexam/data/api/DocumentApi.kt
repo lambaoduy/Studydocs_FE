@@ -1,5 +1,6 @@
 package com.example.finalexam.data.api
 
+import com.example.finalexam.data.dao.document.DocumentListWrapper
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.entity.Document
 import okhttp3.MultipartBody
@@ -11,6 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+
 
 interface DocumentApi {
     @GET("/detail/{documentId}")
@@ -24,22 +26,38 @@ interface DocumentApi {
 
     @DELETE("/{documentId}/like")
     suspend fun unlikeDocument(@Path("documentId") documentId: String, @Query("userId") userId: String): Response<BaseResponse<Void>>
-    @GET("/documents/all")
-    suspend fun getAllDocuments(): Response<BaseResponse<List<Document>>>
 
-    @GET("/documents/search")
-    suspend fun searchDocuments(@Query("keyword") keyword: String): Response<BaseResponse<List<Document>>>
+    @GET("/controller/getAllDocument")
+    suspend fun getAllDocuments(): Response<BaseResponse<DocumentListWrapper>>
+
+    @GET("/controller/searchByTitle")
+    suspend fun searchDocumentByTitle(
+        @Query("keyword") keyword: String
+    ): Response<BaseResponse<DocumentListWrapper>>
+
+    @GET("/controller/searchBySubject")
+    suspend fun searchDocumentBySubject(
+        @Query("keyword") keyword: String
+    ): Response<BaseResponse<DocumentListWrapper>>
+
+    @GET("/controller/searchByUniversity")
+    suspend fun searchDocumentByUniversity(
+        @Query("keyword") keyword: String
+    ): Response<BaseResponse<DocumentListWrapper>>
 
     @GET("/documents/user")
-    suspend fun getDocumentsByUserID(@Query("userId") userId: String): Response<BaseResponse<List<Document>>>
+    suspend fun getDocumentsByUserID(
+        @Query("userId") userId: String
+    ): Response<BaseResponse<DocumentListWrapper>>
+
 
     //===Phần này của Hảo===
-    @POST("contronller/upload")
+    @POST("/contronller/upload")
     suspend fun uploadDocument(@Body document: Document, @Part file: MultipartBody.Part): Response<BaseResponse<Document>>
     //===Phần này của Hảo end===
 
     //===Phần này của Hảo end===
-    @GET("controller/my-documents")
-    suspend fun getMyDocuments(): Response<BaseResponse<List<Document>>>
+    @GET("/controller/my-documents")
+    suspend fun getMyDocuments(): Response<BaseResponse<DocumentListWrapper>>
     //===Phần này của Hảo end===
 }

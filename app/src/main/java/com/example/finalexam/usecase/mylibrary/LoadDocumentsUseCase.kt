@@ -1,6 +1,6 @@
 package com.example.finalexam.usecase.mylibrary
 
-import com.example.finalexam.dao.document.DocumentDao
+import com.example.finalexam.data.dao.document.DocumentDao
 import com.example.finalexam.result.MyLibraryResult
 
 class LoadDocumentsUseCase(private val documentDao: DocumentDao) {

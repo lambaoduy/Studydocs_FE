@@ -28,7 +28,10 @@ class DocumentDao(private val api: DocumentApi) {
     suspend fun getDocumentsByUniversity(keyword: String): List<Document> = withContext(Dispatchers.IO) {
         safeApiCall { api.searchDocumentByUniversity(keyword) }
     }
-
+    // Thêm method lấy tài liệu của tôi
+    suspend fun getMyDocuments(): List<Document> = withContext(Dispatchers.IO) {
+        safeApiCall { api.getMyDocuments() }
+    }
     // --- Helper function chung ---
 
     private suspend fun safeApiCall(
