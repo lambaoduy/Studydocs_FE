@@ -1,7 +1,7 @@
 package com.example.finalexam.entity
 
+import com.google.firebase.Timestamp
 import com.google.gson.annotations.SerializedName
-import java.security.Timestamp
 
 
 data class Document(

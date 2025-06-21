@@ -1,25 +1,24 @@
 package com.example.finalexam.viewmodel
-import androidx.lifecycle.viewModelScope
+//import com.example.finalexam.network.AuthFilter
+
+import android.app.Application
 import androidx.lifecycle.ViewModel
-import com.example.finalexam.data.dao.document.DocumentDao
+import androidx.lifecycle.viewModelScope
 import com.example.finalexam.data.api.DocumentApi
+import com.example.finalexam.data.dao.document.DocumentDao
+import com.example.finalexam.handler.HomeScreen.HomeFindWithFiltersHandler
 import com.example.finalexam.handler.HomeScreen.HomeGetAllHandler
-import com.example.finalexam.handler.HomeScreen.HomeLoadByUerIDHandler
+import com.example.finalexam.handler.HomeScreen.NavigateToDocumentDetailHandler
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.HomeIntent
 import com.example.finalexam.network.RetrofitClient
-//import com.example.finalexam.network.AuthFilter
 import com.example.finalexam.reduce.HomeReducer
 import com.example.finalexam.result.HomeResult
 import com.example.finalexam.state.HomeState
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import android.app.Application
-import com.example.finalexam.handler.HomeScreen.HomeFindWithFiltersHandler
-import com.example.finalexam.handler.HomeScreen.NavigateToDocumentDetailHandler
 
 
 //file này duy viết
@@ -39,7 +38,6 @@ class HomeViewModel(private val app: Application) : ViewModel() {
 //
 
     private val handlers: List<IntentHandler<HomeIntent,HomeResult>> = listOf(
-        HomeLoadByUerIDHandler(documentDao),//lấy dữ liệu theo id user
         HomeGetAllHandler(documentDao),// lấy tất cả dữ liệu
         NavigateToDocumentDetailHandler(),
         HomeFindWithFiltersHandler(documentDao,state.value.listDocument)

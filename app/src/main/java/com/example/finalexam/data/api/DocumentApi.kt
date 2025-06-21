@@ -11,39 +11,33 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface DocumentApi {
-    @GET("/detail/{documentId}")
+    @GET("/document/detail/{documentId}")
     suspend fun getDocumentDetail(@Path("documentId") documentId: String): Response<BaseResponse<Document>>
 
-    @GET("/download/{documentId}")
+    @GET("/user/document/download/{documentId}")
     suspend fun getDownloadUrl(@Path("documentId") documentId: String): Response<BaseResponse<String>>
 
-    @POST("/{documentId}/like")
-    suspend fun likeDocument(@Path("documentId") documentId: String, @Query("userId") userId: String): Response<BaseResponse<Void>>
+    @POST("/user/document/{documentId}/like")
+    suspend fun likeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Void>>
 
-    @DELETE("/{documentId}/like")
-    suspend fun unlikeDocument(@Path("documentId") documentId: String, @Query("userId") userId: String): Response<BaseResponse<Void>>
+    @DELETE("/user/document/{documentId}/like")
+    suspend fun unlikeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Void>>
 
-    @GET("/controller/getAllDocument")
+    @GET("/document/getAllDocument")
     suspend fun getAllDocuments(): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/controller/searchByTitle")
+    @GET("/document/searchByTitle")
     suspend fun searchDocumentByTitle(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/controller/searchBySubject")
+    @GET("/document/searchBySubject")
     suspend fun searchDocumentBySubject(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/controller/searchByUniversity")
+    @GET("/document/searchByUniversity")
     suspend fun searchDocumentByUniversity(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
-
-    @GET("/documents/user")
-    suspend fun getDocumentsByUserID(
-        @Query("userId") userId: String
-    ): Response<BaseResponse<DocumentListWrapper>>
-
 }
