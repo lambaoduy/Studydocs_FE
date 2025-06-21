@@ -60,7 +60,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     /* Quản lý vòng đời ứng dụng với Kotlin extensions */
     implementation(libs.androidx.lifecycle.runtime.ktx)
-
+    implementation(libs.androidx.activity.compose)
     // ========== COMPOSE ========== //
     /* BOM (Bill of Materials) để quản lý phiên bản các thư viện   */
     val composeBom = platform("androidx.compose:compose-bom:2024.04.00")
@@ -92,6 +92,8 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.9.0")
     /* Thư viện load ảnh trong Compose */
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+
     /* */
     implementation("androidx.compose.foundation:foundation")
     // ========== FIREBASE ========== //

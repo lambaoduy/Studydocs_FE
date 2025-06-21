@@ -2,11 +2,12 @@ package com.example.finalexam.data.repository
 
 import com.example.finalexam.data.api.UniversityApi
 import com.example.finalexam.entity.University
+import com.example.finalexam.network.RetrofitClient
 
-class UniversityRepository(private val api: UniversityApi) {
-
+class UniversityRepository() {
+    private val universityApi: UniversityApi = RetrofitClient.createApi(UniversityApi::class.java)
     suspend fun getAllUniversities(): List<University> {
-        val response = api.getAllUniversities()
+        val response = universityApi.getAllUniversities()
         if (response.isSuccessful) {
             return response.body()?.data ?: emptyList()
         } else {
@@ -15,7 +16,7 @@ class UniversityRepository(private val api: UniversityApi) {
     }
 
     suspend fun addSubject(universityId: String, subject: String): Boolean {
-        val response = api.addSubject(universityId, subject)
+        val response = universityApi.addSubject(universityId, subject)
         if (response.isSuccessful) {
             return response.body()?.data == true
         } else {

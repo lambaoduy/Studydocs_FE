@@ -17,6 +17,10 @@ import com.example.finalexam.ui.screens.LoginScreen
 import com.example.finalexam.ui.screens.NotificationScreen
 import com.example.finalexam.ui.screens.ProfileScreen
 import com.example.finalexam.ui.screens.RegisterScreen
+//===Phần này của Hảo 22/6===
+import com.example.finalexam.ui.screens.myLibraryScreen.MyLibraryScreen
+import com.example.finalexam.ui.screens.myLibraryScreen.UploadDocumentScreen
+//===Phần này của Hảo 22/6===
 import com.example.finalexam.ui.theme.FinalExamTheme
 
 class MainActivity : ComponentActivity() {
@@ -67,9 +71,16 @@ class MainActivity : ComponentActivity() {
                             onNavigateToDocumentDetail = { docId ->
                                 navController.navigate("document_detail/$docId")
                             },
+                            //===Phần này của Hảo 22/6===
                             onBottomNavItemSelected = { route ->
-                                navController.navigate(route)
+                                when (route) {
+                                    "library" -> navController.navigate("mylibrary")
+                                    "home" -> navController.navigate("home")
+                                    "acount" -> navController.navigate("profile")
+                                    else -> navController.navigate(route)
+                                }
                             }
+                            //===Phần này của Hảo 22/6===
                         )
                     }
                     composable("profile") {
@@ -95,6 +106,31 @@ class MainActivity : ComponentActivity() {
                             onNavigateBack = { navController.popBackStack() }
                         )
                     }
+                    //===Phần này của Hảo 22/6===
+                    composable("mylibrary") {
+                        MyLibraryScreen(
+                            onNavigateToUpload = { navController.navigate("upload_document") },
+                            onNavigateToDocumentDetail = { docId ->
+                                navController.navigate("document_detail/$docId")
+                            },
+                            onNavigateToHome = { navController.navigate("home") }
+                        )
+                    }
+                    composable("upload_document") {
+                        UploadDocumentScreen(
+                            onBackClick = { navController.popBackStack() },
+                            onUploadClick = { document ->
+                                // Có thể thêm logic xử lý khi click upload
+                            },
+                            onUploadSuccess = {
+                                // Chuyển về MyLibrary sau khi upload thành công
+                                navController.navigate("mylibrary") {
+                                    popUpTo("upload_document") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                    //===Phần này của Hảo 22/6===
                 }
             }
         }

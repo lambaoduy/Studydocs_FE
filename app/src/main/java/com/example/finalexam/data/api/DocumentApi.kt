@@ -3,41 +3,61 @@ package com.example.finalexam.data.api
 import com.example.finalexam.data.dao.document.DocumentListWrapper
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.entity.Document
+import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+
 interface DocumentApi {
-    @GET("/document/detail/{documentId}")
+    @GET("/detail/{documentId}")
     suspend fun getDocumentDetail(@Path("documentId") documentId: String): Response<BaseResponse<Document>>
 
-    @GET("/user/document/download/{documentId}")
+    @GET("/download/{documentId}")
     suspend fun getDownloadUrl(@Path("documentId") documentId: String): Response<BaseResponse<String>>
 
-    @POST("/user/document/{documentId}/like")
-    suspend fun likeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Void>>
+    @POST("/{documentId}/like")
+    suspend fun likeDocument(@Path("documentId") documentId: String, @Query("userId") userId: String): Response<BaseResponse<Void>>
 
-    @DELETE("/user/document/{documentId}/like")
-    suspend fun unlikeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Void>>
+    @DELETE("/{documentId}/like")
+    suspend fun unlikeDocument(@Path("documentId") documentId: String, @Query("userId") userId: String): Response<BaseResponse<Void>>
 
-    @GET("/document/getAllDocument")
+    @GET("/controller/getAllDocument")
     suspend fun getAllDocuments(): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/document/searchByTitle")
+    @GET("/controller/searchByTitle")
     suspend fun searchDocumentByTitle(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/document/searchBySubject")
+    @GET("/controller/searchBySubject")
     suspend fun searchDocumentBySubject(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/document/searchByUniversity")
+    @GET("/controller/searchByUniversity")
     suspend fun searchDocumentByUniversity(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
+
+    @GET("/documents/user")
+    suspend fun getDocumentsByUserID(
+        @Query("userId") userId: String
+    ): Response<BaseResponse<DocumentListWrapper>>
+
+
+    //===Phần này của Hảo===
+    @POST("/contronller/upload")
+    suspend fun uploadDocument(@Body document: Document, @Part file: MultipartBody.Part): Response<BaseResponse<Document>>
+    //===Phần này của Hảo end===
+
+    //===Phần này của Hảo end===
+    @GET("/controller/my-documents")
+    suspend fun getMyDocuments(): Response<BaseResponse<DocumentListWrapper>>
+    //===Phần này của Hảo end===
 }
