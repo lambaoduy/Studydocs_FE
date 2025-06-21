@@ -54,17 +54,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.finalexam.data.api.UniversityApi
-import com.example.finalexam.data.repository.UniversityRepository
 import com.example.finalexam.entity.University
 import com.example.finalexam.entity.UploadDocument
 import com.example.finalexam.intent.UniversityIntent
 import com.example.finalexam.intent.UploadDocumentIntent
-import com.example.finalexam.network.RetrofitClient
+import com.example.finalexam.ui.location.ServiceLocator
 import com.example.finalexam.ui.theme.AppColors
-import com.example.finalexam.usecase.university.AddSubjectUseCase
-import com.example.finalexam.usecase.university.GetAllUniversitiesUseCase
-import com.example.finalexam.usecase.upload.UploadDocumentsUseCase
 import com.example.finalexam.viewmodel.UniversityViewModel
 import com.example.finalexam.viewmodel.UniversityViewModelFactory
 import com.example.finalexam.viewmodel.UploadDocumentViewModel
@@ -83,36 +78,52 @@ fun UploadDocumentScreen(
     val context = LocalContext.current
 
     // === API & Repository ===
-    val universityApi = remember { RetrofitClient.createApi(UniversityApi::class.java) }
-    val universityRepository = remember(universityApi) {
-        UniversityRepository(universityApi)
-    }
+//    val universityApi = remember { RetrofitClient.createApi(UniversityApi::class.java) }
+//    val universityRepository = remember(universityApi) {
+//        UniversityRepository(universityApi)
+//    }
+//
+//    // === UseCase ===
+//    val getAllUniversitiesUseCase = remember(universityRepository) {
+//        GetAllUniversitiesUseCase(universityRepository)
+//    }
+//    val addSubjectUseCase = remember(universityRepository) {
+//        AddSubjectUseCase(universityRepository)
+//    }
+//    val uploadDocumentsUseCase = remember {
+//        UploadDocumentsUseCase()
+//    }
+//
+//    // === ViewModel Factory & ViewModels ===
+//    val universityViewModelFactory = remember {
+//        UniversityViewModelFactory(
+//            getAllUniversitiesUseCase = getAllUniversitiesUseCase,
+//            addSubjectUseCase = addSubjectUseCase
+//        )
+//    }
+//
+//    val uploadDocumentViewModelFactory = remember {
+//        UploadDocumentViewModelFactory(uploadDocumentsUseCase)
+//    }
 
-    // === UseCase ===
-    val getAllUniversitiesUseCase = remember(universityRepository) {
-        GetAllUniversitiesUseCase(universityRepository)
-    }
-    val addSubjectUseCase = remember(universityRepository) {
-        AddSubjectUseCase(universityRepository)
-    }
-    val uploadDocumentsUseCase = remember {
-        UploadDocumentsUseCase()
-    }
+//    val universityViewModel: UniversityViewModel = viewModel(factory = universityViewModelFactory)
+//    val uploadDocumentViewModel: UploadDocumentViewModel = viewModel(factory = uploadDocumentViewModelFactory)
 
-    // === ViewModel Factory & ViewModels ===
-    val universityViewModelFactory = remember {
-        UniversityViewModelFactory(
-            getAllUniversitiesUseCase = getAllUniversitiesUseCase,
-            addSubjectUseCase = addSubjectUseCase
-        )
-    }
+    val universityViewModel: UniversityViewModel = viewModel(
+        factory = remember {
+            UniversityViewModelFactory(
+                ServiceLocator.getAllUniversitiesUseCase,
+                ServiceLocator.addSubjectUseCase
+            )
+        }
+    )
 
-    val uploadDocumentViewModelFactory = remember {
-        UploadDocumentViewModelFactory(uploadDocumentsUseCase)
-    }
+    val uploadDocumentViewModel: UploadDocumentViewModel = viewModel(
+        factory = remember {
+            UploadDocumentViewModelFactory(ServiceLocator.uploadDocumentsUseCase)
+        }
+    )
 
-    val universityViewModel: UniversityViewModel = viewModel(factory = universityViewModelFactory)
-    val uploadDocumentViewModel: UploadDocumentViewModel = viewModel(factory = uploadDocumentViewModelFactory)
 
     val uploadState by uploadDocumentViewModel.state.collectAsState()
     val universityState by universityViewModel.state.collectAsState()
