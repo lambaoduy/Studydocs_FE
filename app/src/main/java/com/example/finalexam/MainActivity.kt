@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.finalexam.data.datastore.UserProvider
+import com.example.finalexam.ui.document.DocumentDetailScreen
 import com.example.finalexam.ui.screens.ForgotPasswordScreen
 import com.example.finalexam.ui.screens.HomeScreen
 import com.example.finalexam.ui.screens.LoginScreen
@@ -62,7 +63,13 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("home") {
                         HomeScreen(
-                            navigateToNotification = { navController.navigate("notification") }
+                            navigateToNotification = { navController.navigate("notification") },
+                            onNavigateToDocumentDetail = { docId ->
+                                navController.navigate("document_detail/$docId")
+                            },
+                            onBottomNavItemSelected = { route ->
+                                navController.navigate(route)
+                            }
                         )
                     }
                     composable("profile") {
@@ -81,6 +88,12 @@ class MainActivity : ComponentActivity() {
                         FollowScreen(
                             userId = UserProvider.getUserId(),
                             onBackClick = { navController.popBackStack() })
+                    }
+                    composable("document_detail/{documentId}") {
+                        DocumentDetailScreen(
+                            documentId = it.arguments?.getString("documentId") ?: "",
+                            onNavigateBack = { navController.popBackStack() }
+                        )
                     }
                 }
             }

@@ -17,9 +17,6 @@ class DocumentDao(private val api: DocumentApi) {
         safeApiCall { api.searchDocumentByTitle(keyword) }
     }
 
-    suspend fun getDocumentbyUserID(userId: String): List<Document> = withContext(Dispatchers.IO) {
-        safeApiCall { api.getDocumentsByUserID(userId) }
-    }
 
     suspend fun getDocumentsBySubject(keyword: String): List<Document> = withContext(Dispatchers.IO) {
         safeApiCall { api.searchDocumentBySubject(keyword) }
