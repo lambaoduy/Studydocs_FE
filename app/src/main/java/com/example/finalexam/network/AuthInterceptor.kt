@@ -1,6 +1,8 @@
 package com.example.finalexam.network
 
-import android.content.Context
+import com.example.finalexam.data.datastore.UserPreferences
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -8,17 +10,20 @@ import okhttp3.Response
  * Interceptor này sẽ tự động lấy token từ SharedPreferences
  * và gắn vào header Authorization cho mọi request gửi tới backend.
  */
-class AuthInterceptor(private val context: Context) : Interceptor {
+class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val prefs = context.getSharedPreferences("APP_PREF", Context.MODE_PRIVATE)
-        val token = prefs.getString("ID_TOKEN", null)
-        val request = if (token != null) {
+        val token = runBlocking {
+            UserPreferences.getToken().first()
+        }
+        print(token)
+        val request = if (!token.isNullOrBlank()) {
             chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer $token")
                 .build()
         } else {
             chain.request()
         }
+
         return chain.proceed(request)
     }
 }

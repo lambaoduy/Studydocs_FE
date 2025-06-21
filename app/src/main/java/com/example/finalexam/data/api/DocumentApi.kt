@@ -4,7 +4,11 @@ import com.example.finalexam.data.dao.document.DocumentListWrapper
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.entity.Document
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface DocumentApi {
     @GET("/detail/{documentId}")

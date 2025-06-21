@@ -18,7 +18,7 @@ interface FollowApi {
     suspend fun follow(@Body followRequest: FollowRequest): BaseResponse<Following>
 
     @POST("/user/unFollow")
-    suspend fun unFollow(@Body followingId: String): BaseResponse<String>
+    suspend fun unFollow(@Query("followingId") followingId: String): BaseResponse<String>
 
     @PATCH("/user/follow")
     suspend fun toggleNotify(@Body toggleNotifyRequest: ToggleNotifyRequest): BaseResponse<Boolean>

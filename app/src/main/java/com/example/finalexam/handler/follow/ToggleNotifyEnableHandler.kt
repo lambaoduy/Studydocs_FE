@@ -6,7 +6,8 @@ import com.example.finalexam.result.FollowResult
 import com.example.finalexam.usecase.follow.ToggleNotifyEnableUseCase
 
 class ToggleNotifyEnableHandler : IntentHandler<FollowIntent, FollowResult> {
-    private val toggleNotifyEnableHandler = ToggleNotifyEnableUseCase()
+    private val toggleNotifyEnableUseCase = ToggleNotifyEnableUseCase()
+    
     override fun canHandle(intent: FollowIntent): Boolean =
         intent is FollowIntent.ToggleNotifyEnable
 
@@ -15,21 +16,19 @@ class ToggleNotifyEnableHandler : IntentHandler<FollowIntent, FollowResult> {
         setResult: (FollowResult) -> Unit
     ) {
         setResult(FollowResult.Loading)
-        try {
-            val toggleNotifyEnableIntent = intent as FollowIntent.ToggleNotifyEnable
-            toggleNotifyEnableHandler.invoke(
-                toggleNotifyEnableIntent.followingId,
-                toggleNotifyEnableIntent.notifyEnable
-            )
+        val toggleNotifyEnableIntent = intent as FollowIntent.ToggleNotifyEnable
+        toggleNotifyEnableUseCase.invoke(
+            toggleNotifyEnableIntent.followingId,
+            toggleNotifyEnableIntent.notifyEnable
+        ).onSuccess {
             setResult(
                 FollowResult.ToggleNotifyEnableResult(
                     toggleNotifyEnableIntent.followingId,
                     toggleNotifyEnableIntent.notifyEnable
                 )
             )
-        } catch (e: Exception) {
-            setResult(FollowResult.Error(e.message ?: "Unknown error"))
+        }.onFailure { error ->
+            setResult(FollowResult.Error(error.message ?: "An unknown error occurred."))
         }
-
     }
-}
+} 

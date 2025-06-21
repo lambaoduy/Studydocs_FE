@@ -1,13 +1,9 @@
 package com.example.finalexam.handler.follow
 
-
-import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.FollowIntent
 import com.example.finalexam.result.FollowResult
 import com.example.finalexam.usecase.follow.FollowUseCase
-import com.google.gson.Gson
-import retrofit2.HttpException
 
 class FollowHandler : IntentHandler<FollowIntent, FollowResult> {
     private val followUseCase = FollowUseCase()
@@ -20,18 +16,12 @@ class FollowHandler : IntentHandler<FollowIntent, FollowResult> {
     ) {
         setResult(FollowResult.Loading)
         val followIntent = intent as FollowIntent.Follow
-        try {
-            var result = followUseCase.invoke(followIntent.targetId, followIntent.targetType)
-            setResult(FollowResult.FollowActionResult(result))
-        } catch (e: HttpException) {
-            val errorBody = e.response()?.errorBody()?.string()
-            val message = try {
-                val errorResponse = Gson().fromJson(errorBody, BaseResponse::class.java)
-                errorResponse?.message ?: "Unknown error"
-            } catch (ex: Exception) {
-                "Unknown error"
+        followUseCase.invoke(followIntent.targetId, followIntent.targetType)
+            .onSuccess { following ->
+                setResult(FollowResult.FollowActionResult(following))
             }
-            setResult(FollowResult.Error(message))
-        }
+            .onFailure { error ->
+                setResult(FollowResult.Error(error.message ?: "An unknown error occurred."))
+            }
     }
-}
+} 
