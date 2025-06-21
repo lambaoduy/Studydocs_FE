@@ -1,9 +1,15 @@
 package com.example.finalexam.entity
 
 import com.google.gson.annotations.SerializedName
-import java.sql.Timestamp
+import java.security.Timestamp
+
 
 data class Document(
+    //hao
+    val author: String = "",
+    val createdDate: String = "",
+    val downloadUrl: String = "",
+    //
     val id: String = "",
     val userId: String = "",
     val title: String = "",
@@ -16,10 +22,7 @@ data class Document(
     val createdAt: Timestamp? = null,
     val updatedAt: Timestamp? = null,
     val deletedAt: Timestamp? = null,
-    val author: String = "",
-    val createdDate: String = "",
-    val likes: List<Like>? = null
-
+    val likes: List<Like>? = null,
 ) {
     data class Like(
         val userId: String = "",

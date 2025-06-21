@@ -3,23 +3,23 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
 import com.example.finalexam.data.dao.document.DocumentDao
 import com.example.finalexam.data.api.DocumentApi
-import com.example.finalexam.handler.HomeScreen.HomFindBySubject
-import com.example.finalexam.handler.HomeScreen.HomeFindBySchool
-import com.example.finalexam.handler.HomeScreen.HomeFindHandler
 import com.example.finalexam.handler.HomeScreen.HomeGetAllHandler
 import com.example.finalexam.handler.HomeScreen.HomeLoadByUerIDHandler
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.HomeIntent
 import com.example.finalexam.network.RetrofitClient
-import com.example.finalexam.network.AuthFilter
+//import com.example.finalexam.network.AuthFilter
 import com.example.finalexam.reduce.HomeReducer
 import com.example.finalexam.result.HomeResult
 import com.example.finalexam.state.HomeState
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import android.app.Application
+import com.example.finalexam.handler.HomeScreen.HomeFindWithFiltersHandler
+import com.example.finalexam.handler.HomeScreen.NavigateToDocumentDetailHandler
 
 
 //file này duy viết
@@ -39,16 +39,15 @@ class HomeViewModel(private val app: Application) : ViewModel() {
 //
 
     private val handlers: List<IntentHandler<HomeIntent,HomeResult>> = listOf(
-       HomeFindHandler(documentDao),//tìm kiếm
         HomeLoadByUerIDHandler(documentDao),//lấy dữ liệu theo id user
-        HomeFindBySchool(documentDao,_state.value.listDocument),//lấy dữ liệu theo school
-        HomFindBySubject(documentDao,_state.value.listDocument),//lấy dữ liệu theo subject
-        HomeGetAllHandler(documentDao)// lấy tất cả dữ liệu
+        HomeGetAllHandler(documentDao),// lấy tất cả dữ liệu
+        NavigateToDocumentDetailHandler(),
+        HomeFindWithFiltersHandler(documentDao,state.value.listDocument)
     )
     // xử lý intent truyền vào từ trang home ở đây
     fun processIntent(intent: HomeIntent) {
         // Kiểm tra đăng nhập trước khi xử lý intent
-        AuthFilter.requireLogin(app)
+//        AuthFilter.requireLogin(app)
         viewModelScope.launch {
             val handler = handlers.find { it.canHandle(intent) }//tạo handler để xử lý
             handler?.handle(intent) {//kiểm tra intent có trong các intent xử lý được không
