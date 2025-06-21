@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                         composable("library") {
                             MyLibraryScreen(
                                 onNavigateToUpload = {
-                                    Log.d("MainActivity", "Executing navigate to upload") // Thêm log ở đây
+                                    Log.d("MainActivity", "Executing navigate to upload")
                              navController.navigate("upload") }
                             )
                         }
