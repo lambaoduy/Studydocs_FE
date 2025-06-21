@@ -1,9 +1,12 @@
+package com.example.finalexam.ui.screens.HomeScreen
 
 import android.app.Application
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,21 +42,20 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.HomeIntent
-import com.example.finalexam.ui.components.homeScreen.RightFilterDrawer
 import com.example.finalexam.ui.theme.AppColors
+import com.example.finalexam.ui.theme.AppColors.Surface
 import com.example.finalexam.viewmodel.HomeViewModel
 import com.example.finalexam.viewmodel.HomeViewModelFactory
 
 @Composable
-fun Content(
-    modifier: Modifier = Modifier
-) {
+fun Content(modifier: Modifier = Modifier) {
     val app = LocalContext.current.applicationContext as Application
     val homeViewModel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(app)
     )
     var searchQuery by remember { mutableStateOf("") }
     var isDrawerOpen by remember { mutableStateOf(false) }
+    val id = ""
     var school by remember { mutableStateOf("") }
     var subject by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
@@ -70,14 +72,13 @@ fun Content(
 
 
     Box(modifier = modifier.fillMaxSize()) { // 👈 Wrap lại toàn bộ bằng Box
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
         ) {
             OutlinedTextField(
                 value =
-                    searchQuery,
+                searchQuery,
                 onValueChange = {
                     searchQuery = it
                 },
@@ -126,7 +127,8 @@ fun Content(
                             }
                         }
                     }
-                },
+                }
+                ,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -157,10 +159,8 @@ fun Content(
 
 
 @Composable
-fun ListDocumentView(
-    documents: List<Document>,
-    onNavigateToDetail: (String) -> Unit
-) {
+fun ListDocumentView(documents: List<Document>,
+                     onNavigateToDetail: (String) -> Unit) {
     LazyColumn {
         items(documents) { doc ->
             DocumentItemView(doc, onClick = { onNavigateToDetail(doc.id) })
@@ -168,6 +168,7 @@ fun ListDocumentView(
         }
     }
 }
+
 
 
 @Composable
@@ -207,7 +208,6 @@ fun DocumentItemView(
 
 
 fun onItemSelected(s: String) {}
-
 @Preview(showBackground = true, widthDp = 400, heightDp = 700)
 @Composable
 fun ContentPreview() {

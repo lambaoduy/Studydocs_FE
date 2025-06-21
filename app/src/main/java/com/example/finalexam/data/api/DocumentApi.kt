@@ -4,11 +4,7 @@ import com.example.finalexam.data.dao.document.DocumentListWrapper
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.entity.Document
 import retrofit2.Response
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface DocumentApi {
     @GET("/detail/{documentId}")
@@ -23,20 +19,20 @@ interface DocumentApi {
     @DELETE("/{documentId}/like")
     suspend fun unlikeDocument(@Path("documentId") documentId: String, @Query("userId") userId: String): Response<BaseResponse<Void>>
 
-    @GET("/document/getAllDocument")
+    @GET("/controller/getAllDocument")
     suspend fun getAllDocuments(): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/document/searchByTitle")
+    @GET("/controller/searchByTitle")
     suspend fun searchDocumentByTitle(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/document/searchBySubject")
+    @GET("/controller/searchBySubject")
     suspend fun searchDocumentBySubject(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/document/searchByUniversity")
+    @GET("/controller/searchByUniversity")
     suspend fun searchDocumentByUniversity(
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
