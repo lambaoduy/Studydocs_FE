@@ -1,16 +1,18 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.finalexam.ui.screens.HomeScreen
-
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,21 +24,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.finalexam.R
-import com.example.finalexam.network.AuthFilter
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun TopBar(
@@ -47,7 +45,9 @@ fun TopBar(
 ) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
-    val isLoggedIn = AuthFilter.isLoggedIn(context)
+    val prefs = context.getSharedPreferences("APP_PREF", Context.MODE_PRIVATE)
+    val isLoggedIn = prefs.getString("USER_ID", null) != null
+
     TopAppBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -113,9 +113,13 @@ fun TopBar(
         },
         actions = {
             IconButton(onClick = {
-                 //action thông báo
-                }) {
-                Icon(Icons.Filled.Notifications, contentDescription = "Bell", modifier = Modifier.size(32.dp))
+                //action thông báo
+            }) {
+                Icon(
+                    Icons.Filled.Notifications,
+                    contentDescription = "Bell",
+                    modifier = Modifier.size(32.dp)
+                )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

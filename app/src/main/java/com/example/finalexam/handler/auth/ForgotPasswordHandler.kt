@@ -15,12 +15,13 @@ class ForgotPasswordHandler : IntentHandler<AuthIntent, AuthResult> {
     ) {
         setResult(AuthResult.Loading)
         val forgotPasswordIntent = intent as AuthIntent.ForgotPassword
-        val result = forgotPasswordUseCase.invoke(forgotPasswordIntent.email)
-        if (result.isSuccess) {
-            setResult(AuthResult.Success)
-        } else {
-            setResult(AuthResult.Error(result.exceptionOrNull()!!))
-        }
+        forgotPasswordUseCase.invoke(forgotPasswordIntent.email)
+            .onSuccess {
+                setResult(AuthResult.Success)
+            }
+            .onFailure { error ->
+                setResult(AuthResult.Error(error.message ?: "Unknown error"))
+            }
     }
 
 }

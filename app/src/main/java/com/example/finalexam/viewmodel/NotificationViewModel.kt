@@ -1,6 +1,5 @@
 package com.example.finalexam.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.handler.notification.NotificationDeleteAllHandler
@@ -9,14 +8,13 @@ import com.example.finalexam.handler.notification.NotificationInitialHandler
 import com.example.finalexam.handler.notification.NotificationMarkAsReadAllHandler
 import com.example.finalexam.handler.notification.NotificationMarkAsReadHandler
 import com.example.finalexam.intent.NotificationIntent
-import com.example.finalexam.network.AuthFilter
 import com.example.finalexam.reduce.NotificationReducer
 import com.example.finalexam.result.NotificationResult
 import com.example.finalexam.state.NotificationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class NotificationViewModel(private val app: Application) : ViewModel() {
+class NotificationViewModel: ViewModel() {
     private val reducer = NotificationReducer()
     private val _state = MutableStateFlow(NotificationState())
     val state = _state.asStateFlow()
@@ -29,8 +27,6 @@ class NotificationViewModel(private val app: Application) : ViewModel() {
     )
 
     suspend fun processIntent(intent: NotificationIntent) {
-        // Kiểm tra đăng nhập trước khi xử lý intent
-        AuthFilter.requireLogin(app)
         handlers.find { it.canHandle(intent) }?.handle(intent) { result ->
             _state.value = reducer.reduce(_state.value, result)
         } ?: println("[WARN] No handler for intent: $intent")

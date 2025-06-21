@@ -4,7 +4,7 @@ package com.example.finalexam.result
 sealed class AuthResult {
     object Loading : AuthResult()
     object Success : AuthResult()
-    data class Error(val throwable: Throwable) : AuthResult()
+    data class Error(val message: String) : AuthResult()
     data class ProfileLoaded(val user: com.example.finalexam.entity.User) : AuthResult()
     data class ProfileUpdated(val user: com.example.finalexam.entity.User) : AuthResult()
 } 

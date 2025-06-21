@@ -1,11 +1,9 @@
-package com.example.finalexam.ui.screens.HomeScreen
+package com.example.finalexam.ui.components.HomeScreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +39,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.HomeIntent
 import com.example.finalexam.ui.theme.AppColors
-import com.example.finalexam.ui.theme.AppColors.Surface
 import com.example.finalexam.viewmodel.HomeViewModel
 
 @Composable

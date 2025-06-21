@@ -42,9 +42,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun FollowScreen(
     viewModel: FollowViewModel = viewModel(),
+    userId: String? = null,
     onBackClick: () -> Unit
 ) {
-    val userId = 1
     val scope = rememberCoroutineScope()
 
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }

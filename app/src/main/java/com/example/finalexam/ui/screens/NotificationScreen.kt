@@ -58,7 +58,7 @@ enum class NotificationTypeUI(
 fun NotificationScreen(
     viewModel: NotificationViewModel = viewModel(),
     navigateToFollow: () -> Unit,
-    onBackClick: () -> Unit = {},
+    onBackClick: () -> Unit,
     onNotificationClick: (Notification) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
