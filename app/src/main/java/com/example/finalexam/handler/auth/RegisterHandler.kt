@@ -1,4 +1,4 @@
-package com.example.finalexam.handler
+package com.example.finalexam.handler.auth
 
 import com.example.finalexam.intent.RegisterIntent
 import com.example.finalexam.result.RegisterResult

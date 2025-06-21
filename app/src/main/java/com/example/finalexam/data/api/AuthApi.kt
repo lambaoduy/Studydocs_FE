@@ -1,4 +1,4 @@
-package com.example.finalexam.api
+package com.example.finalexam.data.api
 
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.entity.ForgotPassword
