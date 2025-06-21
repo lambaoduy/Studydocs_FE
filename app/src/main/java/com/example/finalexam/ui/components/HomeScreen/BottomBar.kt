@@ -12,26 +12,28 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 @Composable
 fun BottomBar(
-    onItemSelected: (String) -> Unit // ← callback để chuyển trang
+    currentRoute: String, // ← thêm route hiện tại
+    onItemSelected: (String) -> Unit
 ) {
     NavigationBar {
         NavigationBarItem(
-            selected = false,
+            selected = currentRoute == "home",
             onClick = { onItemSelected("home") },
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
             label = { Text("Home") }
         )
         NavigationBarItem(
-            selected = false,
-            onClick = { onItemSelected("acount") },
+            selected = currentRoute == "account",
+            onClick = { onItemSelected("account") },
             icon = { Icon(Icons.Default.AccountBox, contentDescription = "Account") },
-            label = { Text("Find") }
+            label = { Text("Account") }
         )
         NavigationBarItem(
-            selected = false,
+            selected = currentRoute == "library",
             onClick = { onItemSelected("library") },
             icon = { Icon(Icons.AutoMirrored.Filled.LibraryBooks, contentDescription = "Library") },
             label = { Text("Library") }
         )
     }
 }
+

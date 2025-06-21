@@ -68,8 +68,8 @@ class MainActivity : ComponentActivity() {
                             onNavigateToDocumentDetail = { docId ->
                                 navController.navigate("document_detail/$docId")
                             },
-                            onBottomNavItemSelected = { route ->
-                                navController.navigate(route)
+                            onNavigateToRoute = {
+                                navController.navigate("profile") // 👈 điều hướng tới Profile
                             }
                         )
                     }
@@ -92,9 +92,6 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("library") { /* LibraryScreen() */
                         MyLibraryScreen()
-                    }
-                    composable("Account") { /* LibraryScreen() */
-//                        ProfileScreen()
                     }
                 }
             }
