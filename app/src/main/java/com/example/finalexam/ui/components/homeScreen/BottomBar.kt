@@ -23,9 +23,9 @@ fun BottomBar(
         )
         NavigationBarItem(
             selected = false,
-            onClick = { onItemSelected("acount") },
+            onClick = { onItemSelected("profile")},
             icon = { Icon(Icons.Default.AccountBox, contentDescription = "Account") },
-            label = { Text("Find") }
+            label = { Text("Account") }
         )
         NavigationBarItem(
             selected = false,
