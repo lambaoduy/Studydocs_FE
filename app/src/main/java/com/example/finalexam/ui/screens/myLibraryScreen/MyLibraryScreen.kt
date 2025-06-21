@@ -25,7 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -46,12 +45,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.MyLibraryIntent
-import com.example.finalexam.navigation.NavigationEvent
+import com.example.finalexam.ui.components.HomeScreen.RightFilterDrawer
 import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.MyLibraryViewModel
 
@@ -59,26 +57,26 @@ import com.example.finalexam.viewmodel.MyLibraryViewModel
 @Composable
 fun MyLibraryScreen(
     viewModel: MyLibraryViewModel = viewModel(),
-   onNavigateToUpload: () -> Unit = {},
-   onNavigateToDocumentDetail: (String) -> Unit = {},
-   onNavigateToHome: () -> Unit = {}
+//    onNavigateToUpload: () -> Unit = {},
+//    onNavigateToDocumentDetail: (String) -> Unit = {},
+//    onNavigateToHome: () -> Unit = {}
 ) {
     var selectedTabIndex by remember { mutableStateOf(1) }
     val state by viewModel.state.collectAsState()
     var isDrawerOpen by remember { mutableStateOf(false) }
     var unversity by remember { mutableStateOf("") }
     var subject by remember { mutableStateOf("") }
-
-   LaunchedEffect(Unit) {
-       viewModel.navigationEvent.collect { event ->
-           when (event) {
-               is NavigationEvent.NavigateToUpload -> onNavigateToUpload()
-               is NavigationEvent.NavigateToDocumentDetail -> onNavigateToDocumentDetail(event.documentId)
-               is NavigationEvent.NavigateToHome -> onNavigateToHome()
-               else -> {}
-           }
-       }
-   }
+//
+//    LaunchedEffect(Unit) {
+//        viewModel.navigationEvent.collect { event ->
+//            when (event) {
+//                is NavigationEvent.NavigateToUpload -> onNavigateToUpload()
+//                is NavigationEvent.NavigateToDocumentDetail -> onNavigateToDocumentDetail(event.documentId)
+//                is NavigationEvent.NavigateToHome -> onNavigateToHome()
+//                else -> {}
+//            }
+//        }
+//    }
 
     LaunchedEffect(Unit) {
         viewModel.loadDocuments()
@@ -268,7 +266,7 @@ fun SearchPanel(
         ) {
             OutlinedTextField(
                 value =
-                searchQuery,
+                    searchQuery,
                 onValueChange = {
                     searchQuery = it
                 },
@@ -276,22 +274,22 @@ fun SearchPanel(
                 leadingIcon = {
                     IconButton(onClick =
 //                    {}
-                    {// nếu search query thay đổi thì gọi db để tìm kiếm
-                        if (searchQuery.isNotBlank() && !state.searchQuery.equals(searchQuery)) {
-                            viewModel.processIntent(MyLibraryIntent.Search(searchQuery))
-                        }
+                        {// nếu search query thay đổi thì gọi db để tìm kiếm
+                            if (searchQuery.isNotBlank() && !state.searchQuery.equals(searchQuery)) {
+                                viewModel.processIntent(MyLibraryIntent.Search(searchQuery))
+                            }
 
-                        if (unversity.isNotBlank()) {
-                            viewModel.processIntent(
-                                MyLibraryIntent.FilterByUniversity(
-                                    searchQuery
+                            if (unversity.isNotBlank()) {
+                                viewModel.processIntent(
+                                    MyLibraryIntent.FilterByUniversity(
+                                        searchQuery
+                                    )
                                 )
-                            )
+                            }
+                            if (subject.isNotBlank()) {
+                                viewModel.processIntent(MyLibraryIntent.FilterBySubject(subject))
+                            }
                         }
-                        if (subject.isNotBlank()) {
-                            viewModel.processIntent(MyLibraryIntent.FilterBySubject(subject))
-                        }
-                    }
                     ) {
                         Icon(Icons.Default.Search, contentDescription = "Search")
                     }
@@ -420,3 +418,4 @@ fun UploadedDocumentsPanel(
         }
     }
 }
+
