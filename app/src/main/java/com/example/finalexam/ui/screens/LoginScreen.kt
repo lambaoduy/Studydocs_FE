@@ -25,22 +25,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.finalexam.intent.AuthIntent
-import com.example.finalexam.viewmodel.AuthViewModel
+import com.example.finalexam.intent.LoginIntent
+import com.example.finalexam.viewmodel.LoginViewModel
+import com.example.finalexam.state.LoginState
 import com.example.finalexam.ui.theme.*
 import androidx.compose.material3.MaterialTheme
+import com.example.finalexam.view.RoundedInputField
 
 // thiện làm: LoginScreen theo MVI
 @Composable
 fun LoginScreen(
-    authViewModel: AuthViewModel = viewModel(),
+    loginViewModel: LoginViewModel = viewModel(),
     onRegisterClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
     onLoginSuccess: () -> Unit = {}
 ) {
-    val state by authViewModel.state.collectAsState()
+    val state by loginViewModel.state.collectAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    // Khi đăng nhập thành công thì gọi callback
+    LaunchedEffect(state.user) {
+        if (state.user != null) onLoginSuccess()
+    }
 
     Box(
         modifier = Modifier
@@ -84,9 +91,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = {
-                    authViewModel.processIntent(AuthIntent.Login(email, password))
-                    // Sau khi đăng nhập thành công, gọi callback
-                    if (state.isSuccess) onLoginSuccess()
+                    loginViewModel.processIntent(LoginIntent.Login(email, password))
                 },
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(containerColor = Purple40),
@@ -96,8 +101,8 @@ fun LoginScreen(
             ) {
                 Text("LOGIN", color = Color.White, fontWeight = FontWeight.Bold)
             }
-            if (state.error?.isNotBlank() == true) {
-                Text(state.error ?: "", color = Color.Red)
+            if (state.error != null) {
+                Text(state.error?.localizedMessage ?: "", color = Color.Red)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
