@@ -28,7 +28,7 @@ import com.example.finalexam.ui.screens.RegisterScreen
 import com.example.finalexam.ui.screens.myLibraryScreen.MyLibraryScreen
 import com.example.finalexam.ui.screens.myLibraryScreen.UploadDocumentScreen
 import com.example.finalexam.ui.theme.FinalExamTheme
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,8 +39,12 @@ class MainActivity : ComponentActivity() {
             FinalExamTheme {
                 val navController = rememberNavController()
                 val startDestination by produceState<String>("login") {
-                    val userId = UserPreferences.getUserId().first()
-                    value = if (userId != null) "home" else "login"
+                    val userId = UserPreferences.getUserId().firstOrNull()
+                    val user = UserPreferences.getUser()
+                    value = if (userId != null && user != null) "home" else "login"
+                }
+                val user by produceState<com.example.finalexam.entity.User?>(null) {
+                    value = UserPreferences.getUser()
                 }
                 NavHost(navController = navController, startDestination = startDestination) {
                     composable("login") {
@@ -86,7 +90,10 @@ class MainActivity : ComponentActivity() {
                             onBottomNavItemSelected = { route ->
                                 navController.navigate(route)
                             },
-                            navigateToProfile = { navController.navigate("profile") }
+                            navigateToProfile = { navController.navigate("profile") },
+                            navigateToLogin = { navController.navigate("login") },
+                            navigateToRegister = { navController.navigate("register") },
+                            user = user
                         )
                     }
                     composable("profile") {

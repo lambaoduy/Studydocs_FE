@@ -6,6 +6,7 @@ import com.example.finalexam.data.datastore.FcmTokenManager
 import com.example.finalexam.data.datastore.UserPreferences
 import com.example.finalexam.data.request.RegisterRequest
 import com.example.finalexam.data.response.BaseResponse
+import com.example.finalexam.entity.User
 import com.example.finalexam.network.RetrofitClient
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -34,8 +35,8 @@ class RegisterUseCase {
             val response = userApi.register(RegisterRequest(fullName, email))
             if (response.status != 200) throw Exception(response.message)
             FcmTokenManager.syncTokenIfNeeded(userApi)
+            UserPreferences.saveUserObject(User(fullName, email, null))
             Result.success(Unit)
-
         } catch (e: Exception) {
             // Rollback nếu đã tạo Firebase user
             if (createdFirebaseUser) {

@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.intent.AuthIntent
-import com.example.finalexam.ui.theme.Purple40
+import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.ui.theme.creamy
 import com.example.finalexam.viewmodel.AuthViewModel
 
@@ -54,7 +54,7 @@ fun ForgotPasswordScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("Quên mật khẩu", style = MaterialTheme.typography.titleLarge, color = Purple40)
+            Text("Quên mật khẩu", style = MaterialTheme.typography.titleLarge, color = AppColors.BlueMid)
             Spacer(modifier = Modifier.height(24.dp))
             OutlinedTextField(
                 value = email,

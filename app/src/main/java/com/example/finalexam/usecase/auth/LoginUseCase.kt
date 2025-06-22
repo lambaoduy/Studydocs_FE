@@ -20,6 +20,7 @@ class LoginUseCase {
             val uid = user.uid
             UserPreferences.saveUser(uid, token)
             FcmTokenManager.syncTokenIfNeeded(userApi)
+            UserPreferences.saveUserObject(userApi.getProfile().data)
             Result.success(Unit)
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             return Result.failure(Exception("Email hoặc mật khẩu không đúng"))

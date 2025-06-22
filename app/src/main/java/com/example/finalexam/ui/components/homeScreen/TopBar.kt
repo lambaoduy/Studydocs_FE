@@ -26,32 +26,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
 import com.example.finalexam.R
 import com.example.finalexam.ui.theme.AppColors
 
 @Composable
-fun TopBar(navigateToNotification: () -> Unit, navigateToProfile: () -> Unit) {
+fun TopBar(
+    navigateToProfile: () -> Unit,
+    navigateToNotification: () -> Unit,
+    isLoggedIn: Boolean,
+    avatarUrl: String?,
+    navigateToLogin: () -> Unit,
+    navigateToRegister: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
     TopAppBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = {
-                    navigateToProfile()
-                }) {
-                    Icon(
-                        Icons.Default.AccountCircle,
-                        contentDescription = "Account",
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-
-
                 Spacer(Modifier.width(8.dp))
                 Image(
                     painter = painterResource(id = R.drawable.logo),
@@ -70,7 +63,51 @@ fun TopBar(navigateToNotification: () -> Unit, navigateToProfile: () -> Unit) {
                     modifier = Modifier.size(32.dp)
                 )
             }
-
+            if (!avatarUrl.isNullOrBlank()) {
+                // Hiển thị avatar từ URL
+                coil.compose.AsyncImage(
+                    model = avatarUrl,
+                    contentDescription = "Avatar",
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clickable { expanded = true },
+                )
+            } else {
+                // Hiển thị icon mặc định
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "Account",
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clickable { expanded = true }
+                )
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                if (isLoggedIn) {
+                    DropdownMenuItem(
+                        text = { Text("Trang cá nhân") },
+                        onClick = {
+                            expanded = false
+                            navigateToProfile()
+                        }
+                    )
+                } else {
+                    DropdownMenuItem(
+                        text = { Text("Đăng nhập") },
+                        onClick = {
+                            expanded = false
+                            navigateToLogin()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Đăng ký") },
+                        onClick = {
+                            expanded = false
+                            navigateToRegister()
+                        }
+                    )
+                }
+            }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = AppColors.Background,
