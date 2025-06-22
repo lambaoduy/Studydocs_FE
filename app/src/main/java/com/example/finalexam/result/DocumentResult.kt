@@ -9,7 +9,7 @@ sealed class DocumentResult {
     data class Liked(val updatedLikes: List<Document.Like>? = null) : DocumentResult()
     data class Unliked(val updatedLikes: List<Document.Like>? = null) : DocumentResult()
     // Thêm mới
-    data class Followed(val userId: String) : DocumentResult()
-    data class Unfollowed(val userId: String) : DocumentResult()
+    data object Followed: DocumentResult()
+    data object Unfollowed : DocumentResult()
     data class Error(val message: String) : DocumentResult()
 }
