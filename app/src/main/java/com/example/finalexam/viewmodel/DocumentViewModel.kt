@@ -3,8 +3,11 @@ package com.example.finalexam.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.finalexam.data.api.DocumentApi
+import com.example.finalexam.data.dao.document.DocumentDao
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.handler.document.DocumentFollowHandler
+import com.example.finalexam.handler.document.DocumentSaveHandler
 import com.example.finalexam.handler.document.DocumentUnFollowHandler
 import com.example.finalexam.handler.document.DownloadDocumentHandler
 import com.example.finalexam.handler.document.LikeDocumentHandler
@@ -12,6 +15,7 @@ import com.example.finalexam.handler.document.LoadDocumentHandler
 import com.example.finalexam.handler.document.UnlikeDocumentHandler
 import com.example.finalexam.intent.DocumentIntent
 import com.example.finalexam.intent.FollowIntent
+import com.example.finalexam.network.RetrofitClient
 import com.example.finalexam.reduce.DocumentReducer
 import com.example.finalexam.result.DocumentResult
 import com.example.finalexam.state.DocumentState
@@ -24,7 +28,8 @@ class DocumentViewModel : ViewModel() {
     private val reducer = DocumentReducer()
     private val _state = MutableStateFlow(DocumentState())
     val state = _state.asStateFlow()
-
+    val documentApi = RetrofitClient.createApi(DocumentApi::class.java)
+    private val documentDao = DocumentDao(documentApi)
     private val handlers = listOf<IntentHandler<DocumentIntent, DocumentResult>>(
         LoadDocumentHandler(),
         DownloadDocumentHandler(),
@@ -32,7 +37,8 @@ class DocumentViewModel : ViewModel() {
         UnlikeDocumentHandler(),
         ErrorHandler(),
         DocumentFollowHandler(),
-        DocumentUnFollowHandler()
+        DocumentUnFollowHandler(),
+        DocumentSaveHandler(documentDao)
     )
 
     fun processIntent(intent: Any) {

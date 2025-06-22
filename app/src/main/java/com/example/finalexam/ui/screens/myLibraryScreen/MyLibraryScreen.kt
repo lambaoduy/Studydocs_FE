@@ -103,8 +103,8 @@ fun MyLibraryScreen(
             ) {
                 IconButton(
                     onClick = {
-                         onNavigateToHome() // Cái này không cần thiết vì ViewModel đã xử lý navigation
-//                        viewModel.processIntent(MyLibraryIntent.NavigateToHome)
+                        // onNavigateToHome // Cái này không cần thiết vì ViewModel đã xử lý navigation
+                        viewModel.processIntent(MyLibraryIntent.NavigateToHome)
                     }
                 ) {
                     Icon(

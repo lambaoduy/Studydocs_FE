@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.GetApp
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.PersonRemove
@@ -75,24 +76,24 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
-
-fun downloadFile(context: Context, url: String, fileName: String) {
-    try {
-        val request = android.app.DownloadManager.Request(Uri.parse(url))
-            .setTitle(fileName)
-            .setDescription("Downloading")
-            .setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, fileName)
-            .setAllowedOverMetered(true)
-            .setAllowedOverRoaming(true)
-        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
-        downloadManager.enqueue(request)
-        Toast.makeText(context, "Đang tải $fileName...", Toast.LENGTH_SHORT).show()
-    } catch (e: Exception) {
-        Toast.makeText(context, "Lỗi tải tệp: ${e.message}", Toast.LENGTH_LONG).show()
-        Log.e("DocumentDetail", "Download error: ${e.message}", e)
-    }
-}
+//
+//fun downloadFile(context: Context, url: String, fileName: String) {
+//    try {
+//        val request = android.app.DownloadManager.Request(Uri.parse(url))
+//            .setTitle(fileName)
+//            .setDescription("Downloading")
+//            .setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+//            .setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, fileName)
+//            .setAllowedOverMetered(true)
+//            .setAllowedOverRoaming(true)
+//        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
+//        downloadManager.enqueue(request)
+//        Toast.makeText(context, "Đang tải $fileName...", Toast.LENGTH_SHORT).show()
+//    } catch (e: Exception) {
+//        Toast.makeText(context, "Lỗi tải tệp: ${e.message}", Toast.LENGTH_LONG).show()
+//        Log.e("DocumentDetail", "Download error: ${e.message}", e)
+//    }
+//}
 
 suspend fun downloadFileWithSAF(context: Context, url: String, fileName: String, uri: Uri) {
     try {
@@ -423,11 +424,10 @@ fun DocumentDetailScreen(
                             }
 
                             IconButton(onClick = {
-                                val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
-                                downloadFile(context, documentState.downloadUrl!!, fileName)
+                                documentViewModel.processIntent(DocumentIntent.SaveDocument(documentId))
                             }) {
                                 Icon(
-                                    imageVector = Icons.Default.GetApp,
+                                    imageVector = Icons.Default.Bookmark,
                                     contentDescription = "Download with DownloadManager",
                                     tint = MaterialTheme.colorScheme.primary
                                 )
