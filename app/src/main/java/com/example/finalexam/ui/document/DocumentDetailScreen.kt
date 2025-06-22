@@ -445,6 +445,9 @@ fun DocumentDetailScreen(
                             }
                             IconButton(onClick = {
                                 documentViewModel.processIntent(DocumentIntent.SaveDocument(documentId))
+                                if (documentState.errorMessage.isNullOrEmpty()) {
+                                    Toast.makeText(context, "Đã lưu trữ", Toast.LENGTH_SHORT).show()
+                                }
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.Bookmark,
