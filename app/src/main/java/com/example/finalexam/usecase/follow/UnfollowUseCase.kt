@@ -11,6 +11,7 @@ class UnfollowUseCase {
     private val followApi: FollowApi = RetrofitClient.createApi(FollowApi::class.java)
     suspend fun invoke(followingId: String): Result<String> {
         return try {
+            println(followingId)
             val response = followApi.unFollow(UnfollowRequest(followingId))
             if (response.status == 200) {
                 Result.success(response.data)

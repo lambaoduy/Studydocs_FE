@@ -65,7 +65,7 @@ interface DocumentApi {
     @GET("/document/getDocSaveInLibrary")
     suspend fun getSaveDocument(): Response<BaseResponse<DocumentListWrapper>>
     @POST("/user/document/saveToLibrary")
-    suspend fun saveDocument(@Query("documentId") documentId: String): Response<BaseResponse<String>>
+    suspend fun saveDocument(@Query("keyword") documentId: String): Response<BaseResponse<String>>
     //===Phần này của Hảo end===
 
 }

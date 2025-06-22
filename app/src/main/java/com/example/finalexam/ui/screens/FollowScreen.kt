@@ -45,8 +45,20 @@ fun FollowScreen(
 ) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val tabs = remember { listOf("Followers", "Following") }
-
+    val onLoad = {
+        viewModel.processIntent(
+            FollowIntent.GetFollowers(
+                userId.toString(),
+                FollowType.USER
+            )
+        )
+        viewModel.processIntent(FollowIntent.GetFollowings)
+    }
+    LaunchedEffect(Unit) {
+        onLoad()
+    }
     val state by viewModel.state.collectAsState()
+
 
     val isLoading = state.isLoading
     val errorMessage = state.errorMessage
@@ -61,19 +73,6 @@ fun FollowScreen(
         viewModel.processIntent(FollowIntent.ToggleNotifyEnable(followingId, notifyEnable))
     }
 
-    val onLoad = {
-        viewModel.processIntent(
-            FollowIntent.GetFollowers(
-                userId.toString(),
-                FollowType.USER
-            )
-        )
-        viewModel.processIntent(FollowIntent.GetFollowings)
-    }
-
-    LaunchedEffect(Unit) {
-        onLoad()
-    }
 
     Scaffold(
         topBar = {

@@ -205,13 +205,13 @@ import com.example.finalexam.entity.Following
     if (showUnfollowDialog) {
         AlertDialog(
             onDismissRequest = { showUnfollowDialog = false },
-            title = { Text("Unfollow") },
+            title = { Text("Hủy theo dõi") },
             text = {
                 Text(
-                    "Are you sure you want to unfollow ${following.name}?" +
+                    "Bạn có chắc chắn muốn hủy theo dõi ${following.name}?" +
                             when (following.targetType) {
                                 FollowType.USER -> ""
-                                FollowType.UNIVERSITY -> " You will no longer receive updates about this university."
+                                FollowType.UNIVERSITY -> " Bạn sẽ không còn nhận được cập nhật từ trường này."
                             }
                 )
             },
@@ -222,16 +222,17 @@ import com.example.finalexam.entity.Following
                         showUnfollowDialog = false
                     }
                 ) {
-                    Text("Unfollow")
+                    Text("Hủy theo dõi")
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showUnfollowDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text("Hủy bỏ")
                 }
             }
         )
     }
+
 }
