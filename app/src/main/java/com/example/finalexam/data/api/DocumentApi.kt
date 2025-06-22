@@ -12,6 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.*
 
 
 interface DocumentApi {
@@ -22,10 +23,10 @@ interface DocumentApi {
     suspend fun getDownloadUrl(@Path("documentId") documentId: String): Response<BaseResponse<String>>
 
     @POST("/user/document/{documentId}/like")
-    suspend fun likeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Void>>
+    suspend fun likeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Boolean>>
 
     @DELETE("/user/document/{documentId}/like")
-    suspend fun unlikeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Void>>
+    suspend fun unlikeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Boolean>>
 
     @GET("/document/getAllDocument")
     suspend fun getAllDocuments(): Response<BaseResponse<DocumentListWrapper>>
