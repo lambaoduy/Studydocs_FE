@@ -69,6 +69,7 @@ import com.example.finalexam.intent.FollowIntent
 import com.example.finalexam.network.RetrofitClient
 import com.example.finalexam.viewmodel.DocumentViewModel
 import com.example.finalexam.viewmodel.FollowViewModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -76,23 +77,23 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 
-fun downloadFile(context: Context, url: String, fileName: String) {
-    try {
-        val request = android.app.DownloadManager.Request(Uri.parse(url))
-            .setTitle(fileName)
-            .setDescription("Downloading")
-            .setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, fileName)
-            .setAllowedOverMetered(true)
-            .setAllowedOverRoaming(true)
-        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
-        downloadManager.enqueue(request)
-        Toast.makeText(context, "Đang tải $fileName...", Toast.LENGTH_SHORT).show()
-    } catch (e: Exception) {
-        Toast.makeText(context, "Lỗi tải tệp: ${e.message}", Toast.LENGTH_LONG).show()
-        Log.e("DocumentDetail", "Download error: ${e.message}", e)
-    }
-}
+//fun downloadFile(context: Context, url: String, fileName: String) {
+//    try {
+//        val request = android.app.DownloadManager.Request(Uri.parse(url))
+//            .setTitle(fileName)
+//            .setDescription("Downloading")
+//            .setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+//            .setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, fileName)
+//            .setAllowedOverMetered(true)
+//            .setAllowedOverRoaming(true)
+//        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
+//        downloadManager.enqueue(request)
+//        Toast.makeText(context, "Đang tải $fileName...", Toast.LENGTH_SHORT).show()
+//    } catch (e: Exception) {
+//        Toast.makeText(context, "Lỗi tải tệp: ${e.message}", Toast.LENGTH_LONG).show()
+//        Log.e("DocumentDetail", "Download error: ${e.message}", e)
+//    }
+//}
 
 suspend fun downloadFileWithSAF(context: Context, url: String, fileName: String, uri: Uri) {
     try {
@@ -153,7 +154,11 @@ fun DocumentDetailScreen(
     val followState by followViewModel.state.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-
+// Thêm vào sau các biến như documentState, followState
+    val currentUserId by remember { mutableStateOf(FirebaseAuth.getInstance().currentUser?.uid) }
+    val isCurrentUser by derivedStateOf {
+        currentUserId != null && currentUserId == documentState.document?.userId
+    }
     val documentApi: DocumentApi = RetrofitClient.createApi(DocumentApi::class.java)
 
     var pdfRenderer by remember { mutableStateOf<PdfRenderer?>(null) }
@@ -202,22 +207,22 @@ fun DocumentDetailScreen(
         followViewModel.processIntent(FollowIntent.GetFollowings)
     }
 
-    LaunchedEffect(documentState.document?.fileUrl) {
-        if (documentState.document?.fileUrl == null) {
-            documentViewModel.processIntent(DocumentIntent.Error("Không tìm thấy đường dẫn file trong cơ sở dữ liệu"))
-            return@LaunchedEffect
-        }
-        try {
-            val response = documentApi.getDownloadUrl(documentId)
-            if (response.isSuccessful && response.body()?.data != null) {
-                documentViewModel.processIntent(DocumentIntent.DownloadDocument(response.body()!!.data))
-            } else {
-                documentViewModel.processIntent(DocumentIntent.Error("Lỗi lấy URL tải xuống: ${response.message()}"))
-            }
-        } catch (e: Exception) {
-            documentViewModel.processIntent(DocumentIntent.Error("Lỗi: ${e.message}"))
-        }
-    }
+//    LaunchedEffect(documentState.document?.fileUrl) {
+//        if (documentState.document?.fileUrl == null) {
+//            documentViewModel.processIntent(DocumentIntent.Error("Không tìm thấy đường dẫn file trong cơ sở dữ liệu"))
+//            return@LaunchedEffect
+//        }
+//        try {
+//            val response = documentApi.getDownloadUrl(documentId)
+//            if (response.isSuccessful && response.body()?.data != null) {
+//                documentViewModel.processIntent(DocumentIntent.DownloadDocument(response.body()!!.data))
+//            } else {
+//                documentViewModel.processIntent(DocumentIntent.Error("Lỗi lấy URL tải xuống: ${response.message()}"))
+//            }
+//        } catch (e: Exception) {
+//            documentViewModel.processIntent(DocumentIntent.Error("Lỗi: ${e.message}"))
+//        }
+//    }
 
     LaunchedEffect(documentState.downloadUrl) {
         val url = documentState.downloadUrl
@@ -362,76 +367,79 @@ fun DocumentDetailScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            var isFollowProcessing by remember { mutableStateOf(false) }
-                            IconButton(
-                                onClick = {
-                                    val userId = documentState.document?.userId
-                                    if (userId.isNullOrEmpty()) {
-                                        Toast.makeText(context, "Không tìm thấy ID người dùng", Toast.LENGTH_SHORT).show()
-                                        return@IconButton
-                                    }
-                                    if (isFollowProcessing) {
-                                        return@IconButton
-                                    }
-                                    scope.launch {
-                                        isFollowProcessing = true
-                                        try {
-                                            val wasFollowed = isFollowed
-                                            documentViewModel.processIntent(
-                                                if (isFollowed) {
-                                                    DocumentIntent.UnFollow(userId, FollowType.USER) // userId là targetId
-                                                } else {
-                                                    DocumentIntent.Follow(userId, FollowType.USER)
-                                                }
-                                            )
-                                            kotlinx.coroutines.delay(500)
-                                            if (followState.errorMessage.isNullOrEmpty()) {
-                                                Toast.makeText(
-                                                    context,
-                                                    if (wasFollowed) "Đã bỏ theo dõi" else "Đã theo dõi",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            } else {
-                                                Toast.makeText(
-                                                    context,
-                                                    followState.errorMessage ?: "Lỗi xử lý theo dõi",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
-                                        } catch (e: Exception) {
-                                            Log.e("DocumentDetailScreen", "Lỗi xử lý follow/unfollow: ${e.message}")
-                                            documentViewModel.processIntent(DocumentIntent.Error("Lỗi xử lý theo dõi: ${e.message}"))
-                                        } finally {
-                                            isFollowProcessing = false
+                            // Chỉ hiển thị nút follow/unfollow nếu không phải người dùng hiện tại
+                            if (!isCurrentUser) {
+                                var isFollowProcessing by remember { mutableStateOf(false) }
+                                IconButton(
+                                    onClick = {
+                                        val userId = documentState.document?.userId
+                                        if (userId.isNullOrEmpty()) {
+                                            Toast.makeText(context, "Không tìm thấy ID người dùng", Toast.LENGTH_SHORT).show()
+                                            return@IconButton
                                         }
+                                        if (isFollowProcessing) {
+                                            return@IconButton
+                                        }
+                                        scope.launch {
+                                            isFollowProcessing = true
+                                            try {
+                                                val wasFollowed = isFollowed
+                                                documentViewModel.processIntent(
+                                                    if (isFollowed) {
+                                                        DocumentIntent.UnFollow(userId, FollowType.USER)
+                                                    } else {
+                                                        DocumentIntent.Follow(userId, FollowType.USER)
+                                                    }
+                                                )
+                                                kotlinx.coroutines.delay(500)
+                                                if (followState.errorMessage.isNullOrEmpty()) {
+                                                    Toast.makeText(
+                                                        context,
+                                                        if (wasFollowed) "Đã bỏ theo dõi" else "Đã theo dõi",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                } else {
+                                                    Toast.makeText(
+                                                        context,
+                                                        followState.errorMessage ?: "Lỗi xử lý theo dõi",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            } catch (e: Exception) {
+                                                Log.e("DocumentDetailScreen", "Lỗi xử lý follow/unfollow: ${e.message}")
+                                                documentViewModel.processIntent(DocumentIntent.Error("Lỗi xử lý theo dõi: ${e.message}"))
+                                            } finally {
+                                                isFollowProcessing = false
+                                            }
+                                        }
+                                    },
+                                    enabled = !isFollowProcessing && documentState.document?.userId?.isNotEmpty() == true && !documentState.isLoading
+                                ) {
+                                    if (isFollowProcessing) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp),
+                                            strokeWidth = 2.dp
+                                        )
+                                    } else {
+                                        Icon(
+                                            imageVector = if (isFollowed) Icons.Default.PersonRemove else Icons.Default.PersonAdd,
+                                            contentDescription = if (isFollowed) "Bỏ theo dõi" else "Theo dõi",
+                                            tint = if (isFollowed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                        )
                                     }
-                                },
-                                enabled = !isFollowProcessing && documentState.document?.userId?.isNotEmpty() == true && !documentState.isLoading
-                            ) {
-                                if (isFollowProcessing) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp),
-                                        strokeWidth = 2.dp
-                                    )
-                                } else {
-                                    Icon(
-                                        imageVector = if (isFollowed) Icons.Default.PersonRemove else Icons.Default.PersonAdd,
-                                        contentDescription = if (isFollowed) "Bỏ theo dõi" else "Theo dõi",
-                                        tint = if (isFollowed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                                    )
                                 }
                             }
 
-                            IconButton(onClick = {
-                                val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
-                                downloadFile(context, documentState.downloadUrl!!, fileName)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.GetApp,
-                                    contentDescription = "Download with DownloadManager",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
+//                            IconButton(onClick = {
+//                                val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
+//                                downloadFile(context, documentState.downloadUrl!!, fileName)
+//                            }) {
+//                                Icon(
+//                                    imageVector = Icons.Default.GetApp,
+//                                    contentDescription = "Download with DownloadManager",
+//                                    tint = MaterialTheme.colorScheme.primary
+//                                )
+//                            }
 
                             IconButton(onClick = {
                                 val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"

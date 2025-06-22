@@ -15,7 +15,7 @@ class DocumentUnFollowHandler : IntentHandler<DocumentIntent, DocumentResult> {
             unfollowUseCase.invokeByTarget(unFollowIntent.targetId, unFollowIntent.type)
             setResult(DocumentResult.Followed)
         } catch (e: Exception) {
-            setResult(DocumentResult.Error("Theo dõi thất bại: ${e.message}"))
+            setResult(DocumentResult.Error("Hủy theo dõi thất bại: ${e.message}"))
         }
     }
 }
