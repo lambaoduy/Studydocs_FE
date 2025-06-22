@@ -17,8 +17,8 @@ class FollowHandler : IntentHandler<FollowIntent, FollowResult> {
         setResult(FollowResult.Loading)
         val followIntent = intent as FollowIntent.Follow
         followUseCase.invoke(followIntent.targetId, followIntent.targetType)
-            .onSuccess { following ->
-                setResult(FollowResult.FollowActionResult(following))
+            .onSuccess {
+                setResult(FollowResult.FollowActionResult)
             }
             .onFailure { error ->
                 setResult(FollowResult.Error(error.message ?: "An unknown error occurred."))

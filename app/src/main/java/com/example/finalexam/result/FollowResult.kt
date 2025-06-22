@@ -6,8 +6,7 @@ import com.example.finalexam.entity.Following
 
 sealed class FollowResult {
     data object Loading : FollowResult()
-    data class FollowActionResult(val following: Following) :
-        FollowResult()
+    data object FollowActionResult : FollowResult()
 
     data class UnFollowActionResult(val followingId: String) : FollowResult()
 

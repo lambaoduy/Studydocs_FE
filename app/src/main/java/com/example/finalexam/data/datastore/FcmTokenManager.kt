@@ -2,6 +2,7 @@ package com.example.finalexam.data.datastore
 
 import android.util.Log
 import com.example.finalexam.data.api.UserApi
+import com.example.finalexam.data.request.UpdateFcmTokenRequest
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,7 @@ object FcmTokenManager {
                 val savedToken = UserPreferences.getFcmToken()
 
                 if (savedToken != newToken) {
-                    userApi.updateFcmToken(newToken)
+                    userApi.updateFcmToken(UpdateFcmTokenRequest(newToken))
                     UserPreferences.saveFcmToken(newToken)
                 }
             } catch (e: Exception) {

@@ -1,5 +1,6 @@
 package com.example.finalexam.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,22 +34,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.finalexam.R
 import com.example.finalexam.intent.AuthIntent
-import com.example.finalexam.ui.theme.Purple40
-import com.example.finalexam.ui.theme.PurpleGrey40
-import com.example.finalexam.ui.theme.creamy
+import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.AuthViewModel
 
-// thiện làm: RegisterScreen theo MVI
 @Composable
 fun RegisterScreen(
     authViewModel: AuthViewModel = viewModel(),
@@ -67,11 +68,7 @@ fun RegisterScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Purple40, PurpleGrey40, creamy)
-                )
-            )
+            .background(AppColors.Background)
     ) {
         Column(
             modifier = Modifier
@@ -80,41 +77,41 @@ fun RegisterScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Register Icon",
-                tint = Purple40,
-                modifier = Modifier.size(64.dp)
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo",
+                modifier = Modifier.size(150.dp)
             )
-            Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Create New Account",
+                text = "Đăng ký tài khoản",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = Purple40
+                color = AppColors.BlueMid
             )
             Spacer(modifier = Modifier.height(24.dp))
             RoundedInputField(
                 icon = Icons.Default.Person,
-                placeholder = "Full Name",
+                placeholder = "Họ tên",
                 value = fullName,
-                onValueChange = { fullName = it }
+                onValueChange = { fullName = it },
+                iconTint = AppColors.BlueMid
             )
             Spacer(modifier = Modifier.height(12.dp))
             RoundedInputField(
                 icon = Icons.Default.Email,
                 placeholder = "Email",
                 value = email,
-                onValueChange = { email = it }
+                onValueChange = { email = it },
+                iconTint = AppColors.BlueMid
             )
             Spacer(modifier = Modifier.height(12.dp))
             RoundedInputField(
                 icon = Icons.Default.Lock,
-                placeholder = "Password",
+                placeholder = "Mật khẩu",
                 value = password,
                 onValueChange = { password = it },
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = PasswordVisualTransformation(),
+                iconTint = AppColors.BlueMid
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
@@ -124,12 +121,12 @@ fun RegisterScreen(
                     )
                 },
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(containerColor = Purple40),
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.BlueMid),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Text("SIGN UP", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("Đăng ký", color = Color.White, fontWeight = FontWeight.Bold)
             }
             if (state.error?.isNotBlank() == true) {
                 Text(state.error ?: "", color = Color.Red)
@@ -140,12 +137,12 @@ fun RegisterScreen(
                 modifier = Modifier.clickable { onLoginClick() }
             ) {
                 Text(
-                    text = "Already registered? ",
-                    color = PurpleGrey40
+                    text = "Bạn đã có tài khoản?",
+                    color = AppColors.TextSecondary
                 )
                 Text(
-                    text = "Login",
-                    color = Purple40,
+                    text = "Đăng nhập",
+                    color = AppColors.BlueMid,
                     style = TextStyle(textDecoration = TextDecoration.Underline),
                     fontWeight = FontWeight.Bold
                 )
@@ -160,11 +157,12 @@ fun RegisterScreen(
 // Định nghĩa RoundedInputField duy nhất ở đây
 @Composable
 fun RoundedInputField(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     placeholder: String,
     value: String,
     onValueChange: (String) -> Unit,
-    visualTransformation: androidx.compose.ui.text.input.VisualTransformation = androidx.compose.ui.text.input.VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    iconTint: Color
 ) {
     TextField(
         value = value,
@@ -173,7 +171,7 @@ fun RoundedInputField(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Purple40
+                tint = AppColors.BlueMid
             )
         },
         placeholder = { Text(text = placeholder, color = Color.Gray) },

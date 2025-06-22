@@ -8,7 +8,7 @@ import com.example.finalexam.usecase.profile.LogoutUseCase
 class LogoutHandler : IntentHandler<ProfileIntent, ProfileResult> {
     private val logoutUseCase = LogoutUseCase()
 
-    override fun canHandle(intent: ProfileIntent): Boolean = intent is ProfileResult.Logout
+    override fun canHandle(intent: ProfileIntent): Boolean = intent is ProfileIntent.Logout
 
     override suspend fun handle(
         intent: ProfileIntent,
@@ -17,7 +17,7 @@ class LogoutHandler : IntentHandler<ProfileIntent, ProfileResult> {
         setResult(ProfileResult.Loading)
         logoutUseCase.invoke()
             .onSuccess {
-                setResult(ProfileResult.Success)
+                setResult(ProfileResult.Logout)
             }
             .onFailure { error ->
                 setResult(ProfileResult.Error(error.message ?: "Unknown error"))

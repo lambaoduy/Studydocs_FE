@@ -12,13 +12,15 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-
 interface FollowApi {
     @POST("/user/follow")
-    suspend fun follow(@Body followRequest: FollowRequest): BaseResponse<Following>
+    suspend fun follow(@Body followRequest: FollowRequest): BaseResponse<Void>
 
-    @POST("/user/unFollow")
-    suspend fun unFollow(@Query("followingId") followingId: String): BaseResponse<String>
+    @POST("/unfollow/by-target")
+    suspend fun unFollowByTarget(@Body followRequest: FollowRequest): BaseResponse<Void>
+
+    @POST("/user/unfollow")
+    suspend fun unFollow(@Body followingId: String): BaseResponse<String>
 
     @PATCH("/user/follow")
     suspend fun toggleNotify(@Body toggleNotifyRequest: ToggleNotifyRequest): BaseResponse<Boolean>
@@ -31,6 +33,4 @@ interface FollowApi {
 
     @GET("/user/following")
     suspend fun getFollowings(): BaseResponse<List<Following>>
-
-
 }
