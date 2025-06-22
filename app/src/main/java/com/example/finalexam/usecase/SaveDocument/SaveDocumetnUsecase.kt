@@ -3,7 +3,7 @@
 package com.example.finalexam.domain.usecase
 
 import com.example.finalexam.data.dao.document.DocumentDao
-import kotlin.Result // <-- Đảm bảo bạn import đúng Result của Kotlin
+
 
 class SaveDocumetnUsecase(private val dao: DocumentDao) {
 

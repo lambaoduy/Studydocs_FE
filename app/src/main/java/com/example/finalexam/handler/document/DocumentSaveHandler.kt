@@ -7,7 +7,7 @@ import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.DocumentIntent
 import com.example.finalexam.result.DocumentResult
 import com.example.finalexam.domain.usecase.SaveDocumetnUsecase
-//import kotlin.Result // <-- RẤT QUAN TRỌNG: Import kotlin.Result ở đây!
+
 
 class DocumentSaveHandler(private val documentDao: DocumentDao) : IntentHandler<DocumentIntent, DocumentResult> {
     private val documentUseCase = SaveDocumetnUsecase(dao = documentDao)
