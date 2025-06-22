@@ -8,7 +8,7 @@ import com.example.finalexam.usecase.profile.LoadProfileUseCase
 class LoadProfileHandler : IntentHandler<ProfileIntent, ProfileResult> {
     private val loadProfileUseCase = LoadProfileUseCase()
 
-    override fun canHandle(intent: ProfileIntent): Boolean = intent is ProfileResult.Loaded
+    override fun canHandle(intent: ProfileIntent): Boolean = intent is ProfileIntent.Load
 
     override suspend fun handle(
         intent: ProfileIntent,

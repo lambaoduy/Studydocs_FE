@@ -9,6 +9,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import com.example.finalexam.ui.theme.AppColors
 
 @Composable
 fun BottomBar(
@@ -18,20 +19,20 @@ fun BottomBar(
         NavigationBarItem(
             selected = false,
             onClick = { onItemSelected("home") },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") }
+            icon = { Icon(Icons.Default.Home, contentDescription = "Home", tint = AppColors.TextPrimary) },
+            label = { Text("Trang Chủ") }
         )
         NavigationBarItem(
             selected = false,
-            onClick = { onItemSelected("acount") },
-            icon = { Icon(Icons.Default.AccountBox, contentDescription = "Account") },
-            label = { Text("Find") }
+            onClick = { onItemSelected("profile") },
+            icon = { Icon(Icons.Default.AccountBox, contentDescription = "Account", tint = AppColors.TextPrimary) },
+            label = { Text("Cá nhân") }
         )
         NavigationBarItem(
             selected = false,
             onClick = { onItemSelected("library") },
-            icon = { Icon(Icons.AutoMirrored.Filled.LibraryBooks, contentDescription = "Library") },
-            label = { Text("Library") }
+            icon = { Icon(Icons.AutoMirrored.Filled.LibraryBooks, contentDescription = "Library", tint = AppColors.TextPrimary) },
+            label = { Text("Thư viện") }
         )
     }
 }

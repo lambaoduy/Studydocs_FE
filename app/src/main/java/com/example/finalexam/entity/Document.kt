@@ -5,11 +5,9 @@ import com.google.gson.annotations.SerializedName
 
 
 data class Document(
-    //hao
     val author: String = "",
     val createdDate: String = "",
     val downloadUrl: String = "",
-    //
     val id: String = "",
     val userId: String = "",
     val title: String = "",
@@ -29,5 +27,4 @@ data class Document(
         val type: String = "",
         val createAt: Timestamp? = null
     )
-
 }

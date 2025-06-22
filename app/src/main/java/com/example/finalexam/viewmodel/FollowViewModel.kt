@@ -1,5 +1,6 @@
 package com.example.finalexam.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.finalexam.handler.IntentHandler
@@ -26,14 +27,41 @@ class FollowViewModel : ViewModel() {
         FollowHandler(),
         UnfollowHandler(),
         ToggleNotifyEnableHandler(),
+        ErrorHandler()
     )
 
     fun processIntent(intent: FollowIntent) {
         viewModelScope.launch {
-            handlers.find { it.canHandle(intent) }?.handle(intent) { result ->
-                _state.value = reducer.reduce(_state.value, result)
-            } ?: println("[WARN] No handler for intent: $intent")
+            try {
+                val handler = handlers.find { it.canHandle(intent) }
+                if (handler != null) {
+                    handler.handle(intent) { result ->
+                        _state.value = reducer.reduce(_state.value, result)
+                        if (result is FollowResult.Error) {
+                            Log.e("FollowViewModel", "Lỗi xử lý intent: ${result.message}")
+                        }
+                    }
+                } else {
+                    Log.w("FollowViewModel", "Không có handler cho intent: $intent")
+                    _state.value = reducer.reduce(
+                        _state.value,
+                        FollowResult.Error("Không tìm thấy handler cho intent")
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("FollowViewModel", "Lỗi xử lý intent: ${e.message}")
+                _state.value = reducer.reduce(
+                    _state.value,
+                    FollowResult.Error("Lỗi: ${e.message}")
+                )
+            }
         }
     }
 
+    inner class ErrorHandler : IntentHandler<FollowIntent, FollowResult> {
+        override fun canHandle(intent: FollowIntent): Boolean = false
+        override suspend fun handle(intent: FollowIntent, setResult: (FollowResult) -> Unit) {
+            setResult(FollowResult.Error("Lỗi không xác định"))
+        }
+    }
 }

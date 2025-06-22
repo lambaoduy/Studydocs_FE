@@ -1,11 +1,11 @@
 package com.example.finalexam.reduce
 
 import com.example.finalexam.result.ProfileResult
-import com.example.finalexam.state.UpdateProfileState
+import com.example.finalexam.state.ProfileState
 
 // Reducer cho chức năng cập nhật profile
 class ProfileReducer {
-    fun reduce(state: UpdateProfileState, result: ProfileResult): UpdateProfileState =
+    fun reduce(state: ProfileState, result: ProfileResult): ProfileState =
         when (result) {
             is ProfileResult.Loading -> state.copy(
                 isLoading = true,
@@ -33,7 +33,8 @@ class ProfileReducer {
 
             is ProfileResult.Logout -> state.copy(
                 isLoading = false,
-                isSuccess = false,
+                isSuccess = true,
+                user = null,
                 error = null
             )
         }

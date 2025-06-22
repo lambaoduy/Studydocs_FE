@@ -52,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.data.repository.UniversityRepository
@@ -68,10 +67,10 @@ import com.example.finalexam.viewmodel.UniversityViewModel
 import com.example.finalexam.viewmodel.UniversityViewModelFactory
 import com.example.finalexam.viewmodel.UploadDocumentViewModel
 import com.example.finalexam.viewmodel.UploadDocumentViewModelFactory
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.UUID
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +79,7 @@ fun UploadDocumentScreen(
     onBackClick: () -> Unit = {},
     onUploadClick: (UploadDocument?) -> Unit = {},
     //===Phần này của Hảo 22/6===
-    onUploadSuccess: () -> Unit = {} // Callback khi upload thành công
+    onUploadSuccess: () -> Unit // Callback khi upload thành công
     //===Phần này của Hảo 22/6===
 ) {
     val context = LocalContext.current

@@ -7,6 +7,7 @@ data class DocumentState(
     val document: Document? = null,
     val downloadUrl: String? = null,
     val errorMessage: String? = null,
-    val isLiked: Boolean = false
-
+    val isLiked: Boolean = false,
+    val isLoadingLike: Boolean = false,
+    val isFollowed: Boolean = false
 )

@@ -8,10 +8,7 @@ class FollowReducer {
         when (result) {
             is FollowResult.Loading -> state.copy(isLoading = true)
             is FollowResult.Error -> state.copy(isLoading = false, errorMessage = result.message)
-            is FollowResult.FollowActionResult -> state.copy(
-                isLoading = false,
-                followings = state.followings + result.following
-            )
+            is FollowResult.FollowActionResult -> state.copy(isLoading = false)
 
             is FollowResult.UnFollowActionResult -> state.copy(
                 isLoading = false,
