@@ -1,5 +1,6 @@
 package com.example.finalexam.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.finalexam.handler.IntentHandler
@@ -25,19 +26,22 @@ class DocumentViewModel : ViewModel() {
         DownloadDocumentHandler(),
         LikeDocumentHandler(),
         UnlikeDocumentHandler(),
-        ErrorHandler() // Thêm ErrorHandler vào danh sách
+        ErrorHandler()
     )
 
-    /**
-     * Xử lý intent từ UI
-     * @param intent Hành động người dùng thực hiện
-     */
     fun processIntent(intent: DocumentIntent) {
         viewModelScope.launch {
+            Log.d("DocumentViewModel", "Processing intent: $intent")
             val handler = handlers.find { it.canHandle(intent) }
-            handler?.handle(intent) { result ->
-                _state.value = reducer.reduce(_state.value, result)
-            } ?: println("[WARN] No handler for intent: $intent")
+            if (handler != null) {
+                handler.handle(intent) { result ->
+                    Log.d("DocumentViewModel", "Result: $result")
+                    _state.value = reducer.reduce(_state.value, result)
+                    Log.d("DocumentViewModel", "New state: ${_state.value}")
+                }
+            } else {
+                Log.w("DocumentViewModel", "No handler for intent: $intent")
+            }
         }
     }
 
@@ -45,6 +49,7 @@ class DocumentViewModel : ViewModel() {
         override fun canHandle(intent: DocumentIntent): Boolean = intent is DocumentIntent.Error
         override suspend fun handle(intent: DocumentIntent, setResult: (DocumentResult) -> Unit) {
             val errorIntent = intent as DocumentIntent.Error
+            Log.e("DocumentViewModel", "Error intent: ${errorIntent.message}")
             setResult(DocumentResult.Error(errorIntent.message))
         }
     }

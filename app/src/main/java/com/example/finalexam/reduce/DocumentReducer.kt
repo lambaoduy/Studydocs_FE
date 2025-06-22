@@ -15,11 +15,19 @@ class DocumentReducer {
         is DocumentResult.Loaded -> state.copy(
             isLoading = false,
             document = result.document,
+            errorMessage = null,
             isLiked = result.document.likes?.any { it.userId == "currentUserId" } ?: false // Giả định userId hiện tại
         )
-        is DocumentResult.DownloadUrl -> state.copy(downloadUrl = result.url)
-        is DocumentResult.Liked -> state.copy(isLiked = true) // Cập nhật khi like
-        is DocumentResult.Unliked -> state.copy(isLiked = false) // Cập nhật khi unlike
-        is DocumentResult.Error -> state.copy(isLoading = false, errorMessage = result.message)
+        is DocumentResult.DownloadUrl -> state.copy(
+            downloadUrl = result.url,
+            errorMessage = null, // Xóa errorMessage cũ
+            isLoading = false
+        )
+        is DocumentResult.Liked -> state.copy(isLiked = true)
+        is DocumentResult.Unliked -> state.copy(isLiked = false)
+        is DocumentResult.Error -> state.copy(
+            isLoading = false,
+            errorMessage = result.message
+        )
     }
 }
