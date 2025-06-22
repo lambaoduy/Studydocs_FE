@@ -16,11 +16,11 @@ interface FollowApi {
     @POST("/user/follow")
     suspend fun follow(@Body followRequest: FollowRequest): BaseResponse<Void>
 
-    @POST("/unfollow/by-target")
-    suspend fun unFollowByTarget(@Body followRequest: FollowRequest): BaseResponse<Void>
-
     @POST("/user/unfollow")
     suspend fun unFollow(@Body followingId: String): BaseResponse<String>
+
+    @POST("/user/unfollow/by-target")
+    suspend fun unFollowByTarget(@Body unfollowRequest: FollowRequest): BaseResponse<Void>
 
     @PATCH("/user/follow")
     suspend fun toggleNotify(@Body toggleNotifyRequest: ToggleNotifyRequest): BaseResponse<Boolean>
