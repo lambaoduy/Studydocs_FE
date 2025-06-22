@@ -33,7 +33,8 @@ class MyLibraryViewModel() : ViewModel() {
     // Khởi tạo các handler
     private val handlers: List<IntentHandler<MyLibraryIntent, MyLibraryResult>> = listOf(
         LoadDocumentsHandler(LoadDocumentsUseCase(documentDao)),
-        SearchDocumentsHandler(state)
+        SearchDocumentsHandler(state),
+
     )
 
     fun processIntent(intent: MyLibraryIntent) {

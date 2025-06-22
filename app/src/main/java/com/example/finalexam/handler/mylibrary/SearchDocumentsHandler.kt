@@ -33,10 +33,10 @@ class SearchDocumentsHandler(
                 keyword = filters.keyword,
                 school = filters.university,
                 subject = filters.subject,
-                cacheList =state.value.documetnsSave
+                cacheList =state.value.documentsSave
 
             )
 
-            setResult(MyLibraryResult.LoadDocumentsSuccess(mydoc,savedoc))}
+            setResult(MyLibraryResult.SearchSuccess(mydoc,savedoc))}
     }
 } 
