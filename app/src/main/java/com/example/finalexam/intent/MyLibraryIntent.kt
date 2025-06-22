@@ -5,10 +5,7 @@ import com.example.finalexam.entity.Document
 sealed class MyLibraryIntent {
     // Hành động tìm kiếm tài liệu
     data class Search(val query: String) : MyLibraryIntent()
-    //  lọc theo university
-    data class FilterByUniversity(val university: String) : MyLibraryIntent()
-    //lọc theo subject
-    data class FilterBySubject(val subject: String) : MyLibraryIntent()
+    data class FindWithFilters(val keyword: String?, val university: String?, val subject: String?) :MyLibraryIntent()
     // Hành động tải lại danh sách tài liệu
     data object Refresh : MyLibraryIntent()
     // Hành động nhấn nút upload tài liệu

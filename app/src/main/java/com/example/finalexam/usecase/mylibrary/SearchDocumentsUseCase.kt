@@ -1,24 +1,32 @@
 package com.example.finalexam.usecase.mylibrary
 
 import com.example.finalexam.entity.Document
-import com.example.finalexam.result.MyLibraryResult
+import com.example.finalexam.state.MyLibraryState
+import kotlinx.coroutines.flow.StateFlow
 
-class SearchDocumentsUseCase {
-    suspend operator fun invoke(query: String): MyLibraryResult {
-        return try {
-            // TODO: Replace with actual API call
-            // val response = apiService.searchDocuments(query)
-            // MyLibraryResult.SearchSuccess(response.documents)
-            
-            // Temporary mock data
-            val mockDocuments = listOf(
-                Document("1", "Tài liệu Kotlin", "Nguyễn Văn A", "01/01/2024"),
-                Document("2", "Tài liệu Jetpack Compose", "Trần Thị B", "02/01/2024")
-            ).filter { it.title.contains(query, ignoreCase = true) }
-            
-            MyLibraryResult.SearchSuccess(mockDocuments)
-        } catch (e: Exception) {
-            MyLibraryResult.Error(e.message ?: "Failed to search documents")
+class SearchDocumentsUseCase() {
+    suspend fun findByFilters(
+        keyword: String?,
+        school: String?,
+        subject: String?,
+        cacheList: List<Document>?
+    ): List<Document> {
+        // Dữ liệu ban đầu từ cache
+        var result = cacheList ?: emptyList()
+
+        // Lọc từ cache nếu có
+        if (result.isNotEmpty()) {
+            if (!keyword.isNullOrBlank()) {
+                result = result.filter { it.title.contains(keyword, ignoreCase = true) }
+            }
+            if (!school.isNullOrBlank()) {
+                result = result.filter { it.university.contains(school, ignoreCase = true) }
+            }
+            if (!subject.isNullOrBlank()) {
+                result = result.filter { it.subject.contains(subject, ignoreCase = true) }
+            }
+            return result
         }
+     return result
     }
 } 

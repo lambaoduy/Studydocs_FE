@@ -17,6 +17,6 @@ class LoadDocumentsHandler(
         setResult: (MyLibraryResult) -> Unit
     ) {
         setResult(MyLibraryResult.Loading)
-        setResult(loadDocumentsUseCase())
+        setResult(loadDocumentsUseCase.invoke())
     }
 } 

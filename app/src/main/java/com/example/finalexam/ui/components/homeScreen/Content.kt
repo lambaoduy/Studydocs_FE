@@ -40,16 +40,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.HomeIntent
+import com.example.finalexam.ui.components.homeScreen.RightFilterDrawer
 import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.HomeViewModel
-import com.example.finalexam.viewmodel.HomeViewModelFactory
 
 @Composable
 fun Content(modifier: Modifier = Modifier,
             onNavigateToDocumentDetail: (String) -> Unit) {
-    val app = LocalContext.current.applicationContext as Application
     val homeViewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(app)
+
     )
     var searchQuery by remember { mutableStateOf("") }
     var isDrawerOpen by remember { mutableStateOf(false) }
@@ -71,7 +70,7 @@ fun Content(modifier: Modifier = Modifier,
         ) {
             OutlinedTextField(
                 value =
-                    searchQuery,
+                searchQuery,
                 onValueChange = {
                     searchQuery = it
                 },
