@@ -9,6 +9,7 @@ import retrofit2.http.POST
 interface UserApi {
     @PATCH("/user/fcm-token")
     suspend fun updateFcmToken(@Body fcmToken: String): BaseResponse<Void>
+
     @POST("/user/register")
     suspend fun register(@Body request: RegisterRequest): BaseResponse<String>
 

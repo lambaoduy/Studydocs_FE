@@ -1,6 +1,7 @@
 package com.example.finalexam.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.handler.notification.NotificationDeleteAllHandler
 import com.example.finalexam.handler.notification.NotificationDeleteHandler
@@ -13,8 +14,9 @@ import com.example.finalexam.result.NotificationResult
 import com.example.finalexam.state.NotificationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class NotificationViewModel: ViewModel() {
+class NotificationViewModel : ViewModel() {
     private val reducer = NotificationReducer()
     private val _state = MutableStateFlow(NotificationState())
     val state = _state.asStateFlow()
@@ -26,11 +28,12 @@ class NotificationViewModel: ViewModel() {
         NotificationDeleteAllHandler()
     )
 
-    suspend fun processIntent(intent: NotificationIntent) {
-        handlers.find { it.canHandle(intent) }?.handle(intent) { result ->
-            _state.value = reducer.reduce(_state.value, result)
-        } ?: println("[WARN] No handler for intent: $intent")
+    fun processIntent(intent: NotificationIntent) {
+        viewModelScope.launch {
+            handlers.find { it.canHandle(intent) }?.handle(intent) { result ->
+                _state.value = reducer.reduce(_state.value, result)
+            } ?: println("[WARN] No handler for intent: $intent")
+        }
     }
-
 
 }

@@ -2,11 +2,11 @@ package com.example.finalexam.usecase.auth
 
 import com.example.finalexam.config.FirebaseConfig
 import com.example.finalexam.data.api.UserApi
+import com.example.finalexam.data.datastore.FcmTokenManager
 import com.example.finalexam.data.datastore.UserPreferences
 import com.example.finalexam.network.RetrofitClient
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
 
 class LoginUseCase {
@@ -19,9 +19,7 @@ class LoginUseCase {
             val token = user.getIdToken(true).await().token ?: ""
             val uid = user.uid
             UserPreferences.saveUser(uid, token)
-            val firebaseMessaging = FirebaseMessaging.getInstance()
-            val fcmToken = firebaseMessaging.token.await()
-            userApi.updateFcmToken(fcmToken)
+            FcmTokenManager.syncTokenIfNeeded(userApi)
             Result.success(Unit)
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             return Result.failure(Exception("Email hoặc mật khẩu không đúng"))

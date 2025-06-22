@@ -23,7 +23,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -37,7 +36,6 @@ import com.example.finalexam.ui.components.common.LoadingState
 import com.example.finalexam.ui.components.follow.FollowersContent
 import com.example.finalexam.ui.components.follow.FollowingsContent
 import com.example.finalexam.viewmodel.FollowViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun FollowScreen(
@@ -45,8 +43,6 @@ fun FollowScreen(
     userId: String? = null,
     onBackClick: () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val tabs = remember { listOf("Followers", "Following") }
 
@@ -58,27 +54,21 @@ fun FollowScreen(
     val followings = state.followings
 
     val onUnfollow = { followingId: String ->
-        scope.launch {
-            viewModel.processIntent(FollowIntent.Unfollow(followingId))
-        }
+        viewModel.processIntent(FollowIntent.Unfollow(followingId))
     }
 
     val onToggleNotify = { followingId: String, notifyEnable: Boolean ->
-        scope.launch {
-            viewModel.processIntent(FollowIntent.ToggleNotifyEnable(followingId, notifyEnable))
-        }
+        viewModel.processIntent(FollowIntent.ToggleNotifyEnable(followingId, notifyEnable))
     }
 
     val onLoad = {
-        scope.launch {
-            viewModel.processIntent(
-                FollowIntent.GetFollowers(
-                    userId.toString(),
-                    FollowType.USER
-                )
+        viewModel.processIntent(
+            FollowIntent.GetFollowers(
+                userId.toString(),
+                FollowType.USER
             )
-            viewModel.processIntent(FollowIntent.GetFollowings)
-        }
+        )
+        viewModel.processIntent(FollowIntent.GetFollowings)
     }
 
     LaunchedEffect(Unit) {

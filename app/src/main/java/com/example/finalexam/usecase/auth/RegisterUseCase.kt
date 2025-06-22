@@ -2,6 +2,7 @@ package com.example.finalexam.usecase.auth
 
 import com.example.finalexam.config.FirebaseConfig
 import com.example.finalexam.data.api.UserApi
+import com.example.finalexam.data.datastore.FcmTokenManager
 import com.example.finalexam.data.datastore.UserPreferences
 import com.example.finalexam.data.request.RegisterRequest
 import com.example.finalexam.data.response.BaseResponse
@@ -9,7 +10,6 @@ import com.example.finalexam.network.RetrofitClient
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import kotlinx.coroutines.tasks.await
 import retrofit2.HttpException
@@ -31,10 +31,9 @@ class RegisterUseCase {
             // Lưu local
             UserPreferences.saveUser(uid, token)
 
-            // Gọi API BE
-            val fcmToken = FirebaseMessaging.getInstance().token.await()
-            val response = userApi.register(RegisterRequest(fullName, email, fcmToken))
+            val response = userApi.register(RegisterRequest(fullName, email))
             if (response.status != 200) throw Exception(response.message)
+            FcmTokenManager.syncTokenIfNeeded(userApi)
             Result.success(Unit)
 
         } catch (e: Exception) {

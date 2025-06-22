@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -26,7 +26,6 @@ import com.example.finalexam.ui.components.common.LoadingState
 import com.example.finalexam.ui.components.notification.NotificationList
 import com.example.finalexam.ui.components.notification.NotificationTopBar
 import com.example.finalexam.viewmodel.NotificationViewModel
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -62,12 +61,9 @@ fun NotificationScreen(
     onNotificationClick: (Notification) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
-    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        scope.launch {
-            viewModel.processIntent(NotificationIntent.Initial)
-        }
+    LaunchedEffect(viewModel) {
+        viewModel.processIntent(NotificationIntent.Initial)
     }
 
     Scaffold(
@@ -75,17 +71,13 @@ fun NotificationScreen(
         topBar = {
             NotificationTopBar(
                 unreadCount = state.unreadCount,
-                hasNotification = !state.notifications.isEmpty(),
+                hasNotification = state.notifications.isNotEmpty(),
                 onBackClick = onBackClick,
                 onMarkAllRead = {
-                    scope.launch {
-                        viewModel.processIntent(NotificationIntent.MarkAsReadAll)
-                    }
+                    viewModel.processIntent(NotificationIntent.MarkAsReadAll)
                 },
                 onDeleteAll = {
-                    scope.launch {
-                        viewModel.processIntent(NotificationIntent.DeleteAll)
-                    }
+                    viewModel.processIntent(NotificationIntent.DeleteAll)
                 },
                 onOpenNotificationSettings = navigateToFollow
             )
@@ -105,9 +97,7 @@ fun NotificationScreen(
                     ErrorState(
                         message = state.errorMessage!!,
                         onRetry = {
-                            scope.launch {
-                                viewModel.processIntent(NotificationIntent.Refresh)
-                            }
+                            viewModel.processIntent(NotificationIntent.Refresh)
                         }
                     )
                 }
@@ -119,18 +109,18 @@ fun NotificationScreen(
                 else -> {
                     NotificationList(
                         notifications = state.notifications,
-                        onNotificationClick = { notification ->
-                            scope.launch {
+                        onNotificationClick = remember<(Notification) -> Unit> {
+                            { notification ->
                                 viewModel.processIntent(
                                     NotificationIntent.MarkAsRead(
                                         notificationId = notification.notificationId
                                     )
                                 )
+                                onNotificationClick(notification)
                             }
-                            onNotificationClick(notification)
                         },
-                        onDeleteClick = { notificationId ->
-                            scope.launch {
+                        onDeleteClick = remember<(String) -> Unit> {
+                            { notificationId ->
                                 viewModel.processIntent(
                                     NotificationIntent.Delete(
                                         notificationId = notificationId
