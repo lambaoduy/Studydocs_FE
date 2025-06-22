@@ -59,7 +59,7 @@ interface DocumentApi {
     //===Phần này của Hảo end===
 
     //===Phần này của Hảo end===
-    @GET("/user/document/my-documents")
+    @GET("/document/my-documents")
     suspend fun getMyDocuments(): Response<BaseResponse<DocumentListWrapper>>
     //===Phần này của Hảo end===
     @GET("/document/getDocSaveInLibrary")

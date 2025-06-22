@@ -8,7 +8,7 @@ import com.example.finalexam.entity.Document
 data class MyLibraryState(
     val isLoading: Boolean = false,
     val documents: List<Document> = emptyList(),
-    val documetnsSave: List<Document> = emptyList(),
+    val documentsSave: List<Document> = emptyList(),
     val searchQuery: String = "",
     val selectedDocument: Document? = null,
     val error: String? = null
