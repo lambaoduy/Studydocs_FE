@@ -1,15 +1,9 @@
 package com.example.finalexam.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -27,7 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -35,10 +31,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.finalexam.R
 import com.example.finalexam.intent.AuthIntent
-import com.example.finalexam.ui.theme.Purple40
-import com.example.finalexam.ui.theme.PurpleGrey40
-import com.example.finalexam.ui.theme.creamy
+import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.AuthViewModel
 
 // thiện làm: LoginScreen theo MVI
@@ -61,7 +56,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(creamy)
+            .background(AppColors.Background)
     ) {
         Column(
             modifier = Modifier
@@ -70,32 +65,38 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-            Text(
-                text = "Login",
-                fontSize = 30.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Purple40
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo",
+                modifier = Modifier.size(150.dp)
             )
             Text(
-                text = "Sign in to continue",
+                text = "Đăng nhập",
+                fontSize = 34.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = AppColors.BlueMid
+            )
+            Text(
+                text = "Đăng nhập để tiếp tục",
                 fontSize = 14.sp,
-                color = PurpleGrey40,
+                color = AppColors.TextSecondary,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
             RoundedInputField(
                 icon = Icons.Default.Email,
+                iconTint = AppColors.BlueMid,
                 placeholder = "Email",
                 value = email,
-                onValueChange = { email = it }
+                onValueChange = { email = it },
             )
             Spacer(modifier = Modifier.height(12.dp))
             RoundedInputField(
                 icon = Icons.Default.Lock,
-                placeholder = "Password",
+                iconTint = AppColors.BlueMid,
+                placeholder = "Mật khẩu",
                 value = password,
                 onValueChange = { password = it },
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = PasswordVisualTransformation(),
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
@@ -103,29 +104,37 @@ fun LoginScreen(
                     authViewModel.processIntent(AuthIntent.Login(email, password))
                 },
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(containerColor = Purple40),
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.BlueMid),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
+                    .height(50.dp)
+                    .shadow(6.dp, RoundedCornerShape(50))
             ) {
-                Text("LOGIN", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("Đăng nhập", color = AppColors.Surface, fontWeight = FontWeight.Bold)
             }
             if (state.error?.isNotBlank() == true) {
                 Text(state.error ?: "", color = Color.Red)
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Create New Account",
-                color = PurpleGrey40,
-                style = TextStyle(textDecoration = TextDecoration.Underline),
-                modifier = Modifier.clickable { onRegisterClick() }
-            )
-            Text(
-                text = "Quên mật khẩu?",
-                color = PurpleGrey40,
-                style = TextStyle(textDecoration = TextDecoration.Underline),
-                modifier = Modifier.clickable { onForgotPasswordClick() }
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Quên mật khẩu?",
+                    color = AppColors.TextSecondary,
+                    style = TextStyle(textDecoration = TextDecoration.Underline),
+                    modifier = Modifier.clickable { onForgotPasswordClick() }
+                )
+
+                Text(
+                    text = "Tạo tài khoản mới",
+                    color = AppColors.TextSecondary,
+                    style = TextStyle(textDecoration = TextDecoration.Underline),
+                    modifier = Modifier.clickable { onRegisterClick() }
+                )
+            }
+            Spacer(modifier = Modifier.height(80.dp))
         }
         if (state.isLoading) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
