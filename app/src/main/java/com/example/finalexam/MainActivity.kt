@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 val user by produceState<com.example.finalexam.entity.User?>(null) {
                     value = UserPreferences.getUser()
                 }
-                NavHost(navController = navController, startDestination = "home") {
+                NavHost(navController = navController, startDestination = startDestination) {
                     composable("login") {
                         LoginScreen(
                             onRegisterClick = { navController.navigate("register") },
