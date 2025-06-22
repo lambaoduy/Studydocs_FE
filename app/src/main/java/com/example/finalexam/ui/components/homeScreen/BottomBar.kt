@@ -9,6 +9,8 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.finalexam.ui.theme.AppColors
 
 @Composable
 fun BottomBar(
@@ -18,20 +20,26 @@ fun BottomBar(
         NavigationBarItem(
             selected = false,
             onClick = { onItemSelected("home") },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+            icon = { Icon(Icons.Default.Home, contentDescription = "Home", tint = AppColors.TextPrimary) },
             label = { Text("Home") }
         )
         NavigationBarItem(
             selected = false,
             onClick = { onItemSelected("acount") },
-            icon = { Icon(Icons.Default.AccountBox, contentDescription = "Account") },
+            icon = { Icon(Icons.Default.AccountBox, contentDescription = "Account", tint = AppColors.TextPrimary) },
             label = { Text("Find") }
         )
         NavigationBarItem(
             selected = false,
             onClick = { onItemSelected("library") },
-            icon = { Icon(Icons.AutoMirrored.Filled.LibraryBooks, contentDescription = "Library") },
+            icon = { Icon(Icons.AutoMirrored.Filled.LibraryBooks, contentDescription = "Library", tint = AppColors.TextPrimary) },
             label = { Text("Library") }
         )
     }
+}
+
+@Preview
+@Composable
+fun BottomBarPreview() {
+    BottomBar(onItemSelected = {})
 }

@@ -114,9 +114,3 @@ fun TopBar(
         )
     )
 }
-
-@Preview
-@Composable
-fun TopBarPreview() {
-    TopBar(navigateToNotification = {})
-}
