@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     val userId = UserPreferences.getUserId().first()
                     value = if (userId != null) "home" else "login"
                 }
-                NavHost(navController = navController, startDestination = startDestination) {
+                NavHost(navController = navController, startDestination = "login") {
                     composable("login") {
                         LoginScreen(
                             onRegisterClick = { navController.navigate("register") },
