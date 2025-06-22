@@ -52,12 +52,12 @@ interface DocumentApi {
 
 
     //===Phần này của Hảo===
-    @POST("/contronller/upload")
+    @POST("/user/document/upload")
     suspend fun uploadDocument(@Body document: Document, @Part file: MultipartBody.Part): Response<BaseResponse<Document>>
     //===Phần này của Hảo end===
 
     //===Phần này của Hảo end===
-    @GET("/controller/my-documents")
+    @GET("/user/document/my-documents")
     suspend fun getMyDocuments(): Response<BaseResponse<DocumentListWrapper>>
     //===Phần này của Hảo end===
 }

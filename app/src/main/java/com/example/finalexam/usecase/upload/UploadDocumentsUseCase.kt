@@ -6,7 +6,7 @@ import com.example.finalexam.entity.Document
 import com.example.finalexam.entity.UploadDocument
 import com.example.finalexam.network.RetrofitClient
 import com.example.finalexam.result.UploadDocumentResult
-import com.example.finalexam.utils.FileUtil
+import com.example.finalexam.data.utils.FileUtil
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody

@@ -1,10 +1,12 @@
 package com.example.finalexam.ui.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,12 +24,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,7 +39,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -61,7 +60,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -74,8 +72,7 @@ import com.example.finalexam.viewmodel.ProfileViewModel
 fun EditProfileScreen(
     userId: String?,
     profileViewModel: ProfileViewModel = viewModel(),
-    onBackClick: () -> Unit = {},
-    onImagePicker: () -> Unit = {}
+    onBackClick: () -> Unit = {}
 ) {
     val state by profileViewModel.state.collectAsState()
     var fullName by remember { mutableStateOf("") }
@@ -87,12 +84,12 @@ fun EditProfileScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
 
-    // Lấy profile khi vào màn hình
+    // Load profile khi mở màn hình
     LaunchedEffect(userId) {
         profileViewModel.processIntent(ProfileIntent.Load)
     }
 
-    // Khi có dữ liệu user thì gán vào form
+    // Gán dữ liệu khi đã có user
     LaunchedEffect(state.user) {
         state.user?.let { user ->
             if (!initialized) {
@@ -110,12 +107,22 @@ fun EditProfileScreen(
         }
     }
 
+    // Launcher để chọn ảnh từ thư viện
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            avatarUrl = it.toString()
+        }
+    }
+
+    // UI
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(
+                    listOf(
                         MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
                         MaterialTheme.colorScheme.surface,
                         MaterialTheme.colorScheme.background
@@ -128,26 +135,16 @@ fun EditProfileScreen(
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-            // Top App Bar
             TopAppBar(
                 title = {
-                    Text(
-                        "Chỉnh sửa hồ sơ",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text("Chỉnh sửa hồ sơ", style = MaterialTheme.typography.titleLarge)
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Quay lại"
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
 
             Column(
@@ -159,41 +156,34 @@ fun EditProfileScreen(
                 // Avatar Section
                 AvatarSection(
                     avatarUrl = avatarUrl,
-                    onImagePicker = onImagePicker,
-                    onUrlChange = { avatarUrl = it }
+                    onUrlChange = { avatarUrl = it },
+                    onImagePicker = { imagePickerLauncher.launch("image/*") }
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Form Section
+                // Form
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                     shape = RoundedCornerShape(20.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp)
-                    ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
                         Text(
                             text = "Thông tin cá nhân",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                            fontWeight = FontWeight.SemiBold
                         )
 
-                        // Full Name Field
+                        Spacer(modifier = Modifier.height(16.dp))
+
                         EnhancedInputField(
                             value = fullName,
                             onValueChange = { fullName = it },
                             label = "Họ và tên",
                             icon = Icons.Default.Person,
                             placeholder = "Nhập họ và tên đầy đủ",
-                            keyboardOptions = KeyboardOptions(
-                                imeAction = ImeAction.Next
-                            ),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                             keyboardActions = KeyboardActions(
                                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
                             )
@@ -201,25 +191,23 @@ fun EditProfileScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-
-                        // Save Button
                         Button(
                             onClick = {
                                 keyboardController?.hide()
-                                val user = User(
-                                    fullName = fullName,
-                                    avatarUrl = avatarUrl.takeIf { it.isNotBlank() },
+                                profileViewModel.processIntent(
+                                    ProfileIntent.Update(
+                                        User(
+                                            fullName = fullName,
+                                            avatarUrl = avatarUrl.takeIf { it.isNotBlank() }
+                                        )
+                                    )
                                 )
-                                profileViewModel.processIntent(ProfileIntent.Update(user))
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
                             shape = RoundedCornerShape(16.dp),
-                            enabled = !state.isLoading && fullName.isNotBlank(),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
+                            enabled = !state.isLoading && fullName.isNotBlank()
                         ) {
                             if (state.isLoading) {
                                 CircularProgressIndicator(
@@ -230,54 +218,25 @@ fun EditProfileScreen(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Text("Đang lưu...")
                             } else {
-                                Icon(
-                                    imageVector = Icons.Default.Save,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp)
-                                )
+                                Icon(Icons.Default.Save, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    "Lưu thay đổi",
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Text("Lưu thay đổi", fontWeight = FontWeight.Bold)
                             }
                         }
 
-                        // Error Message
                         state.error?.let { error ->
                             Spacer(modifier = Modifier.height(16.dp))
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer
-                                ),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Error,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onErrorContainer,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = error,
-                                        color = MaterialTheme.colorScheme.onErrorContainer,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
+                            Text(
+                                text = error,
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                     }
                 }
             }
         }
 
-        // Success Dialog
         if (showSuccessDialog) {
             AlertDialog(
                 onDismissRequest = {
@@ -293,26 +252,16 @@ fun EditProfileScreen(
                     )
                 },
                 title = {
-                    Text(
-                        text = "Thành công!",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text("Thành công!", fontWeight = FontWeight.Bold)
                 },
                 text = {
-                    Text(
-                        text = "Hồ sơ của bạn đã được cập nhật thành công.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
-                    )
+                    Text("Hồ sơ của bạn đã được cập nhật thành công.")
                 },
                 confirmButton = {
-                    Button(
-                        onClick = {
-                            showSuccessDialog = false
-                            onBackClick()
-                        }
-                    ) {
+                    Button(onClick = {
+                        showSuccessDialog = false
+                        onBackClick()
+                    }) {
                         Text("OK")
                     }
                 }
@@ -321,20 +270,15 @@ fun EditProfileScreen(
     }
 }
 
+
 @Composable
 private fun AvatarSection(
     avatarUrl: String,
-    onImagePicker: () -> Unit,
-    onUrlChange: (String) -> Unit
+    onUrlChange: (String) -> Unit,
+    onImagePicker: () -> Unit
 ) {
-    var showUrlDialog by remember { mutableStateOf(false) }
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier.size(120.dp)
-        ) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(modifier = Modifier.size(120.dp)) {
             if (avatarUrl.isNotBlank()) {
                 AsyncImage(
                     model = avatarUrl,
@@ -342,11 +286,7 @@ private fun AvatarSection(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CircleShape)
-                        .border(
-                            4.dp,
-                            MaterialTheme.colorScheme.primary,
-                            CircleShape
-                        ),
+                        .border(4.dp, MaterialTheme.colorScheme.primary, CircleShape),
                     contentScale = ContentScale.Crop
                 )
             } else {
@@ -355,33 +295,27 @@ private fun AvatarSection(
                         .fillMaxSize()
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primaryContainer)
-                        .border(
-                            4.dp,
-                            MaterialTheme.colorScheme.primary,
-                            CircleShape
-                        ),
+                        .border(4.dp, MaterialTheme.colorScheme.primary, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Person,
-                        contentDescription = "Default Avatar",
-                        modifier = Modifier.size(60.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        contentDescription = "Avatar",
+                        modifier = Modifier.size(60.dp)
                     )
                 }
             }
 
-            // Edit Button
             FloatingActionButton(
-                onClick = { showUrlDialog = true },
+                onClick = onImagePicker,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .size(36.dp),
                 containerColor = MaterialTheme.colorScheme.secondary
             ) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Chỉnh sửa ảnh",
+                    Icons.Default.Edit,
+                    contentDescription = "Chọn ảnh",
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -395,44 +329,8 @@ private fun AvatarSection(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
-
-    // URL Dialog
-    if (showUrlDialog) {
-        var tempUrl by remember { mutableStateOf(avatarUrl) }
-
-        AlertDialog(
-            onDismissRequest = { showUrlDialog = false },
-            title = { Text("Thay đổi ảnh đại diện") },
-            text = {
-                Column {
-                    Text("Nhập URL ảnh:")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = tempUrl,
-                        onValueChange = { tempUrl = it },
-                        placeholder = { Text("https://...") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onUrlChange(tempUrl)
-                        showUrlDialog = false
-                    }
-                ) {
-                    Text("Lưu")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showUrlDialog = false }) {
-                    Text("Hủy")
-                }
-            }
-        )
-    }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,11 +59,11 @@ import com.example.finalexam.viewmodel.MyLibraryViewModel
 @Composable
 fun MyLibraryScreen(
     viewModel: MyLibraryViewModel = viewModel(),
-    onNavigateToUpload: () -> Unit = {},
-    onNavigateToDocumentDetail: (String) -> Unit = {},
-    onNavigateToHome: () -> Unit = {}
+    onNavigateToUpload: () -> Unit ,
+    onNavigateToDocumentDetail: (String) -> Unit,
+    onNavigateToHome: () -> Unit
 ) {
-    var selectedTabIndex by remember { mutableStateOf(1) }
+    var selectedTabIndex by remember { mutableIntStateOf(1) }
     val state by viewModel.state.collectAsState()
     var isDrawerOpen by remember { mutableStateOf(false) }
     var unversity by remember { mutableStateOf("") }
@@ -101,6 +102,7 @@ fun MyLibraryScreen(
             ) {
                 IconButton(
                     onClick = {
+                        onNavigateToHome
 //                    viewModel.processIntent(MyLibraryIntent.NavigateToHome)
                     }
                 ) {

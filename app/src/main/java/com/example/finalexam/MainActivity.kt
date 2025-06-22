@@ -9,11 +9,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.finalexam.data.datastore.UserPreferences
 import com.example.finalexam.data.datastore.UserProvider
 import com.example.finalexam.ui.document.DocumentDetailScreen
 import com.example.finalexam.ui.screens.EditProfileScreen
@@ -22,8 +25,10 @@ import com.example.finalexam.ui.screens.HomeScreen
 import com.example.finalexam.ui.screens.LoginScreen
 import com.example.finalexam.ui.screens.NotificationScreen
 import com.example.finalexam.ui.screens.RegisterScreen
+import com.example.finalexam.ui.screens.myLibraryScreen.MyLibraryScreen
+import com.example.finalexam.ui.screens.myLibraryScreen.UploadDocumentScreen
 import com.example.finalexam.ui.theme.FinalExamTheme
-import com.example.finalexam.view.myLibraryScreen.MyLibraryScreen
+import kotlinx.coroutines.flow.first
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +38,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             FinalExamTheme {
                 val navController = rememberNavController()
-                val startDestination = if (UserProvider.getUserId() != null) "home" else "login"
+                val startDestination by produceState<String>("login") {
+                    val userId = UserPreferences.getUserId().first()
+                    value = if (userId != null) "home" else "login"
+                }
                 NavHost(navController = navController, startDestination = startDestination) {
                     composable("login") {
                         LoginScreen(
@@ -96,7 +104,7 @@ class MainActivity : ComponentActivity() {
                                 navController.popBackStack()
                             },
                             userId = UserProvider.getUserId(),
-                            )
+                        )
                     }
                     composable("notification") {
                         NotificationScreen(
@@ -116,7 +124,18 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("library") {
-                        MyLibraryScreen()
+                        MyLibraryScreen(
+                            onNavigateToUpload = { navController.navigate("upload") },
+                            onNavigateToDocumentDetail = { docId ->
+                                navController.navigate("document_detail/$docId")
+                            },
+                            onNavigateToHome = { navController.navigate("home") }
+                        )
+                    }
+                    composable("upload") {
+                        UploadDocumentScreen(
+                            onBackClick = { navController.popBackStack() }
+                        )
                     }
                 }
             }

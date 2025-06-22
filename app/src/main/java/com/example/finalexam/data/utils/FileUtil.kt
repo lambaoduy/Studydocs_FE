@@ -1,4 +1,4 @@
-package com.example.finalexam.utils
+package com.example.finalexam.data.utils
 
 import android.content.Context
 import android.net.Uri
