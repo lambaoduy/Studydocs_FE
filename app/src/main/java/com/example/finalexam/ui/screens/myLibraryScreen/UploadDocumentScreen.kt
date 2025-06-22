@@ -177,7 +177,7 @@ fun UploadDocumentScreen(
                 snackbarHostState.showSnackbar("Upload thành công!")
                 //===Phần này của Hảo 22/6===
                 // Chuyển về MyLibrary sau khi upload thành công
-                delay(1000) // Đợi 1 giây để user thấy snackbar
+                delay(59) // Đợi 1 giây để user thấy snackbar
                 onUploadSuccess() // Gọi callback để navigate về MyLibrary
                 //===Phần này của Hảo 22/6===
             }
@@ -306,29 +306,29 @@ fun UploadDocumentScreen(
             Spacer(Modifier.height(24.dp))
 
             //===Phần này của Hảo 22/6===
-            // Debug info để kiểm tra trạng thái
-            Text(
-                text = "Debug: isUploading=${uploadState.isUploading}, error=${uploadState.error}, success=${uploadState.uploadSuccess}",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            
-            // Debug info để kiểm tra trạng thái university
-            Text(
-                text = "University Debug: isLoading=${universityState.isLoading}, count=${universityState.universityList.size}, error=${universityState.error}",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-            
-            // Debug info để kiểm tra file đã chọn
-            Text(
-                text = "File Debug: selected=${uploadState.selectedDocument?.name ?: "None"}, uri=${uploadState.selectedDocument?.uri != null}",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
+//            // Debug info để kiểm tra trạng thái
+//            Text(
+//                text = "Debug: isUploading=${uploadState.isUploading}, error=${uploadState.error}, success=${uploadState.uploadSuccess}",
+//                style = MaterialTheme.typography.bodySmall,
+//                color = Color.Gray,
+//                modifier = Modifier.padding(vertical = 8.dp)
+//            )
+//
+//            // Debug info để kiểm tra trạng thái university
+//            Text(
+//                text = "University Debug: isLoading=${universityState.isLoading}, count=${universityState.universityList.size}, error=${universityState.error}",
+//                style = MaterialTheme.typography.bodySmall,
+//                color = Color.Gray,
+//                modifier = Modifier.padding(vertical = 4.dp)
+//            )
+//
+//            // Debug info để kiểm tra file đã chọn
+//            Text(
+//                text = "File Debug: selected=${uploadState.selectedDocument?.name ?: "None"}, uri=${uploadState.selectedDocument?.uri != null}",
+//                style = MaterialTheme.typography.bodySmall,
+//                color = Color.Gray,
+//                modifier = Modifier.padding(vertical = 4.dp)
+//            )
             //===Phần này của Hảo 22/6===
 
             // ===== UPLOAD BUTTON =====
