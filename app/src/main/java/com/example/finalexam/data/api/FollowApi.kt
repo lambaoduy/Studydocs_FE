@@ -6,11 +6,15 @@ import com.example.finalexam.data.request.ToggleNotifyRequest
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.entity.Follower
 import com.example.finalexam.entity.Following
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.PATCH
+import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface FollowApi {
     @POST("/user/follow")
-    suspend fun follow(@Body followRequest: FollowRequest): BaseResponse<Following>
+    suspend fun follow(@Body followRequest: FollowRequest): BaseResponse<Void>
 
     @POST("/user/unfollow")
     suspend fun unFollow(@Body followingId: String): BaseResponse<String>

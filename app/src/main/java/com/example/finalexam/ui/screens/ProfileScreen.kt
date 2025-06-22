@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,9 +40,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.finalexam.intent.ProfileIntent
 import com.example.finalexam.viewmodel.ProfileViewModel
 
@@ -58,11 +59,18 @@ fun ProfileScreen(
     onLogout: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    LaunchedEffect(viewModel) {
+
+    LaunchedEffect(Unit) {
         viewModel.processIntent(ProfileIntent.Load)
     }
-    val user = state.user
 
+    LaunchedEffect(state.isSuccess, state.user) {
+        if (state.isSuccess && state.user == null) {
+            onLogout()
+        }
+    }
+
+    val user = state.user
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -115,23 +123,28 @@ fun ProfileScreen(
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
-                        .background(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.primaryContainer
-                                )
-                            )
-                        ),
+                        .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Avatar",
-                        modifier = Modifier.size(50.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
+                    if (!user?.avatarUrl.isNullOrBlank()) {
+                        AsyncImage(
+                            model = user.avatarUrl,
+                            contentDescription = "Avatar",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Default Avatar",
+                            modifier = Modifier.size(50.dp),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
                 }
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -219,7 +232,6 @@ fun ProfileScreen(
                     TextButton(
                         onClick = {
                             viewModel.processIntent(ProfileIntent.Logout)
-                            onLogout
                         },
                         colors = ButtonDefaults.textButtonColors(
                             contentColor = MaterialTheme.colorScheme.onErrorContainer

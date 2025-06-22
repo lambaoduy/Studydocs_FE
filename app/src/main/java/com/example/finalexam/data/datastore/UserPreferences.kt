@@ -50,6 +50,5 @@ object UserPreferences {
     suspend fun clear() {
         appContext.dataStore.edit { it.clear() }
         UserProvider.clear()
-
     }
 }

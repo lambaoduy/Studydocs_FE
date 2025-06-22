@@ -9,7 +9,7 @@ import com.example.finalexam.handler.profile.UpdateProfileHandler
 import com.example.finalexam.intent.ProfileIntent
 import com.example.finalexam.reduce.ProfileReducer
 import com.example.finalexam.result.ProfileResult
-import com.example.finalexam.state.UpdateProfileState
+import com.example.finalexam.state.ProfileState
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +18,7 @@ import kotlinx.coroutines.withTimeout
 
 // ViewModel cho chức năng cập nhật profile
 class ProfileViewModel : ViewModel() {
-    private val _state = MutableStateFlow(UpdateProfileState())
+    private val _state = MutableStateFlow(ProfileState())
     private val reducer = ProfileReducer()
     val state = _state.asStateFlow()
 
@@ -26,7 +26,6 @@ class ProfileViewModel : ViewModel() {
         UpdateProfileHandler(),
         LogoutHandler(),
         LoadProfileHandler()
-
     )
 
     fun processIntent(intent: ProfileIntent) {

@@ -1,6 +1,8 @@
 package com.example.finalexam.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.handler.follow.FollowHandler
 import com.example.finalexam.handler.follow.GetFollowersHandler
@@ -13,7 +15,7 @@ import com.example.finalexam.result.FollowResult
 import com.example.finalexam.state.FollowState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import android.util.Log
+import kotlinx.coroutines.launch
 
 class FollowViewModel : ViewModel() {
     private val reducer = FollowReducer()
@@ -28,29 +30,31 @@ class FollowViewModel : ViewModel() {
         ErrorHandler() // Thêm handler lỗi
     )
 
-    suspend fun processIntent(intent: FollowIntent) {
-        try {
-            val handler = handlers.find { it.canHandle(intent) }
-            if (handler != null) {
-                handler.handle(intent) { result ->
-                    _state.value = reducer.reduce(_state.value, result)
-                    if (result is FollowResult.Error) {
-                        Log.e("FollowViewModel", "Lỗi xử lý intent: ${result.message}")
+    fun processIntent(intent: FollowIntent) {
+        viewModelScope.launch {
+            try {
+                val handler = handlers.find { it.canHandle(intent) }
+                if (handler != null) {
+                    handler.handle(intent) { result ->
+                        _state.value = reducer.reduce(_state.value, result)
+                        if (result is FollowResult.Error) {
+                            Log.e("FollowViewModel", "Lỗi xử lý intent: ${result.message}")
+                        }
                     }
+                } else {
+                    Log.w("FollowViewModel", "Không có handler cho intent: $intent")
+                    _state.value = reducer.reduce(
+                        _state.value,
+                        FollowResult.Error("Không tìm thấy handler cho intent")
+                    )
                 }
-            } else {
-                Log.w("FollowViewModel", "Không có handler cho intent: $intent")
+            } catch (e: Exception) {
+                Log.e("FollowViewModel", "Lỗi xử lý intent: ${e.message}")
                 _state.value = reducer.reduce(
                     _state.value,
-                    FollowResult.Error("Không tìm thấy handler cho intent")
+                    FollowResult.Error("Lỗi: ${e.message}")
                 )
             }
-        } catch (e: Exception) {
-            Log.e("FollowViewModel", "Lỗi xử lý intent: ${e.message}")
-            _state.value = reducer.reduce(
-                _state.value,
-                FollowResult.Error("Lỗi: ${e.message}")
-            )
         }
     }
 
