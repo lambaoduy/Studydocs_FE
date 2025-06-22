@@ -69,6 +69,7 @@ import com.example.finalexam.intent.FollowIntent
 import com.example.finalexam.network.RetrofitClient
 import com.example.finalexam.viewmodel.DocumentViewModel
 import com.example.finalexam.viewmodel.FollowViewModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -153,10 +154,12 @@ fun DocumentDetailScreen(
     val followState by followViewModel.state.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-// Thêm vào sau các biến như documentState, followState
+
     val currentUserId by remember { mutableStateOf(FirebaseAuth.getInstance().currentUser?.uid) }
     val isCurrentUser by derivedStateOf {
-        currentUserId != null && currentUserId == documentState.document?.userId
+        val documentUserId = documentState.document?.userId ?: ""
+        Log.d("DocumentDetailScreen", "currentUserId=$currentUserId, documentUserId=$documentUserId, isCurrentUser=${currentUserId != null && currentUserId == documentUserId}")
+        currentUserId != null && currentUserId == documentUserId
     }
     val documentApi: DocumentApi = RetrofitClient.createApi(DocumentApi::class.java)
 
@@ -168,9 +171,9 @@ fun DocumentDetailScreen(
 
     // Tính toán isFollowed dựa trên followState
     val isFollowed by derivedStateOf {
-        val currentUserId = documentState.document?.userId
-        currentUserId != null && followState.followings.any {
-            it.targetId == currentUserId && it.targetType == FollowType.USER
+        val targetUserId = documentState.document?.userId
+        targetUserId != null && targetUserId != currentUserId && followState.followings.any {
+            it.targetId == targetUserId && it.targetType == FollowType.USER
         }
     }
 
@@ -367,7 +370,7 @@ fun DocumentDetailScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             // Chỉ hiển thị nút follow/unfollow nếu không phải người dùng hiện tại
-                            if (!isCurrentUser) {
+                            if (!isCurrentUser && documentState.document?.userId?.isNotEmpty() == true) {
                                 var isFollowProcessing by remember { mutableStateOf(false) }
                                 IconButton(
                                     onClick = {
@@ -383,13 +386,19 @@ fun DocumentDetailScreen(
                                             isFollowProcessing = true
                                             try {
                                                 val wasFollowed = isFollowed
-                                                documentViewModel.processIntent(
-                                                    if (isFollowed) {
-                                                        DocumentIntent.UnFollow(userId, FollowType.USER)
-                                                    } else {
-                                                        DocumentIntent.Follow(userId, FollowType.USER)
+                                                if (isFollowed) {
+                                                    // Tìm followingId từ followState.followings
+                                                    val following = followState.followings.find {
+                                                        it.targetId == userId && it.targetType == FollowType.USER
                                                     }
-                                                )
+                                                    if (following == null) {
+                                                        Toast.makeText(context, "Không tìm thấy bản ghi theo dõi", Toast.LENGTH_SHORT).show()
+                                                        return@launch
+                                                    }
+                                                    followViewModel.processIntent(FollowIntent.Unfollow(following.followingId))
+                                                } else {
+                                                    followViewModel.processIntent(FollowIntent.Follow(userId, FollowType.USER))
+                                                }
                                                 kotlinx.coroutines.delay(500)
                                                 if (followState.errorMessage.isNullOrEmpty()) {
                                                     Toast.makeText(
@@ -406,7 +415,6 @@ fun DocumentDetailScreen(
                                                 }
                                             } catch (e: Exception) {
                                                 Log.e("DocumentDetailScreen", "Lỗi xử lý follow/unfollow: ${e.message}")
-                                                documentViewModel.processIntent(DocumentIntent.Error("Lỗi xử lý theo dõi: ${e.message}"))
                                             } finally {
                                                 isFollowProcessing = false
                                             }
@@ -428,7 +436,6 @@ fun DocumentDetailScreen(
                                     }
                                 }
                             }
-
 
                             IconButton(onClick = {
                                 val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
