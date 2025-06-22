@@ -63,12 +63,11 @@ fun MyLibraryScreen(
     onNavigateToDocumentDetail: (String) -> Unit,
     onNavigateToHome: () -> Unit
 ) {
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    var selectedTabIndex by remember { mutableIntStateOf(1) }
     val state by viewModel.state.collectAsState()
     var isDrawerOpen by remember { mutableStateOf(false) }
-    var universityFilter by remember { mutableStateOf("") } // Đổi tên để rõ ràng hơn
-    var subjectFilter by remember { mutableStateOf("") } // Đổi tên để rõ ràng hơn
-    var searchQuery by remember { mutableStateOf("") } // Thêm searchQuery vào MyLibraryScreen
+    var unversity by remember { mutableStateOf("") }
+    var subject by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
@@ -82,7 +81,7 @@ fun MyLibraryScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.processIntent(MyLibraryIntent.Refresh)
+        viewModel.loadDocuments()
     }
 
 
@@ -103,8 +102,8 @@ fun MyLibraryScreen(
             ) {
                 IconButton(
                     onClick = {
-                        // onNavigateToHome // Cái này không cần thiết vì ViewModel đã xử lý navigation
-                        viewModel.processIntent(MyLibraryIntent.NavigateToHome)
+                        onNavigateToHome
+//                    viewModel.processIntent(MyLibraryIntent.NavigateToHome)
                     }
                 ) {
                     Icon(
@@ -131,7 +130,9 @@ fun MyLibraryScreen(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
                     .clickable {
+                        //===Phần này của Hảo 22/6===
                         onNavigateToUpload() // Gọi callback để navigate đến upload screen
+                        //===Phần này của Hảo 22/6===
                     }
                     .drawBehind {
                         drawRoundRect(
@@ -168,6 +169,8 @@ fun MyLibraryScreen(
                 }
             }
 
+//        // Panel 3: Danh sách tài liệu đã đăng tải
+
             // --- TabRow: Đã đăng & Đã lưu ---
             val tabs = listOf("Tài liệu đã đăng", "Tài liệu đã lưu")
 
@@ -183,100 +186,64 @@ fun MyLibraryScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Nội dung mỗi tab: Áp dụng bố cục từ Content.kt ---
-            // Thay vì Surface và Column phức tạp, chúng ta sẽ đặt trực tiếp các thành phần
-            // tìm kiếm và danh sách tài liệu vào đây, tương tự Content.kt
-            Column(
+            // --- Nội dung mỗi tab ---
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = AppColors.Surface,
+                tonalElevation = 2.dp,
                 modifier = Modifier
-                    .fillMaxSize() // Sử dụng fillMaxSize cho Column chứa nội dung chính
-                    .background(AppColors.Surface, shape = RoundedCornerShape(16.dp)) // Nền và shape cho toàn bộ khu vực nội dung
-                    .padding(16.dp)
+                    .fillMaxSize()
+                    .padding(top = 8.dp)
             ) {
-                // Thanh tìm kiếm (tương tự như trong Content.kt)
-                OutlinedTextField(
-                    value = searchQuery, // Sử dụng searchQuery của MyLibraryScreen
-                    onValueChange = {
-                        searchQuery = it
-                    },
-                    label = { Text("Tìm kiếm") },
-                    leadingIcon = {
-                        IconButton(onClick = {
-                            // Kích hoạt tìm kiếm khi nhấn icon
-                            viewModel.processIntent(MyLibraryIntent.FindWithFilters(
-                                keyword = searchQuery.takeIf { it.isNotBlank() },
-                                university = universityFilter.takeIf { it.isNotBlank() },
-                                subject = subjectFilter.takeIf { it.isNotBlank() }
-                            ))
-                        }) {
-                            Icon(Icons.Default.Search, contentDescription = "Search")
-                        }
-                    },
-                    trailingIcon = {
-                        Box(modifier = Modifier.padding(4.dp)) {
-                            IconButton(
-                                onClick = { isDrawerOpen = true } // Gọi hàm để mở drawer
-                            ) {
-                                Icon(Icons.Default.FilterList, contentDescription = "Filter")
-                            }
-
-                            val count = listOf(universityFilter, subjectFilter).count { it.isNotBlank() }
-                            if (count > 0) {
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(top = 2.dp, end = 2.dp)
-                                        .height(16.dp)
-                                        .width(16.dp)
-                                        .background(Color.Black, shape = RoundedCornerShape(8.dp)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = count.toString(),
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.labelSmall
-                                    )
-                                }
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFFDDA83F),
-                        cursorColor = Color(0xFFDDA83F),
-                        focusedLabelColor = Color(0xFFDDA83F)
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    // Tiêu đề
+                    Text(
+                        text = tabs[selectedTabIndex],
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        color = AppColors.TextPrimary
                     )
-                )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Thanh tìm kiếm
+                    SearchPanel(
+                        viewModel,
+                        unversity = unversity,
+                        subject = subject,
+                        open = { isDrawerOpen = true }
+                    )
+                }
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Danh sách tài liệu (sử dụng DocumentList đã có)
+                // Danh sách tương ứng theo tab
                 val documentsToShow = if (selectedTabIndex == 0) {
                     state.documents
                 } else {
-                    state.documentsSave
+                    state.documents
                 }
-                println("MyLibraryScreen - xem duoc: " + documentsToShow.size)
-                println("MyLibraryScreen - trong state: " + state.documentsSave.size)
 
                 DocumentList(
                     documents = documentsToShow,
                     onDocumentClick = { doc ->
                         viewModel.processIntent(MyLibraryIntent.SelectDocument(doc))
-                    },
-                    modifier = Modifier.fillMaxSize() // LazyColumn bên trong Column, cho phép nó cuộn
+
+                    }
                 )
+
             }
+            //  Hiển thị drawer filter bên phải
+
         }
-        // Hiển thị drawer filter bên phải, đặt trong Box lớn nhất để phủ lên toàn màn hình
         RightFilterDrawer(
             isVisible = isDrawerOpen,
-            school = universityFilter,
-            onSchoolChange = { universityFilter = it },
-            subject = subjectFilter,
-            onSubjectChange = { subjectFilter = it },
+            school = unversity,
+            onSchoolChange = { unversity = it },
+            subject = subject,
+            onSubjectChange = { subject = it },
             onClose = { isDrawerOpen = false }
         )
     }
@@ -284,14 +251,107 @@ fun MyLibraryScreen(
 
 
 @Composable
+fun SearchPanel(
+    viewModel: MyLibraryViewModel,
+    modifier: Modifier = Modifier,
+    unversity: String,
+    subject: String,
+    open: () -> Unit,
+) {
+    val state by viewModel.state.collectAsState()
+    var searchQuery = ""
+
+
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            OutlinedTextField(
+                value =
+                    searchQuery,
+                onValueChange = {
+                    searchQuery = it
+                },
+                label = { Text("Tìm kiếm") },
+                leadingIcon = {
+                    IconButton(onClick =
+//                    {}
+                        {// nếu search query thay đổi thì gọi db để tìm kiếm
+                            if (searchQuery.isNotBlank() && !state.searchQuery.equals(searchQuery)) {
+                                viewModel.processIntent(MyLibraryIntent.Search(searchQuery))
+                            }
+
+                            if (unversity.isNotBlank()) {
+                                viewModel.processIntent(
+                                    MyLibraryIntent.FilterByUniversity(
+                                        searchQuery
+                                    )
+                                )
+                            }
+                            if (subject.isNotBlank()) {
+                                viewModel.processIntent(MyLibraryIntent.FilterBySubject(subject))
+                            }
+                        }
+                    ) {
+                        Icon(Icons.Default.Search, contentDescription = "Search")
+                    }
+                },
+                trailingIcon = {
+                    Box(modifier = Modifier.padding(4.dp)) {
+                        IconButton(
+                            onClick = { open }
+                        ) {
+                            Icon(Icons.Default.FilterList, contentDescription = "Filter")
+                        }
+
+                        // Tính số lượng bộ lọc đang được bật
+                        val count = listOf(unversity, subject).count { it.isNotBlank() }
+
+                        // Chỉ hiển thị nếu có ít nhất 1 filter
+                        if (count > 0) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(top = 2.dp, end = 2.dp)
+                                    .height(16.dp)
+                                    .width(16.dp)
+                                    .background(Color.Black, shape = RoundedCornerShape(8.dp)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = count.toString(),
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFDDA83F),
+                    cursorColor = Color(0xFFDDA83F),
+                    focusedLabelColor = Color(0xFFDDA83F)
+                )
+            )
+
+        }
+
+    }
+}
+
+@Composable
 fun DocumentList(
     documents: List<Document>,
-    onDocumentClick: (Document) -> Unit,
-    modifier: Modifier = Modifier
+    onDocumentClick: (Document) -> Unit
 ) {
-    println("📋 Danh sách render: ${documents.size} item")
     LazyColumn(
-        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(documents) { document ->
@@ -302,7 +362,6 @@ fun DocumentList(
         }
     }
 }
-
 
 @Composable
 fun DocumentItem(
@@ -326,20 +385,19 @@ fun DocumentItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Trường: ${document.university ?: "Không rõ"}",
+                text = "Tác giả: ${document.author}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = AppColors.TextSecondary
             )
             Text(
-                text = "Môn học: ${document.subject ?: "Không rõ"}",
-                style = MaterialTheme.typography.bodyMedium,
+                text = "Ngày đăng: ${document.createdAt}",
+                style = MaterialTheme.typography.bodySmall,
                 color = AppColors.TextSecondary
             )
         }
     }
 }
 
-// UploadedDocumentsPanel không được sử dụng và có thể xóa nếu không cần
 @Composable
 fun UploadedDocumentsPanel(
     documents: List<Document>, onDocumentClick: (Document) -> Unit, modifier: Modifier = Modifier
@@ -365,3 +423,4 @@ fun UploadedDocumentsPanel(
         }
     }
 }
+
