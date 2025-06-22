@@ -18,10 +18,10 @@ interface DocumentApi {
     suspend fun getDownloadUrl(@Path("documentId") documentId: String): Response<BaseResponse<String>>
 
     @POST("/user/document/{documentId}/like")
-    suspend fun likeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Void>>
+    suspend fun likeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Boolean>>
 
     @DELETE("/user/document/{documentId}/like")
-    suspend fun unlikeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Void>>
+    suspend fun unlikeDocument(@Path("documentId") documentId: String): Response<BaseResponse<Boolean>>
 
     @GET("/document/getAllDocument")
     suspend fun getAllDocuments(): Response<BaseResponse<DocumentListWrapper>>
