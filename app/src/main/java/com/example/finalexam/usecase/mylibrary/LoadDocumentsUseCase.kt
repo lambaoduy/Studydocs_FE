@@ -7,7 +7,8 @@ class LoadDocumentsUseCase(private val documentDao: DocumentDao) {
     suspend operator fun invoke(): MyLibraryResult {
         return try {
             val documents = documentDao.getMyDocuments()
-            MyLibraryResult.LoadDocumentsSuccess(documents)
+            val documetsSave= documentDao.getSaveDocumests()
+            MyLibraryResult.LoadDocumentsSuccess(documents,documetsSave)
         } catch (e: Exception) {
             MyLibraryResult.Error(e.message ?: "Failed to load documents")
         }

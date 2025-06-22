@@ -81,7 +81,7 @@ fun MyLibraryScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.loadDocuments()
+        viewModel.processIntent(MyLibraryIntent.Refresh)
     }
 
 
@@ -223,7 +223,7 @@ fun MyLibraryScreen(
                 val documentsToShow = if (selectedTabIndex == 0) {
                     state.documents
                 } else {
-                    state.documents
+                    state.documetnsSave
                 }
 
                 DocumentList(
@@ -280,20 +280,11 @@ fun SearchPanel(
                     IconButton(onClick =
 //                    {}
                         {// nếu search query thay đổi thì gọi db để tìm kiếm
-                            if (searchQuery.isNotBlank() && !state.searchQuery.equals(searchQuery)) {
-                                viewModel.processIntent(MyLibraryIntent.Search(searchQuery))
-                            }
-
-                            if (unversity.isNotBlank()) {
-                                viewModel.processIntent(
-                                    MyLibraryIntent.FilterByUniversity(
-                                        searchQuery
-                                    )
-                                )
-                            }
-                            if (subject.isNotBlank()) {
-                                viewModel.processIntent(MyLibraryIntent.FilterBySubject(subject))
-                            }
+                           viewModel.processIntent(MyLibraryIntent.FindWithFilters(
+                               keyword = searchQuery.takeIf { it.isNotBlank() },
+                               university = unversity.takeIf { it.isNotBlank() },
+                               subject = subject.takeIf { it.isNotBlank() }
+                           ))
                         }
                     ) {
                         Icon(Icons.Default.Search, contentDescription = "Search")

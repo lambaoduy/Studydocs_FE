@@ -45,7 +45,7 @@ interface DocumentApi {
         @Query("keyword") keyword: String
     ): Response<BaseResponse<DocumentListWrapper>>
 
-    @GET("/documents/user")
+    @GET("/document/user")
     suspend fun getDocumentsByUserID(
         @Query("userId") userId: String
     ): Response<BaseResponse<DocumentListWrapper>>
@@ -60,4 +60,6 @@ interface DocumentApi {
     @GET("/user/document/my-documents")
     suspend fun getMyDocuments(): Response<BaseResponse<DocumentListWrapper>>
     //===Phần này của Hảo end===
+    @GET("/document/getDocSaveInLibrary")
+    suspend fun getSaveDocument(): Response<BaseResponse<DocumentListWrapper>>
 }

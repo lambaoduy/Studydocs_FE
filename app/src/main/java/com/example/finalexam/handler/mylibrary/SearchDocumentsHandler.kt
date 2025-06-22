@@ -3,21 +3,40 @@ package com.example.finalexam.handler.mylibrary
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.MyLibraryIntent
 import com.example.finalexam.result.MyLibraryResult
+import com.example.finalexam.state.MyLibraryState
 import com.example.finalexam.usecase.mylibrary.SearchDocumentsUseCase
+import kotlinx.coroutines.flow.StateFlow
 
 class SearchDocumentsHandler(
-    private val searchDocumentsUseCase: SearchDocumentsUseCase
+    private val state: StateFlow<MyLibraryState>
 ) : IntentHandler<MyLibraryIntent, MyLibraryResult> {
-    
+
     override fun canHandle(intent: MyLibraryIntent): Boolean = 
-        intent is MyLibraryIntent.Search
+        intent is MyLibraryIntent.FindWithFilters
 
     override suspend fun handle(
         intent: MyLibraryIntent,
         setResult: (MyLibraryResult) -> Unit
     ) {
-        val searchIntent = intent as MyLibraryIntent.Search
-        setResult(MyLibraryResult.Loading)
-        setResult(searchDocumentsUseCase(searchIntent.query))
+        if (intent is MyLibraryIntent.FindWithFilters) {
+            val filters = intent
+            val usecase = SearchDocumentsUseCase()
+
+            var mydoc = usecase.findByFilters(
+                keyword = filters.keyword,
+                school = filters.university,
+                subject = filters.subject,
+                cacheList =state.value.documents
+
+            )
+            var savedoc=usecase.findByFilters(
+                keyword = filters.keyword,
+                school = filters.university,
+                subject = filters.subject,
+                cacheList =state.value.documetnsSave
+
+            )
+
+            setResult(MyLibraryResult.LoadDocumentsSuccess(mydoc,savedoc))}
     }
 } 
