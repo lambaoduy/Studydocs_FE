@@ -3,61 +3,74 @@ package com.example.finalexam.reduce
 import com.example.finalexam.result.UploadDocumentResult
 import com.example.finalexam.state.UploadDocumentState
 
-
+/**
+ * Reducer chịu trách nhiệm cập nhật UploadDocumentState dựa trên UploadDocumentResult
+ * 
+ * Luồng hoạt động:
+ * 1. Nhận UploadDocumentResult từ Handler
+ * 2. Nhận UploadDocumentState hiện tại
+ * 3. Tạo UploadDocumentState mới dựa trên result type
+ * 4. Trả về state mới để ViewModel cập nhật
+ * 
+ * Nguyên tắc:
+ * - State là immutable, luôn tạo state mới thay vì modify state cũ
+ * - Mỗi result type có logic xử lý riêng biệt
+ * - Error state sẽ clear loading state
+ */
 class UploadDocumentReducer {
+    
+    /**
+     * Cập nhật state dựa trên result nhận được
+     * 
+     * @param state State hiện tại
+     * @param result Result từ Handler
+     * @return State mới sau khi được cập nhật
+     */
     fun reduce(state: UploadDocumentState, result: UploadDocumentResult): UploadDocumentState =
         when (result) {
+            // ===== LOADING STATE =====
             is UploadDocumentResult.Loading ->
-                state.copy(isUploading = true, error = null)
-
-            is UploadDocumentResult.SetSelectedDocument ->
                 state.copy(
-                    isUploading = false,
-                    selectedDocument = result.document,
-                    error = null
+                    isUploading = true,  // Bắt đầu upload - hiển thị loading
+                    error = null         // Clear error message
                 )
 
-            is UploadDocumentResult.SelectUniversitySuccess ->
+            // ===== DOCUMENT SELECTION =====
+            is UploadDocumentResult.DocumentSelected ->
                 state.copy(
-                    isUploading = false,
-                    university = result.university,
-                    error = null
+                    selectedDocument = result.document,  // Cập nhật document đã chọn
+                    error = null                         // Clear error message
                 )
 
-            is UploadDocumentResult.SelectCourseSuccess ->
-                state.copy(
-                    isUploading = false,
-                    university = state.university?.copy(selectedSubjectIndex = result.courseIndex),
-                    error = null
-                )
-
+            // ===== UPLOAD SUCCESS =====
             is UploadDocumentResult.UploadSuccess ->
                 state.copy(
-                    isUploading = false,
-                    uploadSuccess = true,
-                    uploadedDocuments = result.uploadedDocuments,
-                    error = null
+                    isUploading = false,                    // Kết thúc upload
+                    uploadSuccess = true,                   // Đánh dấu upload thành công
+                    uploadedDocuments = result.uploadedDocuments,  // Lưu danh sách documents đã upload
+                    error = null,                           // Clear error message
+                    // TODO: Có thể clear form data sau khi upload thành công
+                    // title = "",
+                    // description = "",
+                    // selectedDocument = null
                 )
 
+            // ===== ERROR STATE =====
             is UploadDocumentResult.Error ->
                 state.copy(
-                    isUploading = false,
-                    error = result.message
+                    isUploading = false,    // Dừng loading khi có lỗi
+                    error = result.message  // Lưu error message để hiển thị
                 )
 
-            is UploadDocumentResult.SetTitleSuccess ->
-                state.copy(title = result.title)
-
-            is UploadDocumentResult.SetDescriptionSuccess ->
-                state.copy(description = result.description)
-
-            is UploadDocumentResult.SubjectListLoaded ->
-                state.copy(subjectList = result.subjects)
-
-            is UploadDocumentResult.SubjectCreated ->
+            // ===== TEXT INPUT UPDATES =====
+            is UploadDocumentResult.SetTitle ->
                 state.copy(
-                    subject = result.subject,
-                    isCreatingSubject = false
+                    title = result.title  // Cập nhật title từ user input
+                )
+
+            is UploadDocumentResult.SetDescription ->
+                state.copy(
+                    description = result.description  // Cập nhật description từ user input
                 )
         }
 }

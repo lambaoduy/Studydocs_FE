@@ -1,97 +1,164 @@
 package com.example.finalexam.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.finalexam.handler.IntentHandler
+import com.example.finalexam.handler.upload.SetDocumentHandler
+import com.example.finalexam.handler.upload.SetTextHandler
 import com.example.finalexam.intent.UploadDocumentIntent
+import com.example.finalexam.reduce.UploadDocumentReducer
+import com.example.finalexam.result.UploadDocumentResult
 import com.example.finalexam.state.UploadDocumentState
+import com.example.finalexam.usecase.upload.UploadDocumentsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-// ===== Hảo làm phần này (Đồng bộ dữ liệu trường và môn học từ UniversityViewModel) =====
+/**
+ * ViewModel cho màn hình Upload Document theo kiến trúc MVI
+ * 
+ * Luồng hoạt động MVI:
+ * 1. View (UploadDocumentScreen) gửi Intent thông qua processIntent()
+ * 2. ViewModel tìm Handler phù hợp để xử lý Intent
+ * 3. Handler thực hiện logic và tạo Result
+ * 4. Reducer nhận Result và State hiện tại, tạo State mới
+ * 5. View quan sát State và cập nhật UI
+ * 
+ * Dependencies:
+ * - universityViewModel: Để lấy thông tin university và subject đã chọn
+ * - uploadDocumentsUseCase: Để thực hiện logic upload
+ */
 class UploadDocumentViewModel(
-    private val universityViewModel: UniversityViewModel // Inject hoặc truyền vào từ Activity/Fragment
+    private val universityViewModel: UniversityViewModel,
+    private val uploadDocumentsUseCase: UploadDocumentsUseCase
 ) : ViewModel() {
 
+    // Reducer để cập nhật state dựa trên result
+    private val reducer = UploadDocumentReducer()
+    
+    // State hiện tại của màn hình upload
     private val _state = MutableStateFlow(UploadDocumentState())
-    val state: StateFlow<UploadDocumentState> = _state
+    val state = _state.asStateFlow()
 
-    init {
-        // Lắng nghe state của UniversityViewModel để đồng bộ danh sách trường
-        viewModelScope.launch {
-            universityViewModel.state.collect { uniState ->
-                _state.update { it.copy(universityList = uniState.universityList) }
-            }
-        }
+    //===Phần này của Hảo 22/6===
+    // Context để truy cập ContentResolver
+    private var context: Context? = null
+    
+    /**
+     * Set context cho ViewModel (được gọi từ UI)
+     */
+    fun setContext(context: Context) {
+        this.context = context
     }
+    //===Phần này của Hảo 22/6===
 
+    // Danh sách các handler để xử lý các intent khác nhau
+    private val handlers: List<IntentHandler<UploadDocumentIntent, UploadDocumentResult>> = listOf(
+        SetDocumentHandler(),           // Xử lý chọn/xóa document
+        SetTextHandler()                // Xử lý nhập title/description
+        // Xóa UploadDocumentHandler cũ khỏi đây để tránh context = null
+    )
+
+    /**
+     * Xử lý intent từ View
+     * 
+     * @param intent Intent được gửi từ View
+     */
     fun processIntent(intent: UploadDocumentIntent) {
-        when (intent) {
-            is UploadDocumentIntent.PickDocument -> {
-                // UI sẽ handle mở file picker
-            }
-
-            is UploadDocumentIntent.SetSelectedDocument -> {
-                _state.value = _state.value.copy(selectedDocument = intent.document)
-            }
-
-            is UploadDocumentIntent.RemoveSelectedDocument -> {
-                _state.value = _state.value.copy(selectedDocument = null)
-            }
-
-            is UploadDocumentIntent.SelectUniversity -> {
-                // Lấy trường từ danh sách đã đồng bộ từ UniversityViewModel
-                val university = _state.value.universityList.find { it.id == intent.universityId }
-                if (university != null) {
-                    _state.value = _state.value.copy(university = university)
+        viewModelScope.launch {
+            // Tìm handler phù hợp để xử lý intent
+            val handler = handlers.find { it.canHandle(intent) }
+            
+            if (handler != null) {
+                // Gọi handler để xử lý intent và tạo result
+                handler.handle(intent) { result ->
+                    _state.value = reducer.reduce(_state.value, result)
                 }
-            }
-
-            is UploadDocumentIntent.SelectSubjectIndex -> {
-                _state.value.university?.let { uni ->
-                    val updatedUni = uni.copy(selectedSubjectIndex = intent.index)
-                    _state.value = _state.value.copy(university = updatedUni)
+            } else if (intent is UploadDocumentIntent.Upload) {
+                // Xử lý upload với context và state
+                val handlerWithContext = UploadDocumentHandlerWithContext(
+                    uploadDocumentsUseCase = uploadDocumentsUseCase,
+                    universityViewModel = universityViewModel,
+                    context = context,
+                    currentState = _state.value
+                )
+                handlerWithContext.handle(intent) { result ->
+                    _state.value = reducer.reduce(_state.value, result)
                 }
-            }
-
-            is UploadDocumentIntent.AddSubject -> {
-                // Gọi UniversityViewModel để thêm môn học qua API
-                _state.value.university?.let { uni ->
-                    universityViewModel.addSubject(uni.id, intent.subjectName)
-                    // Khi UniversityViewModel cập nhật xong, danh sách trường sẽ tự đồng bộ lại qua collect ở trên
-                }
-            }
-
-            is UploadDocumentIntent.SetTitle -> {
-                _state.value = _state.value.copy(title = intent.title)
-            }
-
-            is UploadDocumentIntent.SetDescription -> {
-                _state.value = _state.value.copy(description = intent.description)
-            }
-
-            is UploadDocumentIntent.SelectSubjectByName -> {
-                _state.value = _state.value.copy(subject = intent.subject)
-            }
-
-            is UploadDocumentIntent.Upload -> {
-                if (_state.value.selectedDocument != null) {
-                    _state.value = _state.value.copy(isUploading = true)
-                    viewModelScope.launch {
-                        kotlinx.coroutines.delay(1000)
-                        _state.value = _state.value.copy(
-                            isUploading = false,
-                            uploadSuccess = true
-                        )
-                    }
-                }
-            }
-
-            is UploadDocumentIntent.Back -> {
-                // Nếu cần xử lý riêng khi back
+            } else {
+                println("[WARN] No handler for intent: $intent")
             }
         }
     }
 }
-// ===== end Hảo làm phần này =====
+
+//===Phần này của Hảo 22/6===
+/**
+ * Handler wrapper để truyền context và state
+ */
+class UploadDocumentHandlerWithContext(
+    private val uploadDocumentsUseCase: UploadDocumentsUseCase,
+    private val universityViewModel: UniversityViewModel,
+    private val context: Context?,
+    private val currentState: UploadDocumentState
+) {
+    suspend fun handle(
+        intent: UploadDocumentIntent,
+        setResult: (UploadDocumentResult) -> Unit
+    ) {
+        try {
+            setResult(UploadDocumentResult.Loading)
+            
+            // Lấy thông tin university và subject từ UniversityViewModel
+            val universityState = universityViewModel.state.value
+            val selectedUniversity = universityState.selectedUniversity
+            
+            if (selectedUniversity == null) {
+                setResult(UploadDocumentResult.Error("Vui lòng chọn trường đại học"))
+                return
+            }
+            
+            val universityId = selectedUniversity.id
+            val courseIndex = selectedUniversity.selectedSubjectIndex
+            
+            if (courseIndex < 0 || courseIndex >= selectedUniversity.subjects.size) {
+                setResult(UploadDocumentResult.Error("Vui lòng chọn môn học"))
+                return
+            }
+            
+            // Lấy selected documents từ current state
+            val selectedDocument = currentState.selectedDocument
+            if (selectedDocument == null) {
+                setResult(UploadDocumentResult.Error("Vui lòng chọn tài liệu"))
+                return
+            }
+            
+            // Cập nhật document với thông tin từ UI
+            val documentWithInfo = selectedDocument.copy(
+                title = currentState.title,
+                description = currentState.description,
+                universityId = selectedUniversity.id,
+                subject = selectedUniversity.selectedSubject
+            )
+            
+            if (context == null) {
+                setResult(UploadDocumentResult.Error("Context không khả dụng"))
+                return
+            }
+            
+            val result = uploadDocumentsUseCase(
+                documents = listOf(documentWithInfo),
+                universityId = selectedUniversity.id,
+                courseIndex = selectedUniversity.selectedSubjectIndex,
+                context = context
+            )
+            
+            setResult(result)
+            
+        } catch (e: Exception) {
+            setResult(UploadDocumentResult.Error(e.message ?: "Upload failed"))
+        }
+    }
+}
+//===Phần này của Hảo 22/6===

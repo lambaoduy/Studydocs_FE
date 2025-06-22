@@ -1,4 +1,4 @@
-package com.example.finalexam.view.myLibraryScreen
+package com.example.finalexam.ui.screens.myLibraryScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finalexam.entity.Document
 import com.example.finalexam.intent.MyLibraryIntent
+import com.example.finalexam.navigation.NavigationEvent
 import com.example.finalexam.ui.components.homeScreen.RightFilterDrawer
 import com.example.finalexam.ui.theme.AppColors
 import com.example.finalexam.viewmodel.MyLibraryViewModel
@@ -57,26 +58,26 @@ import com.example.finalexam.viewmodel.MyLibraryViewModel
 @Composable
 fun MyLibraryScreen(
     viewModel: MyLibraryViewModel = viewModel(),
-//    onNavigateToUpload: () -> Unit = {},
-//    onNavigateToDocumentDetail: (String) -> Unit = {},
-//    onNavigateToHome: () -> Unit = {}
+    onNavigateToUpload: () -> Unit = {},
+    onNavigateToDocumentDetail: (String) -> Unit = {},
+    onNavigateToHome: () -> Unit = {}
 ) {
     var selectedTabIndex by remember { mutableStateOf(1) }
     val state by viewModel.state.collectAsState()
     var isDrawerOpen by remember { mutableStateOf(false) }
     var unversity by remember { mutableStateOf("") }
     var subject by remember { mutableStateOf("") }
-//
-//    LaunchedEffect(Unit) {
-//        viewModel.navigationEvent.collect { event ->
-//            when (event) {
-//                is NavigationEvent.NavigateToUpload -> onNavigateToUpload()
-//                is NavigationEvent.NavigateToDocumentDetail -> onNavigateToDocumentDetail(event.documentId)
-//                is NavigationEvent.NavigateToHome -> onNavigateToHome()
-//                else -> {}
-//            }
-//        }
-//    }
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is NavigationEvent.NavigateToUpload -> onNavigateToUpload()
+                is NavigationEvent.NavigateToDocumentDetail -> onNavigateToDocumentDetail(event.documentId)
+                is NavigationEvent.NavigateToHome -> onNavigateToHome()
+                else -> {}
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadDocuments()
@@ -127,7 +128,9 @@ fun MyLibraryScreen(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
                     .clickable {
-//                    viewModel.processIntent(MyLibraryIntent.OnUploadClicked)
+                        //===Phần này của Hảo 22/6===
+                        onNavigateToUpload() // Gọi callback để navigate đến upload screen
+                        //===Phần này của Hảo 22/6===
                     }
                     .drawBehind {
                         drawRoundRect(
@@ -266,7 +269,7 @@ fun SearchPanel(
         ) {
             OutlinedTextField(
                 value =
-                searchQuery,
+                    searchQuery,
                 onValueChange = {
                     searchQuery = it
                 },
@@ -274,22 +277,22 @@ fun SearchPanel(
                 leadingIcon = {
                     IconButton(onClick =
 //                    {}
-                    {// nếu search query thay đổi thì gọi db để tìm kiếm
-                        if (searchQuery.isNotBlank() && !state.searchQuery.equals(searchQuery)) {
-                            viewModel.processIntent(MyLibraryIntent.Search(searchQuery))
-                        }
+                        {// nếu search query thay đổi thì gọi db để tìm kiếm
+                            if (searchQuery.isNotBlank() && !state.searchQuery.equals(searchQuery)) {
+                                viewModel.processIntent(MyLibraryIntent.Search(searchQuery))
+                            }
 
-                        if (unversity.isNotBlank()) {
-                            viewModel.processIntent(
-                                MyLibraryIntent.FilterByUniversity(
-                                    searchQuery
+                            if (unversity.isNotBlank()) {
+                                viewModel.processIntent(
+                                    MyLibraryIntent.FilterByUniversity(
+                                        searchQuery
+                                    )
                                 )
-                            )
+                            }
+                            if (subject.isNotBlank()) {
+                                viewModel.processIntent(MyLibraryIntent.FilterBySubject(subject))
+                            }
                         }
-                        if (subject.isNotBlank()) {
-                            viewModel.processIntent(MyLibraryIntent.FilterBySubject(subject))
-                        }
-                    }
                     ) {
                         Icon(Icons.Default.Search, contentDescription = "Search")
                     }

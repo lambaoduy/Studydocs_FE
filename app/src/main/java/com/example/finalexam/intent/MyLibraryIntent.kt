@@ -1,7 +1,6 @@
 // Định nghĩa các Intent (hành động) cho màn hình MyLibrary
 package com.example.finalexam.intent
 import com.example.finalexam.entity.Document
-import com.example.finalexam.intent.MyLibraryIntent
 
 sealed class MyLibraryIntent {
     // Hành động tìm kiếm tài liệu
