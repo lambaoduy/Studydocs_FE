@@ -141,7 +141,8 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("upload") {
                         UploadDocumentScreen(
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { navController.popBackStack() },
+                            onUploadSuccess = {navController.navigate("library")}
                         )
                     }
                 }

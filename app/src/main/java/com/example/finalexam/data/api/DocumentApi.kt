@@ -4,15 +4,15 @@ import com.example.finalexam.data.dao.document.DocumentListWrapper
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.entity.Document
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
-import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
-import retrofit2.http.*
 
 
 interface DocumentApi {
@@ -53,8 +53,9 @@ interface DocumentApi {
 
 
     //===Phần này của Hảo===
+    @Multipart
     @POST("/user/document/upload")
-    suspend fun uploadDocument(@Body document: Document, @Part file: MultipartBody.Part): Response<BaseResponse<Document>>
+    suspend fun uploadDocument(@Part("document") document: RequestBody, @Part file: MultipartBody.Part): Response<BaseResponse<Document>>
     //===Phần này của Hảo end===
 
     //===Phần này của Hảo end===
