@@ -59,16 +59,16 @@ import com.example.finalexam.viewmodel.MyLibraryViewModel
 @Composable
 fun MyLibraryScreen(
     viewModel: MyLibraryViewModel = viewModel(),
-    onNavigateToUpload: () -> Unit ,
-    onNavigateToDocumentDetail: (String) -> Unit,
+    onNavigateToUpload: () -> Unit,
+    onNavigateToDocumentDetail: (String) -> Unit, // Đây là hàm nhận documentId
     onNavigateToHome: () -> Unit
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val state by viewModel.state.collectAsState()
     var isDrawerOpen by remember { mutableStateOf(false) }
-    var universityFilter by remember { mutableStateOf("") } // Đổi tên để rõ ràng hơn
-    var subjectFilter by remember { mutableStateOf("") } // Đổi tên để rõ ràng hơn
-    var searchQuery by remember { mutableStateOf("") } // Thêm searchQuery vào MyLibraryScreen
+    var universityFilter by remember { mutableStateOf("") }
+    var subjectFilter by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
@@ -103,15 +103,18 @@ fun MyLibraryScreen(
             ) {
                 IconButton(
                     onClick = {
-                        // onNavigateToHome // Cái này không cần thiết vì ViewModel đã xử lý navigation
-                        viewModel.processIntent(MyLibraryIntent.NavigateToHome)
-                    }
+                        onNavigateToHome()
+//                        viewModel.processIntent(MyLibraryIntent.NavigateToHome)
+                    }, modifier = Modifier
+                        .padding(8.dp)
+                        .size(48.dp)
+
                 ) {
                     Icon(
                         Icons.Default.Home,
                         contentDescription = "Quay về trang chủ",
                         tint = AppColors.Primary,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
 
@@ -131,7 +134,7 @@ fun MyLibraryScreen(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
                     .clickable {
-                        onNavigateToUpload() // Gọi callback để navigate đến upload screen
+                        onNavigateToUpload()
                     }
                     .drawBehind {
                         drawRoundRect(
@@ -183,30 +186,28 @@ fun MyLibraryScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Nội dung mỗi tab: Áp dụng bố cục từ Content.kt ---
-            // Thay vì Surface và Column phức tạp, chúng ta sẽ đặt trực tiếp các thành phần
-            // tìm kiếm và danh sách tài liệu vào đây, tương tự Content.kt
+            // --- Nội dung mỗi tab ---
             Column(
                 modifier = Modifier
-                    .fillMaxSize() // Sử dụng fillMaxSize cho Column chứa nội dung chính
-                    .background(AppColors.Surface, shape = RoundedCornerShape(16.dp)) // Nền và shape cho toàn bộ khu vực nội dung
+                    .fillMaxSize()
+                    .background(AppColors.Surface, shape = RoundedCornerShape(16.dp))
                     .padding(16.dp)
             ) {
-                // Thanh tìm kiếm (tương tự như trong Content.kt)
+                // Thanh tìm kiếm
                 OutlinedTextField(
-                    value = searchQuery, // Sử dụng searchQuery của MyLibraryScreen
+                    value = searchQuery,
                     onValueChange = {
                         searchQuery = it
                     },
                     label = { Text("Tìm kiếm") },
                     leadingIcon = {
                         IconButton(onClick = {
-                            // Kích hoạt tìm kiếm khi nhấn icon
-                            viewModel.processIntent(MyLibraryIntent.FindWithFilters(
-                                keyword = searchQuery.takeIf { it.isNotBlank() },
-                                university = universityFilter.takeIf { it.isNotBlank() },
-                                subject = subjectFilter.takeIf { it.isNotBlank() }
-                            ))
+                            viewModel.processIntent(
+                                MyLibraryIntent.FindWithFilters(
+                                    keyword = searchQuery.takeIf { it.isNotBlank() },
+                                    university = universityFilter.takeIf { it.isNotBlank() },
+                                    subject = subjectFilter.takeIf { it.isNotBlank() }
+                                ))
                         }) {
                             Icon(Icons.Default.Search, contentDescription = "Search")
                         }
@@ -214,12 +215,13 @@ fun MyLibraryScreen(
                     trailingIcon = {
                         Box(modifier = Modifier.padding(4.dp)) {
                             IconButton(
-                                onClick = { isDrawerOpen = true } // Gọi hàm để mở drawer
+                                onClick = { isDrawerOpen = true }
                             ) {
                                 Icon(Icons.Default.FilterList, contentDescription = "Filter")
                             }
 
-                            val count = listOf(universityFilter, subjectFilter).count { it.isNotBlank() }
+                            val count =
+                                listOf(universityFilter, subjectFilter).count { it.isNotBlank() }
                             if (count > 0) {
                                 Box(
                                     modifier = Modifier
@@ -252,7 +254,7 @@ fun MyLibraryScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Danh sách tài liệu (sử dụng DocumentList đã có)
+                // Danh sách tài liệu
                 val documentsToShow = if (selectedTabIndex == 0) {
                     state.documents
                 } else {
@@ -263,14 +265,14 @@ fun MyLibraryScreen(
 
                 DocumentList(
                     documents = documentsToShow,
-                    onDocumentClick = { doc ->
-                        viewModel.processIntent(MyLibraryIntent.SelectDocument(doc))
+                    onDocumentClick = { document -> // THAY ĐỔI Ở ĐÂY: nhận document
+                        onNavigateToDocumentDetail(document.id) // Gọi với document.id
                     },
-                    modifier = Modifier.fillMaxSize() // LazyColumn bên trong Column, cho phép nó cuộn
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }
-        // Hiển thị drawer filter bên phải, đặt trong Box lớn nhất để phủ lên toàn màn hình
+        // Hiển thị drawer filter bên phải
         RightFilterDrawer(
             isVisible = isDrawerOpen,
             school = universityFilter,
@@ -286,7 +288,7 @@ fun MyLibraryScreen(
 @Composable
 fun DocumentList(
     documents: List<Document>,
-    onDocumentClick: (Document) -> Unit,
+    onDocumentClick: (Document) -> Unit, // Callback nhận Document
     modifier: Modifier = Modifier
 ) {
     println("📋 Danh sách render: ${documents.size} item")
@@ -297,7 +299,7 @@ fun DocumentList(
         items(documents) { document ->
             DocumentItem(
                 document = document,
-                onClick = { onDocumentClick(document) }
+                onClick = { onDocumentClick(document) } // Truyền document vào callback
             )
         }
     }
@@ -339,7 +341,6 @@ fun DocumentItem(
     }
 }
 
-// UploadedDocumentsPanel không được sử dụng và có thể xóa nếu không cần
 @Composable
 fun UploadedDocumentsPanel(
     documents: List<Document>, onDocumentClick: (Document) -> Unit, modifier: Modifier = Modifier
