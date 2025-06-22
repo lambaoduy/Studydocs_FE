@@ -6,7 +6,6 @@ import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.DocumentIntent
 import com.example.finalexam.network.RetrofitClient
 import com.example.finalexam.result.DocumentResult
-import kotlinx.coroutines.tasks.await
 
 class UnlikeDocumentHandler : IntentHandler<DocumentIntent, DocumentResult> {
     private val api = RetrofitClient.createApi(DocumentApi::class.java)
@@ -14,20 +13,20 @@ class UnlikeDocumentHandler : IntentHandler<DocumentIntent, DocumentResult> {
     override fun canHandle(intent: DocumentIntent): Boolean = intent is DocumentIntent.UnlikeDocument
 
     override suspend fun handle(intent: DocumentIntent, setResult: (DocumentResult) -> Unit) {
-        val likeIntent = intent as DocumentIntent.LikeDocument
+        val unlikeIntent = intent as DocumentIntent.UnlikeDocument // Sửa ép kiểu
         try {
-            setResult(DocumentResult.Loading) // Đặt isLoadingLike = true qua reducer
-            Log.d("LikeDocumentHandler", "Liking document: ${likeIntent.documentId}")
-            val response = api.likeDocument(likeIntent.documentId)
+            setResult(DocumentResult.Loading)
+            Log.d("UnlikeDocumentHandler", "Unliking document: ${unlikeIntent.documentId}")
+            val response = api.unlikeDocument(unlikeIntent.documentId) // Gọi API unlike
             if (response.isSuccessful) {
-                Log.d("LikeDocumentHandler", "Document liked successfully")
-                setResult(DocumentResult.Liked())
+                Log.d("UnlikeDocumentHandler", "Document unliked successfully")
+                setResult(DocumentResult.Unliked())
             } else {
-                setResult(DocumentResult.Error("Failed to like document: ${response.message()}"))
+                setResult(DocumentResult.Error("Failed to unlike document: ${response.message()}"))
             }
         } catch (e: Exception) {
-            Log.e("LikeDocumentHandler", "Error liking document: ${e.message}", e)
-            setResult(DocumentResult.Error("Lỗi khi like tài liệu: ${e.message}"))
+            Log.e("UnlikeDocumentHandler", "Error unliking document: ${e.message}", e)
+            setResult(DocumentResult.Error("Lỗi khi unlike tài liệu: ${e.message}"))
         }
     }
 }

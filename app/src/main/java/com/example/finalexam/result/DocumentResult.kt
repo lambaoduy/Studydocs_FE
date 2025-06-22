@@ -8,7 +8,8 @@ sealed class DocumentResult {
     data class DownloadUrl(val url: String) : DocumentResult()
     data class Liked(val updatedLikes: List<Document.Like>? = null) : DocumentResult()
     data class Unliked(val updatedLikes: List<Document.Like>? = null) : DocumentResult()
-    data object Followed : DocumentResult()
-    data object Unfollowed : DocumentResult()
+    // Thêm mới
+    data class Followed(val userId: String) : DocumentResult()
+    data class Unfollowed(val userId: String) : DocumentResult()
     data class Error(val message: String) : DocumentResult()
 }
