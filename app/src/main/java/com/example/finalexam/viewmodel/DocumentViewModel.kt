@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.handler.document.DocumentFollowHandler
+import com.example.finalexam.handler.document.DocumentSaveHandler
 import com.example.finalexam.handler.document.DocumentUnFollowHandler
 import com.example.finalexam.handler.document.DownloadDocumentHandler
 import com.example.finalexam.handler.document.LikeDocumentHandler
@@ -32,7 +33,8 @@ class DocumentViewModel : ViewModel() {
         UnlikeDocumentHandler(),
         ErrorHandler(),
         DocumentFollowHandler(),
-        DocumentUnFollowHandler()
+        DocumentUnFollowHandler(),
+        DocumentSaveHandler()
     )
 
     fun processIntent(intent: Any) {

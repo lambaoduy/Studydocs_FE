@@ -1,5 +1,6 @@
 package com.example.finalexam.data.dao.document
 
+import androidx.room.Query
 import com.example.finalexam.data.api.DocumentApi
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.entity.Document
@@ -35,6 +36,29 @@ class DocumentDao(private val api: DocumentApi) {
     // Thêm method lấy tài liệu đã lưu
     suspend fun getSaveDocumests(): List<Document> = withContext(Dispatchers.IO) {
         safeApiCall { api.getSaveDocument() }
+    }
+    // Hàm để lưu tài liệu, trả về Boolean cho biết thành công hay thất bại
+    // hoặc String nếu API trả về một thông báo.
+    suspend fun saveDocument(documentId: String): Boolean = withContext(Dispatchers.IO) { // Thay đổi kiểu trả về
+        try {
+            val response = api.saveDocument(documentId) // Gọi hàm API
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.status == 200) {
+                    println("✅ [DocumentDao] Lưu tài liệu thành công: $documentId - ${body.data}")
+                    true // Trả về true nếu thành công
+                } else {
+                    println("⚠️ [DocumentDao] API trả về status != 200 khi lưu: ${body?.status} - ${body?.message}")
+                    false // Trả về false nếu API báo lỗi
+                }
+            } else {
+                println("❌ [DocumentDao] API response lỗi khi lưu: ${response.code()} - ${response.errorBody()?.string()}")
+                false // Trả về false nếu phản hồi HTTP lỗi
+            }
+        } catch (e: Exception) {
+            println("🔥 [DocumentDao] Exception khi gọi API lưu tài liệu: ${e.message}")
+            false // Trả về false nếu có ngoại lệ
+        }
     }
     // --- Helper function chung ---
 
