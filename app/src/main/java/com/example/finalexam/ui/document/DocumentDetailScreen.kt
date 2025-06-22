@@ -76,7 +76,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
-//
+
 //fun downloadFile(context: Context, url: String, fileName: String) {
 //    try {
 //        val request = android.app.DownloadManager.Request(Uri.parse(url))
@@ -154,7 +154,11 @@ fun DocumentDetailScreen(
     val followState by followViewModel.state.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-
+// Thêm vào sau các biến như documentState, followState
+    val currentUserId by remember { mutableStateOf(FirebaseAuth.getInstance().currentUser?.uid) }
+    val isCurrentUser by derivedStateOf {
+        currentUserId != null && currentUserId == documentState.document?.userId
+    }
     val documentApi: DocumentApi = RetrofitClient.createApi(DocumentApi::class.java)
 
     var pdfRenderer by remember { mutableStateOf<PdfRenderer?>(null) }
@@ -203,22 +207,22 @@ fun DocumentDetailScreen(
         followViewModel.processIntent(FollowIntent.GetFollowings)
     }
 
-    LaunchedEffect(documentState.document?.fileUrl) {
-        if (documentState.document?.fileUrl == null) {
-            documentViewModel.processIntent(DocumentIntent.Error("Không tìm thấy đường dẫn file trong cơ sở dữ liệu"))
-            return@LaunchedEffect
-        }
-        try {
-            val response = documentApi.getDownloadUrl(documentId)
-            if (response.isSuccessful && response.body()?.data != null) {
-                documentViewModel.processIntent(DocumentIntent.DownloadDocument(response.body()!!.data))
-            } else {
-                documentViewModel.processIntent(DocumentIntent.Error("Lỗi lấy URL tải xuống: ${response.message()}"))
-            }
-        } catch (e: Exception) {
-            documentViewModel.processIntent(DocumentIntent.Error("Lỗi: ${e.message}"))
-        }
-    }
+//    LaunchedEffect(documentState.document?.fileUrl) {
+//        if (documentState.document?.fileUrl == null) {
+//            documentViewModel.processIntent(DocumentIntent.Error("Không tìm thấy đường dẫn file trong cơ sở dữ liệu"))
+//            return@LaunchedEffect
+//        }
+//        try {
+//            val response = documentApi.getDownloadUrl(documentId)
+//            if (response.isSuccessful && response.body()?.data != null) {
+//                documentViewModel.processIntent(DocumentIntent.DownloadDocument(response.body()!!.data))
+//            } else {
+//                documentViewModel.processIntent(DocumentIntent.Error("Lỗi lấy URL tải xuống: ${response.message()}"))
+//            }
+//        } catch (e: Exception) {
+//            documentViewModel.processIntent(DocumentIntent.Error("Lỗi: ${e.message}"))
+//        }
+//    }
 
     LaunchedEffect(documentState.downloadUrl) {
         val url = documentState.downloadUrl
@@ -423,15 +427,27 @@ fun DocumentDetailScreen(
                                 }
                             }
 
-                            IconButton(onClick = {
-                                documentViewModel.processIntent(DocumentIntent.SaveDocument(documentId))
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.Bookmark,
-                                    contentDescription = "Download with DownloadManager",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
+//                            IconButton(onClick = {
+//                                val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
+//                                downloadFile(context, documentState.downloadUrl!!, fileName)
+//                            }) {
+//                                Icon(
+//                                    imageVector = Icons.Default.GetApp,
+//                                    contentDescription = "Download with DownloadManager",
+//                                    tint = MaterialTheme.colorScheme.primary
+//                                )
+//                            }
+
+//                            IconButton(onClick = {
+//                                val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
+//                                downloadFile(context, documentState.downloadUrl!!, fileName)
+//                            }) {
+//                                Icon(
+//                                    imageVector = Icons.Default.GetApp,
+//                                    contentDescription = "Download with DownloadManager",
+//                                    tint = MaterialTheme.colorScheme.primary
+//                                )
+//                            }
 
                             IconButton(onClick = {
                                 val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
