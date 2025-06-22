@@ -1,5 +1,6 @@
 package com.example.finalexam.ui.document
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -41,15 +42,14 @@ import com.example.finalexam.intent.DocumentIntent
 import com.example.finalexam.intent.FollowIntent
 import com.example.finalexam.network.RetrofitClient
 import com.example.finalexam.viewmodel.DocumentViewModel
+import com.example.finalexam.viewmodel.FollowViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.net.URL
 
-// Tải file dùng DownloadManager
 fun downloadFile(context: Context, url: String, fileName: String) {
     try {
         val request = android.app.DownloadManager.Request(Uri.parse(url))
@@ -68,7 +68,6 @@ fun downloadFile(context: Context, url: String, fileName: String) {
     }
 }
 
-// Tải file dùng SAF
 suspend fun downloadFileWithSAF(context: Context, url: String, fileName: String, uri: Uri) {
     try {
         withContext(Dispatchers.IO) {
@@ -97,7 +96,6 @@ suspend fun downloadFileWithSAF(context: Context, url: String, fileName: String,
     }
 }
 
-// Hàm lấy MIME type
 fun getMimeType(fileName: String): String {
     return when (fileName.substringAfterLast(".", "").lowercase()) {
         "pdf" -> "application/pdf"
@@ -108,7 +106,6 @@ fun getMimeType(fileName: String): String {
     }
 }
 
-// Modifier cho hiệu ứng shadow
 fun Modifier.boxedShadow(): Modifier = this.then(
     Modifier
         .background(Color.White, RoundedCornerShape(8.dp))
@@ -117,33 +114,41 @@ fun Modifier.boxedShadow(): Modifier = this.then(
         .shadow(elevation = 4.dp, shape = RoundedCornerShape(8.dp))
 )
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentDetailScreen(
     documentId: String,
     onNavigateBack: () -> Unit
 ) {
-    val viewModel: DocumentViewModel = viewModel()
-    val state by viewModel.state.collectAsState()
+    val documentViewModel: DocumentViewModel = viewModel()
+    val followViewModel: FollowViewModel = viewModel()
+    val documentState by documentViewModel.state.collectAsState()
+    val followState by followViewModel.state.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    // Khởi tạo DocumentApi từ RetrofitClient
     val documentApi: DocumentApi = RetrofitClient.createApi(DocumentApi::class.java)
 
-    // State để render file
     var pdfRenderer by remember { mutableStateOf<PdfRenderer?>(null) }
     var currentPage by remember { mutableStateOf(0) }
     var pageCount by remember { mutableStateOf(0) }
     var fileBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var tempFile by remember { mutableStateOf<File?>(null) }
 
-    // Storage Access Framework launcher
+    // Tính toán isFollowed dựa trên followState
+    val isFollowed by derivedStateOf {
+        val currentUserId = documentState.document?.userId
+        currentUserId != null && followState.followings.any {
+            it.targetId == currentUserId && it.targetType == FollowType.USER
+        }
+    }
+
     val storageAccessLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument(getMimeType(state.document?.fileUrl ?: ""))
+        ActivityResultContracts.CreateDocument(getMimeType(documentState.document?.fileUrl ?: ""))
     ) { uri ->
-        if (uri != null && state.downloadUrl != null) {
-            val fileName = "${state.document?.title ?: "document"}.${state.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
+        if (uri != null && documentState.downloadUrl != null) {
+            val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
             try {
                 context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 scope.launch {
@@ -155,7 +160,7 @@ fun DocumentDetailScreen(
                         }
                         Toast.makeText(context, "Đã lưu $fileName thành công!", Toast.LENGTH_SHORT).show()
                     } else {
-                        downloadFileWithSAF(context, state.downloadUrl!!, fileName, uri)
+                        downloadFileWithSAF(context, documentState.downloadUrl!!, fileName, uri)
                     }
                 }
             } catch (e: Exception) {
@@ -166,32 +171,30 @@ fun DocumentDetailScreen(
         }
     }
 
-    // Load tài liệu khi màn hình được tạo
     LaunchedEffect(Unit) {
-        viewModel.processIntent(DocumentIntent.LoadDocument(documentId))
+        documentViewModel.processIntent(DocumentIntent.LoadDocument(documentId))
+        followViewModel.processIntent(FollowIntent.GetFollowings)
     }
 
-    // Lấy URL tải xuống từ API
-    LaunchedEffect(state.document?.fileUrl) {
-        if (state.document?.fileUrl == null) {
-            viewModel.processIntent(DocumentIntent.Error("Không tìm thấy đường dẫn file trong cơ sở dữ liệu"))
+    LaunchedEffect(documentState.document?.fileUrl) {
+        if (documentState.document?.fileUrl == null) {
+            documentViewModel.processIntent(DocumentIntent.Error("Không tìm thấy đường dẫn file trong cơ sở dữ liệu"))
             return@LaunchedEffect
         }
         try {
             val response = documentApi.getDownloadUrl(documentId)
             if (response.isSuccessful && response.body()?.data != null) {
-                viewModel.processIntent(DocumentIntent.DownloadDocument(response.body()!!.data))
+                documentViewModel.processIntent(DocumentIntent.DownloadDocument(response.body()!!.data))
             } else {
-                viewModel.processIntent(DocumentIntent.Error("Lỗi lấy URL tải xuống: ${response.message()}"))
+                documentViewModel.processIntent(DocumentIntent.Error("Lỗi lấy URL tải xuống: ${response.message()}"))
             }
         } catch (e: Exception) {
-            viewModel.processIntent(DocumentIntent.Error("Lỗi: ${e.message}"))
+            documentViewModel.processIntent(DocumentIntent.Error("Lỗi: ${e.message}"))
         }
     }
 
-    // Tải và render file khi downloadUrl thay đổi
-    LaunchedEffect(state.downloadUrl) {
-        val url = state.downloadUrl
+    LaunchedEffect(documentState.downloadUrl) {
+        val url = documentState.downloadUrl
         if (url != null) {
             try {
                 tempFile = withContext(Dispatchers.IO) {
@@ -221,34 +224,32 @@ fun DocumentDetailScreen(
                                 page.close()
                             }
                         } else {
-                            viewModel.processIntent(DocumentIntent.Error("PDF không có trang"))
+                            documentViewModel.processIntent(DocumentIntent.Error("PDF không có trang"))
                         }
                     }
                     "image/jpeg", "image/png" -> {
                         fileBitmap = BitmapFactory.decodeFile(tempFile!!.absolutePath)
                         if (fileBitmap == null) {
-                            viewModel.processIntent(DocumentIntent.Error("Không thể giải mã file hình ảnh"))
+                            documentViewModel.processIntent(DocumentIntent.Error("Không thể giải mã file hình ảnh"))
                         }
                     }
                     else -> {
-                        viewModel.processIntent(DocumentIntent.Error("Định dạng file không được hỗ trợ: ${tempFile!!.name.substringAfterLast(".")}"))
+                        documentViewModel.processIntent(DocumentIntent.Error("Định dạng file không được hỗ trợ: ${tempFile!!.name.substringAfterLast(".")}"))
                     }
                 }
             } catch (e: Exception) {
-                viewModel.processIntent(DocumentIntent.Error("Lỗi tải hoặc render file: ${e.message}"))
+                documentViewModel.processIntent(DocumentIntent.Error("Lỗi tải hoặc render file: ${e.message}"))
             }
         }
     }
 
-    // Hiển thị thông báo lỗi
-    LaunchedEffect(state.errorMessage) {
-        if (state.errorMessage != null) {
-            Toast.makeText(context, state.errorMessage, Toast.LENGTH_LONG).show()
-            viewModel.processIntent(DocumentIntent.Error("")) // Reset lỗi
+    LaunchedEffect(documentState.errorMessage) {
+        if (!documentState.errorMessage.isNullOrEmpty()) {
+            Toast.makeText(context, documentState.errorMessage, Toast.LENGTH_LONG).show()
+            documentViewModel.processIntent(DocumentIntent.Error(""))
         }
     }
 
-    // Dọn dẹp PdfRenderer và file tạm
     DisposableEffect(Unit) {
         onDispose {
             pdfRenderer?.close()
@@ -259,7 +260,7 @@ fun DocumentDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(state.document?.title ?: "Loading...") },
+                title = { Text(documentState.document?.title ?: "Loading...") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -276,14 +277,14 @@ fun DocumentDetailScreen(
                 .background(Color(0xFFF5F5F5)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (state.isLoading) {
+            if (documentState.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
-            } else if (state.errorMessage != null && state.errorMessage!!.isNotEmpty()) {
+            } else if (documentState.errorMessage != null && documentState.errorMessage!!.isNotEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = state.errorMessage!!,
+                        text = documentState.errorMessage!!,
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(24.dp)
@@ -293,7 +294,7 @@ fun DocumentDetailScreen(
                 if (fileBitmap != null) {
                     Image(
                         bitmap = fileBitmap!!.asImageBitmap(),
-                        contentDescription = if (state.document?.fileUrl?.endsWith(".pdf") == true) {
+                        contentDescription = if (documentState.document?.fileUrl?.endsWith(".pdf") == true) {
                             "PDF page ${currentPage + 1}"
                         } else {
                             "Image file"
@@ -320,8 +321,7 @@ fun DocumentDetailScreen(
                     }
                 }
 
-                // Thanh hành động
-                if (state.downloadUrl != null && state.document != null) {
+                if (documentState.downloadUrl != null && documentState.document != null) {
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -337,46 +337,50 @@ fun DocumentDetailScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             var isFollowProcessing by remember { mutableStateOf(false) }
-                            // Nút Follow
                             IconButton(
                                 onClick = {
-                                    val userId = state.document?.userId
+                                    val userId = documentState.document?.userId
                                     if (userId.isNullOrEmpty()) {
                                         Toast.makeText(context, "Không tìm thấy ID người dùng", Toast.LENGTH_SHORT).show()
                                         return@IconButton
                                     }
                                     if (isFollowProcessing) {
-                                        // Ngăn hành động nếu đang xử lý
                                         return@IconButton
                                     }
                                     scope.launch {
                                         isFollowProcessing = true
                                         try {
-                                            viewModel.processIntent(
-                                                if (state.isFollowed) {
-                                                    FollowIntent.Unfollow(userId)
+                                            val wasFollowed = isFollowed
+                                            followViewModel.processIntent(
+                                                if (isFollowed) {
+                                                    FollowIntent.Unfollow(userId) // userId là targetId
                                                 } else {
                                                     FollowIntent.Follow(userId, FollowType.USER)
                                                 }
                                             )
-                                            // Chờ một chút để đảm bảo trạng thái được cập nhật
-                                            kotlinx.coroutines.delay(500) // Có thể điều chỉnh
-                                            if (state.errorMessage.isNullOrEmpty()) {
+                                            kotlinx.coroutines.delay(500)
+                                            if (followState.errorMessage.isNullOrEmpty()) {
                                                 Toast.makeText(
                                                     context,
-                                                    if (state.isFollowed) "Đã bỏ theo dõi" else "Đã theo dõi",
+                                                    if (wasFollowed) "Đã bỏ theo dõi" else "Đã theo dõi",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } else {
+                                                Toast.makeText(
+                                                    context,
+                                                    followState.errorMessage ?: "Lỗi xử lý theo dõi",
                                                     Toast.LENGTH_SHORT
                                                 ).show()
                                             }
                                         } catch (e: Exception) {
                                             Log.e("DocumentDetailScreen", "Lỗi xử lý follow/unfollow: ${e.message}")
-                                            viewModel.processIntent(DocumentIntent.Error("Lỗi xử lý theo dõi: ${e.message}"))
+                                            documentViewModel.processIntent(DocumentIntent.Error("Lỗi xử lý theo dõi: ${e.message}"))
                                         } finally {
                                             isFollowProcessing = false
                                         }
                                     }
                                 },
-                                enabled = !isFollowProcessing && state.document?.userId?.isNotEmpty() == true && !state.isLoading
+                                enabled = !isFollowProcessing && documentState.document?.userId?.isNotEmpty() == true && !documentState.isLoading
                             ) {
                                 if (isFollowProcessing) {
                                     CircularProgressIndicator(
@@ -385,17 +389,16 @@ fun DocumentDetailScreen(
                                     )
                                 } else {
                                     Icon(
-                                        imageVector = if (state.isFollowed) Icons.Default.PersonRemove else Icons.Default.PersonAdd,
-                                        contentDescription = if (state.isFollowed) "Bỏ theo dõi" else "Theo dõi",
-                                        tint = if (state.isFollowed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                        imageVector = if (isFollowed) Icons.Default.PersonRemove else Icons.Default.PersonAdd,
+                                        contentDescription = if (isFollowed) "Bỏ theo dõi" else "Theo dõi",
+                                        tint = if (isFollowed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
 
-                            // Nút Download với DownloadManager
                             IconButton(onClick = {
-                                val fileName = "${state.document?.title ?: "document"}.${state.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
-                                downloadFile(context, state.downloadUrl!!, fileName)
+                                val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
+                                downloadFile(context, documentState.downloadUrl!!, fileName)
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.GetApp,
@@ -404,9 +407,8 @@ fun DocumentDetailScreen(
                                 )
                             }
 
-                            // Nút Save với SAF
                             IconButton(onClick = {
-                                val fileName = "${state.document?.title ?: "document"}.${state.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
+                                val fileName = "${documentState.document?.title ?: "document"}.${documentState.document?.fileUrl?.substringAfterLast(".") ?: "pdf"}"
                                 storageAccessLauncher.launch(fileName)
                             }) {
                                 Icon(
@@ -416,44 +418,37 @@ fun DocumentDetailScreen(
                                 )
                             }
 
-                            // Nút Like/Unlike
                             IconButton(onClick = {
                                 scope.launch {
                                     try {
-                                        if (state.isLiked) {
-                                            val response = documentApi.unlikeDocument(documentId)
-                                            if (response.isSuccessful) {
-                                                viewModel.processIntent(DocumentIntent.UnlikeDocument(documentId))
+                                        if (documentState.isLiked) {
+                                            documentViewModel.processIntent(DocumentIntent.UnlikeDocument(documentId))
+                                            if (documentState.errorMessage.isNullOrEmpty()) {
                                                 Toast.makeText(context, "Đã bỏ thích", Toast.LENGTH_SHORT).show()
-                                            } else {
-                                                viewModel.processIntent(DocumentIntent.Error("Lỗi bỏ thích: ${response.message()}"))
                                             }
                                         } else {
-                                            val response = documentApi.likeDocument(documentId)
-                                            if (response.isSuccessful) {
-                                                viewModel.processIntent(DocumentIntent.LikeDocument(documentId))
+                                            documentViewModel.processIntent(DocumentIntent.LikeDocument(documentId))
+                                            if (documentState.errorMessage.isNullOrEmpty()) {
                                                 Toast.makeText(context, "Đã thích", Toast.LENGTH_SHORT).show()
-                                            } else {
-                                                viewModel.processIntent(DocumentIntent.Error("Lỗi thích: ${response.message()}"))
                                             }
                                         }
                                     } catch (e: Exception) {
-                                        viewModel.processIntent(DocumentIntent.Error("Lỗi: ${e.message}"))
+                                        Log.e("DocumentDetail", "Error processing Like/Unlike: ${e.message}", e)
+                                        documentViewModel.processIntent(DocumentIntent.Error("Lỗi: ${e.message}"))
                                     }
                                 }
                             }) {
                                 Icon(
-                                    imageVector = if (state.isLiked) Icons.Default.ThumbUp else Icons.Default.ThumbUpOffAlt,
-                                    contentDescription = "Like",
-                                    tint = if (state.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                    imageVector = if (documentState.isLiked) Icons.Default.ThumbUp else Icons.Default.ThumbUpOffAlt,
+                                    contentDescription = if (documentState.isLiked) "Unlike" else "Like",
+                                    tint = if (documentState.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
                     }
                 }
 
-                // Điều khiển phân trang cho PDF
-                if (state.document?.fileUrl?.endsWith(".pdf") == true && pageCount > 1) {
+                if (documentState.document?.fileUrl?.endsWith(".pdf") == true && pageCount > 1) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

@@ -25,7 +25,7 @@ class FollowViewModel : ViewModel() {
         FollowHandler(),
         UnfollowHandler(),
         ToggleNotifyEnableHandler(),
-        ErrorHandler() // Thêm handler lỗi
+        ErrorHandler()
     )
 
     suspend fun processIntent(intent: FollowIntent) {
@@ -55,7 +55,7 @@ class FollowViewModel : ViewModel() {
     }
 
     inner class ErrorHandler : IntentHandler<FollowIntent, FollowResult> {
-        override fun canHandle(intent: FollowIntent): Boolean = false // Xử lý lỗi toàn cục
+        override fun canHandle(intent: FollowIntent): Boolean = false
         override suspend fun handle(intent: FollowIntent, setResult: (FollowResult) -> Unit) {
             setResult(FollowResult.Error("Lỗi không xác định"))
         }

@@ -16,7 +16,7 @@ class UnfollowHandler : IntentHandler<FollowIntent, FollowResult> {
     ) {
         setResult(FollowResult.Loading)
         val unfollowIntent = intent as FollowIntent.Unfollow
-        unfollowUseCase.invoke(unfollowIntent.followingId)
+        unfollowUseCase.invokeByFollowingId(unfollowIntent.followingId)
             .onSuccess { result ->
                 setResult(FollowResult.UnFollowActionResult(result))
             }

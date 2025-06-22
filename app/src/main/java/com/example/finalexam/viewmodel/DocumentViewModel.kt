@@ -13,14 +13,12 @@ import com.example.finalexam.intent.FollowIntent
 import com.example.finalexam.reduce.DocumentReducer
 import com.example.finalexam.result.DocumentResult
 import com.example.finalexam.state.DocumentState
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class DocumentViewModel(
-    private val followViewModel: FollowViewModel = FollowViewModel() // Tạo instance mặc định
-) : ViewModel() {
+class DocumentViewModel : ViewModel() {
     private val reducer = DocumentReducer()
     private val _state = MutableStateFlow(DocumentState())
     val state = _state.asStateFlow()
@@ -33,25 +31,6 @@ class DocumentViewModel(
         ErrorHandler()
     )
 
-    init {
-        // Lắng nghe FollowState từ FollowViewModel để cập nhật isFollowed
-        viewModelScope.launch {
-            followViewModel.state.collectLatest { followState ->
-                val currentUserId = _state.value.document?.userId
-                if (currentUserId != null) {
-                    val isFollowed = followState.followings.any { it.followingId == currentUserId }
-                    if (_state.value.isFollowed != isFollowed) {
-                        _state.value = reducer.reduce(
-                            _state.value,
-                            if (isFollowed) DocumentResult.Followed else DocumentResult.Unfollowed
-                        )
-                        Log.d("DocumentViewModel", "Cập nhật isFollowed: $isFollowed cho userId: $currentUserId")
-                    }
-                }
-            }
-        }
-    }
-
     fun processIntent(intent: Any) {
         viewModelScope.launch {
             Log.d("DocumentViewModel", "Xử lý intent: $intent")
@@ -62,21 +41,16 @@ class DocumentViewModel(
                         try {
                             handler.handle(intent) { result ->
                                 Log.d("DocumentViewModel", "Kết quả: $result")
-                                _state.value = reducer.reduce(_state.value, result)
-                                // Kiểm tra trạng thái Follow sau khi tải tài liệu
-                                if (intent is DocumentIntent.LoadDocument && result is DocumentResult.Loaded) {
-                                    try {
-                                        viewModelScope.launch {
-                                            followViewModel.processIntent(FollowIntent.GetFollowings)
-                                        }
-                                    } catch (e: Exception) {
-                                        Log.e("DocumentViewModel", "Lỗi xử lý GetFollowings: ${e.message}")
-                                        _state.value = reducer.reduce(
-                                            _state.value,
-                                            DocumentResult.Error("Lỗi kiểm tra trạng thái theo dõi: ${e.message}")
-                                        )
+                                var newState = reducer.reduce(_state.value, result)
+                                if (result is DocumentResult.Loaded) {
+                                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+                                    if (userId != null) {
+                                        val isLiked = result.document.likes?.any { it.userId == userId } ?: false
+                                        newState = newState.copy(isLiked = isLiked)
+                                        Log.d("DocumentViewModel", "Cập nhật isLiked: $isLiked cho documentId: ${result.document.id}")
                                     }
                                 }
+                                _state.value = newState
                             }
                         } catch (e: Exception) {
                             Log.e("DocumentViewModel", "Lỗi xử lý DocumentIntent: ${e.message}")
@@ -90,16 +64,8 @@ class DocumentViewModel(
                     }
                 }
                 is FollowIntent -> {
-                    Log.d("DocumentViewModel", "Chuyển tiếp FollowIntent: $intent")
-                    try {
-                        followViewModel.processIntent(intent)
-                    } catch (e: Exception) {
-                        Log.e("DocumentViewModel", "Lỗi xử lý FollowIntent: ${e.message}")
-                        _state.value = reducer.reduce(
-                            _state.value,
-                            DocumentResult.Error("Lỗi xử lý theo dõi: ${e.message}")
-                        )
-                    }
+                    Log.d("DocumentViewModel", "FollowIntent được gửi từ UI: $intent")
+                    // FollowIntent sẽ được xử lý bởi FollowViewModel trong DocumentDetailScreen
                 }
                 else -> {
                     Log.w("DocumentViewModel", "Loại intent không xác định: $intent")
