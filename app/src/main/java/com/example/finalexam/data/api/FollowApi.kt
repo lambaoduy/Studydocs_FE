@@ -3,6 +3,7 @@ package com.example.finalexam.data.api
 import com.example.finalexam.data.enums.FollowType
 import com.example.finalexam.data.request.FollowRequest
 import com.example.finalexam.data.request.ToggleNotifyRequest
+import com.example.finalexam.data.request.UnfollowRequest
 import com.example.finalexam.data.response.BaseResponse
 import com.example.finalexam.entity.Follower
 import com.example.finalexam.entity.Following
@@ -17,7 +18,7 @@ interface FollowApi {
     suspend fun follow(@Body followRequest: FollowRequest): BaseResponse<Void>
 
     @POST("/user/unfollow")
-    suspend fun unFollow(@Body followingId: String): BaseResponse<String>
+    suspend fun unFollow(@Body followRequest: UnfollowRequest): BaseResponse<String>
 
     @POST("/user/unfollow/by-target")
     suspend fun unFollowByTarget(@Body unfollowRequest: FollowRequest): BaseResponse<Void>

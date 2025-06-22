@@ -69,7 +69,6 @@ import com.example.finalexam.intent.FollowIntent
 import com.example.finalexam.network.RetrofitClient
 import com.example.finalexam.viewmodel.DocumentViewModel
 import com.example.finalexam.viewmodel.FollowViewModel
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
