@@ -62,7 +62,7 @@ interface DocumentApi {
     @GET("/user/document/my-documents")
     suspend fun getMyDocuments(): Response<BaseResponse<DocumentListWrapper>>
     //===Phần này của Hảo end===
-    @GET("/document/getDocSaveInLibrary")
+    @GET("/user/document/getDocSaveInLibrary")
     suspend fun getSaveDocument(): Response<BaseResponse<DocumentListWrapper>>
     @POST("/user/document/saveToLibrary")
     suspend fun saveDocument(@Query("keyword") documentId: String): Response<BaseResponse<String>>
