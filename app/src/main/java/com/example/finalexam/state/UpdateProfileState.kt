@@ -7,6 +7,6 @@ data class UpdateProfileState(
     val isLoading: Boolean = false,
     val user: User? = null,
     val isSuccess: Boolean = false,
-    val error: Throwable? = null
+    val error: String? = null
 )
 

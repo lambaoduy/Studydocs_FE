@@ -49,5 +49,7 @@ object UserPreferences {
     // Xóa userId (logout)
     suspend fun clear() {
         appContext.dataStore.edit { it.clear() }
+        UserProvider.clear()
+
     }
 }

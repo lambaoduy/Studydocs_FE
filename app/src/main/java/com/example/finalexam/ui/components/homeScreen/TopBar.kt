@@ -27,15 +27,20 @@ import androidx.compose.ui.unit.sp
 import com.example.finalexam.R
 
 @Composable
-fun TopBar(navigateToNotification: () -> Unit) {
+fun TopBar(navigateToNotification: () -> Unit, navigateToProfile: () -> Unit) {
     TopAppBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.AccountCircle,
-                    contentDescription = "Account",
-                    modifier = Modifier.size(32.dp)
-                )
+                IconButton(onClick = {
+                    navigateToProfile()
+                }) {
+                    Icon(
+                        Icons.Default.AccountCircle,
+                        contentDescription = "Account",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+
 
                 Spacer(Modifier.width(8.dp))
                 Image(

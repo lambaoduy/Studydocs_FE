@@ -13,6 +13,10 @@ object UserProvider {
     fun setToken(value: String) {
         token = value
     }
+    fun clear() {
+        userId = null
+        token = null
+    }
 
     fun getToken(): String? = token
 }

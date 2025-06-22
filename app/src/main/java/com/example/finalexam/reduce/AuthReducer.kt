@@ -9,7 +9,5 @@ class AuthReducer {
         is AuthResult.Loading -> state.copy(isLoading = true, error = null)
         is AuthResult.Success -> state.copy(isLoading = false, isSuccess = true)
         is AuthResult.Error -> state.copy(isLoading = false, error = result.message)
-        is AuthResult.ProfileLoaded -> state.copy(isLoading = false, user = result.user)
-        is AuthResult.ProfileUpdated -> state.copy(isLoading = false, user = result.user, isSuccess = true)
     }
 } 

@@ -2,6 +2,7 @@ package com.example.finalexam
 
 
 import FollowScreen
+import ProfileScreen
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -15,11 +16,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.finalexam.data.datastore.UserProvider
 import com.example.finalexam.ui.document.DocumentDetailScreen
+import com.example.finalexam.ui.screens.EditProfileScreen
 import com.example.finalexam.ui.screens.ForgotPasswordScreen
 import com.example.finalexam.ui.screens.HomeScreen
 import com.example.finalexam.ui.screens.LoginScreen
 import com.example.finalexam.ui.screens.NotificationScreen
-import com.example.finalexam.ui.screens.ProfileScreen
 import com.example.finalexam.ui.screens.RegisterScreen
 import com.example.finalexam.ui.theme.FinalExamTheme
 import com.example.finalexam.view.myLibraryScreen.MyLibraryScreen
@@ -32,7 +33,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             FinalExamTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "login") {
+                val startDestination = if (UserProvider.getUserId() != null) "home" else "login"
+                NavHost(navController = navController, startDestination = startDestination) {
                     composable("login") {
                         LoginScreen(
                             onRegisterClick = { navController.navigate("register") },
@@ -75,14 +77,26 @@ class MainActivity : ComponentActivity() {
                             },
                             onBottomNavItemSelected = { route ->
                                 navController.navigate(route)
-                            }
+                            },
+                            navigateToProfile = { navController.navigate("profile") }
                         )
                     }
                     composable("profile") {
                         ProfileScreen(
-                            userId = UserProvider.getUserId(),
-                            onEditProfile = { navController.navigate("edit_profile") }
+                            onEditProfile = { navController.navigate("edit-profile") },
+                            followSetting = { navController.navigate("follow") },
+                            onLibrary = { navController.navigate("library") },
+                            onLogout = { navController.navigate("login") },
+                            onBackClick = { navController.popBackStack() }
                         )
+                    }
+                    composable("edit-profile") {
+                        EditProfileScreen(
+                            onBackClick = {
+                                navController.popBackStack()
+                            },
+                            userId = UserProvider.getUserId(),
+                            )
                     }
                     composable("notification") {
                         NotificationScreen(
@@ -109,9 +123,13 @@ class MainActivity : ComponentActivity() {
         }
 
     }
+
     private fun requestNotificationPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                )
                 != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(

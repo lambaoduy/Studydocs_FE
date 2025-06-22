@@ -12,12 +12,13 @@ import com.example.finalexam.ui.theme.FinalExamTheme
 @Composable
 fun HomeScreen(
     navigateToNotification: () -> Unit,
+    navigateToProfile: () -> Unit,
     onNavigateToDocumentDetail: (String) -> Unit ,
     onBottomNavItemSelected: (String) -> Unit
 ) {
     FinalExamTheme {
         Scaffold(
-            topBar = { TopBar(navigateToNotification) },
+            topBar = { TopBar(navigateToNotification,navigateToProfile) },
             bottomBar = { BottomBar(onItemSelected = onBottomNavItemSelected) },
             content =
                 { padding ->

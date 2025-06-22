@@ -1,10 +1,10 @@
 package com.example.finalexam.handler.upload
 
+import com.example.finalexam.entity.UploadDocument
 import com.example.finalexam.handler.IntentHandler
 import com.example.finalexam.intent.UploadDocumentIntent
 import com.example.finalexam.result.UploadDocumentResult
 import com.example.finalexam.usecase.upload.UploadDocumentsUseCase
-import com.example.finalexam.entity.UploadDocument
 
 class UploadDocumentsHandler(
     private val uploadDocumentsUseCase: UploadDocumentsUseCase
