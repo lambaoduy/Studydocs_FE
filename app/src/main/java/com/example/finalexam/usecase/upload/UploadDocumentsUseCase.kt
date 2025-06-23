@@ -45,14 +45,14 @@ class UploadDocumentsUseCase {
      * Thực hiện upload documents
      *
      * @param documents Danh sách documents cần upload
-     * @param universityId ID của trường đại học
+     * @param universityName tên của trường đại học
      * @param courseIndex Index của môn học trong danh sách subjects
      * @param context Context để truy cập ContentResolver
      * @return UploadDocumentResult chứa kết quả upload
      */
     suspend operator fun invoke(
         documents: List<UploadDocument>,
-        universityId: String,
+        universityName: String,
         courseIndex: Int,
         context: Context
     ): UploadDocumentResult {
@@ -62,8 +62,8 @@ class UploadDocumentsUseCase {
                 return UploadDocumentResult.Error("Không có documents nào để upload")
             }
 
-            if (universityId.isBlank()) {
-                return UploadDocumentResult.Error("University ID không hợp lệ")
+            if (universityName.isBlank()) {
+                return UploadDocumentResult.Error("University không hợp lệ")
             }
 
             if (courseIndex < 0) {
@@ -86,7 +86,7 @@ class UploadDocumentsUseCase {
                         title = uploadDoc.title,
                         description = uploadDoc.description,
                         fileUrl = uploadDoc.fileUrl,
-                        university = universityId,
+                        university = universityName,
                         subject = uploadDoc.subject,
                         author = "current_user", // TODO: Lấy từ UserPreferences
                         createdDate = System.currentTimeMillis().toString()

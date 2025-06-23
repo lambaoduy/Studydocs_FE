@@ -7,7 +7,7 @@ data class UploadDocument(
     val name: String,
     val title: String = "",
     val description: String = "",
-    val universityId: String = "",
+    val universityName: String = "",
     val subject: String = "",
     val fileUrl: String = "",
     val fileId: String = "",

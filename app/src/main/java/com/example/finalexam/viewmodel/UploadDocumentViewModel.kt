@@ -119,7 +119,7 @@ class UploadDocumentHandlerWithContext(
                 return
             }
             
-            val universityId = selectedUniversity.id
+            val universityName = selectedUniversity.name
             val courseIndex = selectedUniversity.selectedSubjectIndex
             
             if (courseIndex < 0 || courseIndex >= selectedUniversity.subjects.size) {
@@ -138,7 +138,7 @@ class UploadDocumentHandlerWithContext(
             val documentWithInfo = selectedDocument.copy(
                 title = currentState.title,
                 description = currentState.description,
-                universityId = selectedUniversity.id,
+                universityName = selectedUniversity.name,
                 subject = selectedUniversity.selectedSubject
             )
             
@@ -149,7 +149,7 @@ class UploadDocumentHandlerWithContext(
             
             val result = uploadDocumentsUseCase(
                 documents = listOf(documentWithInfo),
-                universityId = selectedUniversity.id,
+                universityName = selectedUniversity.name,
                 courseIndex = selectedUniversity.selectedSubjectIndex,
                 context = context
             )
