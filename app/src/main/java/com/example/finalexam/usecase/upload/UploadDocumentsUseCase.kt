@@ -2,6 +2,7 @@ package com.example.finalexam.usecase.upload
 
 import android.content.Context
 import com.example.finalexam.data.api.DocumentApi
+import com.example.finalexam.data.datastore.UserPreferences
 import com.example.finalexam.data.utils.FileUtil
 import com.example.finalexam.entity.Document
 import com.example.finalexam.entity.UploadDocument
@@ -46,6 +47,7 @@ class UploadDocumentsUseCase {
      *
      * @param documents Danh sách documents cần upload
      * @param universityId ID của trường đại học
+     * @param universityName name của trường
      * @param courseIndex Index của môn học trong danh sách subjects
      * @param context Context để truy cập ContentResolver
      * @return UploadDocumentResult chứa kết quả upload
@@ -53,6 +55,7 @@ class UploadDocumentsUseCase {
     suspend operator fun invoke(
         documents: List<UploadDocument>,
         universityId: String,
+        universityName: String,
         courseIndex: Int,
         context: Context
     ): UploadDocumentResult {
@@ -82,15 +85,17 @@ class UploadDocumentsUseCase {
                     }
 
                     // Convert UploadDocument to Document entity
-                    val document = Document(
-                        title = uploadDoc.title,
-                        description = uploadDoc.description,
-                        fileUrl = uploadDoc.fileUrl,
-                        university = universityId,
-                        subject = uploadDoc.subject,
-                        author = "current_user", // TODO: Lấy từ UserPreferences
-                        createdDate = System.currentTimeMillis().toString()
-                    )
+                    val document = UserPreferences.getUser()?.let {
+                        Document(
+                            title = uploadDoc.title,
+                            description = uploadDoc.description,
+                            fileUrl = uploadDoc.fileUrl,
+                            university = universityName,
+                            subject = uploadDoc.subject,
+                            author = it.fullName, // TODO: Lấy từ UserPreferences
+                            createdDate = System.currentTimeMillis().toString()
+                        )
+                    }
 
                     // Convert Uri to File sử dụng FileUtil
                     val tempFile = FileUtil.getFileFromUri(context, uploadDoc.uri, uploadDoc.name)

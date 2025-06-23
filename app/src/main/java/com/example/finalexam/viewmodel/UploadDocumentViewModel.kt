@@ -150,6 +150,7 @@ class UploadDocumentHandlerWithContext(
             val result = uploadDocumentsUseCase(
                 documents = listOf(documentWithInfo),
                 universityId = selectedUniversity.id,
+                universityName = selectedUniversity.name,
                 courseIndex = selectedUniversity.selectedSubjectIndex,
                 context = context
             )
