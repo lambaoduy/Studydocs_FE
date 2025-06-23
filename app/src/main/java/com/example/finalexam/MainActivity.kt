@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
                             },
                             onRegisterSuccess = {
                                 navController.popBackStack(
-                                    "login",
+                                            "login",
                                     inclusive = false
                                 )
                             }

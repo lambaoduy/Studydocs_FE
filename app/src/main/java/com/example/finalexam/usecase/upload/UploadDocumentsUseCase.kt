@@ -14,6 +14,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.wait
 import java.io.File
 
 /**
@@ -37,21 +38,9 @@ import java.io.File
  */
 class UploadDocumentsUseCase {
 
-    //===Phần này của Hảo 22/6===
     private val documentApi: DocumentApi = RetrofitClient.createApi(DocumentApi::class.java)
-    //===Phần này của Hảo 22/6===
-    private val gson =Gson()
+    private val gson = Gson()
 
-    /**
-     * Thực hiện upload documents
-     *
-     * @param documents Danh sách documents cần upload
-     * @param universityId ID của trường đại học
-     * @param universityName name của trường
-     * @param courseIndex Index của môn học trong danh sách subjects
-     * @param context Context để truy cập ContentResolver
-     * @return UploadDocumentResult chứa kết quả upload
-     */
     suspend operator fun invoke(
         documents: List<UploadDocument>,
         universityId: String,
@@ -60,7 +49,6 @@ class UploadDocumentsUseCase {
         context: Context
     ): UploadDocumentResult {
         return try {
-            // Validate input parameters
             if (documents.isEmpty()) {
                 return UploadDocumentResult.Error("Không có documents nào để upload")
             }
@@ -73,18 +61,14 @@ class UploadDocumentsUseCase {
                 return UploadDocumentResult.Error("Course index không hợp lệ")
             }
 
-            //===Phần này của Hảo 22/6===
-            // Gọi API thực tế để upload documents
             val uploadedDocuments = mutableListOf<Document>()
 
             for (uploadDoc in documents) {
                 try {
-                    // Kiểm tra có Uri không
                     if (uploadDoc.uri == null) {
                         return UploadDocumentResult.Error("File không hợp lệ: ${uploadDoc.name}")
                     }
 
-                    // Convert UploadDocument to Document entity
                     val document = UserPreferences.getUser()?.let {
                         Document(
                             title = uploadDoc.title,
@@ -92,58 +76,50 @@ class UploadDocumentsUseCase {
                             fileUrl = uploadDoc.fileUrl,
                             university = universityName,
                             subject = uploadDoc.subject,
-                            author = it.fullName, // TODO: Lấy từ UserPreferences
+                            author = it.fullName,
                             createdDate = System.currentTimeMillis().toString()
                         )
-                    }
+                    } ?: return UploadDocumentResult.Error("Không tìm thấy thông tin người dùng")
 
-                    // Convert Uri to File sử dụng FileUtil
                     val tempFile = FileUtil.getFileFromUri(context, uploadDoc.uri, uploadDoc.name)
 
-                    // Convert file to MultipartBody.Part
                     val filePart = createFilePart(tempFile)
                     val documentJson = gson.toJson(document)
                     val documentBody = documentJson.toRequestBody("application/json".toMediaType())
 
-                    // Gọi API upload
                     val response = documentApi.uploadDocument(documentBody, filePart)
 
-                    if (response.isSuccessful) {
-                        response.body()?.data?.let { uploadedDoc ->
-                            uploadedDocuments.add(uploadedDoc)
-                        }
-                    } else {
-                        return UploadDocumentResult.Error("Upload failed: ${response.message()}")
-                    }
+//                    if (response.isSuccessful) {
+//                        response.body()?.data?.let { uploadedDoc ->
+//                            uploadedDocuments.add(uploadedDoc)
+//                        }
+//                    } else {
+//                        return UploadDocumentResult.Error("Upload failed: ${response.message()}")
+//                    }
 
-                    // Xóa file tạm sau khi upload
-                    tempFile.delete()
+                    // Safe delete file
+                    try {
+                        tempFile.delete()
+                    } catch (e: Exception) {
+                        println("Không thể xóa file tạm: ${e.message}")
+                    }
 
                 } catch (e: Exception) {
                     return UploadDocumentResult.Error("Error uploading ${uploadDoc.name}: ${e.message}")
                 }
             }
 
-            // Trả về kết quả thành công
-            return UploadDocumentResult.UploadSuccess(documents)
-            //===Phần này của Hảo 22/6===
+            //
+            return UploadDocumentResult.UploadSuccess(uploadedDocuments)
 
         } catch (e: Exception) {
-            // Log error for debugging
             println("UploadDocumentsUseCase error: ${e.message}")
-
-            // Return error result with meaningful message
             UploadDocumentResult.Error(e.message ?: "Failed to upload documents")
         }
     }
 
-    //===Phần này của Hảo 22/6===
-    /**
-     * Convert File to MultipartBody.Part for API upload
-     */
     private fun createFilePart(file: File): MultipartBody.Part {
         val requestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
         return MultipartBody.Part.createFormData("file", file.name, requestBody)
     }
-    //===Phần này của Hảo 22/6===
-} 
+}

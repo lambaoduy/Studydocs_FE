@@ -31,8 +31,16 @@ class UploadDocumentReducer {
             // ===== LOADING STATE =====
             is UploadDocumentResult.Loading ->
                 state.copy(
-                    isUploading = true,  // Bắt đầu upload - hiển thị loading
-                    error = null         // Clear error message
+                    isUploading = true,
+                    uploadSuccess = false, // RESET
+                    error = null
+                )
+
+            is UploadDocumentResult.Error ->
+                state.copy(
+                    isUploading = false,
+                    uploadSuccess = false, // RESET
+                    error = result.message
                 )
 
             // ===== DOCUMENT SELECTION =====
@@ -43,17 +51,15 @@ class UploadDocumentReducer {
                 )
 
             // ===== UPLOAD SUCCESS =====
-            is UploadDocumentResult.UploadSuccess ->
-                state.copy(
-                    isUploading = false,                    // Kết thúc upload
-                    uploadSuccess = true,                   // Đánh dấu upload thành công
-                    uploadedDocuments = result.uploadedDocuments,  // Lưu danh sách documents đã upload
-                    error = null,                           // Clear error message
-                    // TODO: Có thể clear form data sau khi upload thành công
-                    // title = "",
-                    // description = "",
-                    // selectedDocument = null
-                )
+            is UploadDocumentResult.UploadSuccess -> state.copy(
+                isUploading = false,
+                uploadSuccess = true,
+                uploadedDocuments = result.uploadedDocuments,
+                error = null,
+                title = "",
+                description = "",
+                selectedDocument = null
+            )
 
             // ===== ERROR STATE =====
             is UploadDocumentResult.Error ->
